@@ -9,6 +9,22 @@
 
 html {
     scroll-behavior: smooth;
+    scroll-padding-top: 80px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
 }
 
 body {
@@ -41,6 +57,12 @@ button {
     cursor: pointer;
 }
 
+:focus-visible {
+    outline: 2px solid #C8B9F4;
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
 .d-flex {
     display: flex;
 }
@@ -64,7 +86,7 @@ button {
     position: absolute;
     width: 830px;
     height: 1009px;
-    background-image: url(../images/gradient-blur.png);
+    background-image: url(../images/gradient-blur.webp);
     pointer-events: none;
 }
 
@@ -94,23 +116,21 @@ button {
 
 .link-arrow {
     position: relative;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
     line-height: 1.5;
     color: var(--text-strong);
 }
 
-.link-arrow:after {
-    content: "";
+.link-arrow__icon {
     position: absolute;
     right: -41px;
     width: 30px;
     height: 30px;
-    background-image: url(../images/icons/arrow-right.svg);
-    background-size: contain;
     transition: right .3s ease;
 }
 
-.link-arrow:hover:after {
+.link-arrow:hover .link-arrow__icon {
     right: -53px;
 }
 
@@ -135,6 +155,7 @@ button {
 .main-header.main-header--scrolled {
     top: 0;
     background-color: rgba(0, 0, 0, .6);
+    -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
     box-shadow: 0 10px 30px rgba(0, 0, 0, .5);
 }
@@ -194,8 +215,16 @@ button {
 }
 
 .menu-btn {
+    align-items: center;
     gap: 12px;
     transition: opacity .2s ease, transform .2s ease;
+}
+
+.menu-btn__icon {
+    width: 21px;
+    height: 21px;
+    display: inline-block;
+    flex-shrink: 0;
 }
 
 .menu-btn.menu-btn--hidden {
@@ -320,15 +349,15 @@ button {
 }
 
 .hero__title .hero__line--small-indent {
-    margin-left: 8vw;
+    margin-left: 5vw;
 }
 
 .hero__title .hero__line--medium-indent {
-    margin-left: 16vw;
+    margin-left: 10vw;
 }
 
 .hero__title .hero__line--large-indent {
-    margin-left: 32vw;
+    margin-left: 20vw;
 }
 
 .hero__scroll-block {
@@ -347,11 +376,16 @@ button {
     flex-shrink: 0;
     width: 40px;
     height: 39px;
-    background-image: url(../images/icons/arrow-down.svg);
+}
+
+.hero__scroll-icon {
+    display: block;
+    width: 100%;
+    height: 100%;
 }
 
 .hero__desc {
-    max-width: 342px;
+    max-width: 400px;
 }
 
 .hero__image-bg {
@@ -362,7 +396,7 @@ button {
     max-width: 1008px;
     height: calc(50dvh - 64px);
     max-height: 946px;
-    background-image: url(../images/hero-image.png);
+    background-image: url(../images/hero-image.webp);
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -385,8 +419,17 @@ button {
     gap: 40px;
 }
 
+.logo-strip__item {
+    justify-content: center;
+    align-items: center;
+    height: 56px;
+}
+
 .logo-strip__logo {
-    max-height: 80px;
+    display: block;
+    height: 30px;
+    width: auto;
+    max-width: 130px;
 }
 
 .text-media {
@@ -533,6 +576,9 @@ button {
 }
 
 .slider__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 38px;
     height: 40px;
     transition: opacity .3s ease;
@@ -542,12 +588,10 @@ button {
     opacity: .6;
 }
 
-.slider__btn--prev {
-    background-image: url(../images/icons/chevron-left.svg);
-}
-
-.slider__btn--next {
-    background-image: url(../images/icons/chevron-right.svg);
+.slider__btn-icon {
+    display: block;
+    width: 100%;
+    height: 100%;
 }
 
 .services {
@@ -728,7 +772,7 @@ button {
     .text-sm {
         font-size: 1rem;
     }
-    
+
     .title-display {
         font-size: 3.75rem;
     }
@@ -740,7 +784,7 @@ button {
     .main-header__inner {
         padding: 0 24px;
     }
-    
+
     .menu-overlay__inner {
         padding: 68px 32px 64px;
     }
@@ -823,7 +867,7 @@ button {
     .slider__controls {
         display: flex;
     }
-    
+
     .services__inner {
         padding: 25px 32px 0;
     }
@@ -855,7 +899,7 @@ button {
     .main-footer__nav-title {
         margin-bottom: 12px;
     }
-    
+
     .main-footer__scroll-top {
         position: absolute;
         right: 32px;
@@ -868,9 +912,8 @@ button {
         transform-origin: top right;
         transition: color .3s ease;
     }
-    
-    .main-footer__scroll-top:before {
-        content: "";
+
+    .main-footer__scroll-top-icon {
         position: absolute;
         top: 0;
         bottom: 0;
@@ -879,16 +922,15 @@ button {
         width: 40px;
         height: 39px;
         margin: auto;
-        background-image: url(../images/icons/arrow-up.svg);
         transform: rotate(-90deg);
         transition: left .3s ease;
     }
-    
+
     .main-footer__scroll-top:hover {
         color: var(--text-strong);
     }
-    
-    .main-footer__scroll-top:hover:before {
+
+    .main-footer__scroll-top:hover .main-footer__scroll-top-icon {
         left: -59px;
     }
 }
@@ -898,7 +940,7 @@ button {
         margin-bottom: 34px;
         font-size: 5rem;
     }
-    
+
     .decor-shapes {
         height: 0;
         margin-top: 91px;
@@ -906,7 +948,7 @@ button {
         padding-bottom: 27.9%;
         background-size: 100% 100%;
     }
-    
+
     .decor-shape {
         display: block;
     }
@@ -939,7 +981,7 @@ button {
     .link-arrow:hover:after {
         right: -61px;
     }
-    
+
     .nav {
         display: block;
     }
@@ -1015,10 +1057,11 @@ button {
 
     .logo-strip__item {
         width: calc(25% - 30px);
+        height: 56px;
     }
 
     .logo-strip__logo {
-        max-height: none;
+        height: 34px;
     }
 
     .text-media__inner {
@@ -1062,7 +1105,7 @@ button {
     .projects__name {
         font-size: 1.875rem;
     }
-    
+
     .slider__inner {
         margin-bottom: 57px;
     }
@@ -1090,7 +1133,7 @@ button {
     .services__list {
         width: calc(33.333333% - 8px);
     }
-    
+
     .services__item {
         padding: 8px 0;
     }
@@ -1101,7 +1144,7 @@ button {
         width: calc(66.666667% - 8px);
         padding: 20px 0;
     }
-    
+
     .services__img {
         width: calc(45% - 20px);
     }
@@ -1111,67 +1154,65 @@ button {
         width: calc(55% - 20px);
         font-size: 1.375rem;
     }
-    
+
     .about__inner {
         min-height: 625px;
         margin-bottom: 87px;
         padding: 87px 0 0;
     }
-    
+
     .about__content {
         max-width: 43%;
         margin: 0 25% 0 32%;
         font-size: 1.375rem;
     }
-    
+
     .about__inner .about__title {
         margin-bottom: 8px;
     }
-    
+
     .about__desc {
         margin-bottom: 20px;
     }
-    
-    
-    
+
     .about__photo {
         z-index: 100;
         display: block;
     }
-    
+
     .about__photo--1 {
         top: 87px;
         left: 7.98vw;
         max-width: 15.98%;
     }
-    
+
     .about__photo--2 {
         top: 290px;
         right: 7.98vw;
         max-width: 15.98%;
     }
-    
+
     .about__photo--3 {
         bottom: 0;
         left: 32vw;
         max-width: 20%;
     }
-    
+
     .about .decor-shape--triangle {
         top: 0;
         right: 7.98vw;
     }
-    
+
     .about .decor-shape--arc {
         right: 1.66vw;
         bottom: 16px;
     }
-    
+
     .about .decor-shape--square {
         bottom: 8px;
         left: -25.55vw;
     }
-    
+
     .main-footer {
         position: relative;
         overflow: hidden;
@@ -1182,7 +1223,7 @@ button {
         gap: 57px;
         padding: 72px 24px 87px;
     }
-    
+
     .main-footer__info {
         width: calc(50% - 66px);
     }
@@ -1207,7 +1248,7 @@ button {
     .main-footer__nav-col {
         font-size: 1.25rem;
     }
-    
+
     .main-footer__nav-title {
         margin-bottom: 16px;
     }
@@ -1221,13 +1262,13 @@ button {
     .main-footer__circles {
         display: block;
     }
-    
+
     .main-footer__circle {
         position: absolute;
         z-index: -10;
         border-radius: 50%;
     }
-    
+
     .main-footer__circle--green {
         bottom: -25vw;
         left: 19.51vw;
@@ -1235,7 +1276,7 @@ button {
         height: 40.97vw;
         background-color: #3effb4;
     }
-    
+
     .main-footer__circle--purple {
         right: 9.51vw;
         bottom: -25vw;
@@ -1243,7 +1284,7 @@ button {
         height: 40.97vw;
         background-color: #3023ae;
     }
-    
+
     .main-footer__circle--blue {
         right: 21.46vw;
         bottom: -.69vw;
@@ -1270,15 +1311,15 @@ button {
         top: auto;
         bottom: 2px;
     }
-    
+
     .menu-overlay__inner {
         padding: 68px 24px 64px;
     }
-    
+
     .menu-overlay__inner .menu-overlay__email {
         padding-top: 0;
     }
-    
+
     .menu-overlay__info {
         flex-direction: row;
         align-items: center;
@@ -1321,15 +1362,15 @@ button {
     .projects__name {
         font-size: 2.1875rem;
     }
-    
+
     .slider__inner {
         padding-bottom: 120px;
     }
-    
+
     .slider__bottom {
         padding-top: 24px;
     }
-    
+
     .services__inner {
         padding-top: 75px;
     }
@@ -1338,43 +1379,43 @@ button {
         margin-left: 67px;
         margin-bottom: 75px;
     }
-    
+
     .services__body {
         padding: 0 115px;
     }
-    
+
     .services__item {
         padding: 16px 0;
     }
-    
+
     .services__panel {
         align-items: flex-start;
     }
-    
+
     .services__content {
         padding-bottom: 16px;
     }
-    
+
     .about__inner {
         min-height: 700px;
     }
-    
+
     .main-footer__title {
         font-size: 2.5rem;
     }
-    
+
     .main-footer__inner .main-footer__email {
         padding-top: 0;
     }
-    
+
     .main-footer__info {
         width: 40%;
     }
-    
+
     .main-footer__nav {
         width: auto;
     }
-    
+
     .main-footer__nav-col {
         margin-left: 57px;
     }
@@ -1384,20 +1425,20 @@ button {
     .title-display {
         margin-bottom: 68px;
     }
-    
+
     .menu-overlay__email {
         font-size: 1.625rem;
     }
-    
+
     .menu-overlay__info {
         gap: 115px;
         font-size: 2rem;
     }
-    
+
    .menu-overlay__col-title {
        margin-bottom: 32px;
-   } 
-    
+   }
+
     .hero__image-bg {
         margin-top: 62px;
     }
@@ -1408,6 +1449,11 @@ button {
 
     .logo-strip__item {
         width: calc(25% - 60px);
+        height: 56px;
+    }
+
+    .logo-strip__logo {
+        height: 38px;
     }
 
     .text-media__inner {
@@ -1418,64 +1464,64 @@ button {
         margin-top: 115px;
         margin-bottom: 173px;
     }
-    
+
     .slider__inner {
         margin-bottom: 115px;
     }
-    
+
     .services__inner {
         margin-bottom: 173px;
         padding-top: 111px;
     }
-    
+
     .services__inner .services__title {
         margin-bottom: 103px;
     }
-    
+
     .services__list {
         font-size: 2.25rem;
     }
-    
+
     .services__panel {
         gap: 80px;
     }
-    
+
     .services__img {
         width: calc(45% - 40px);
     }
-    
+
     .services__content {
         gap: 40px;
         width: calc(55% - 40px);
         font-size: 1.625rem;
     }
-    
+
     .about__inner {
         min-height: 872px;
         margin-bottom: 166px;
         padding: 173px 0 0;
     }
-    
+
     .about__content {
         font-size: 1.625rem;
     }
-    
+
     .about__photo--1 {
         top: 173px;
     }
-    
+
     .about__photo--2 {
         top: 408px;
     }
-    
+
     .about .decor-shape--arc {
         bottom: 23px;
     }
-    
+
     .about .decor-shape--square {
         bottom: 15px;
     }
-    
+
     .main-footer__inner {
         gap: 115px;
         padding: 144px 24px 173px;
@@ -1484,37 +1530,37 @@ button {
     .main-footer__info {
         width: 34.05%;
     }
-    
+
     .main-footer__title {
         font-size: 2.9375rem;
     }
-    
+
     .main-footer__desc {
         margin-bottom: 73px;
         max-width: 89.87%;
     }
-    
+
     .main-footer__email {
         font-size: 1.625rem;
     }
-    
+
     .main-footer__nav-col {
         margin-left: 115px;
     }
-    
+
     .main-footer__nav-title {
         margin-bottom: 32px;
     }
-    
+
     .main-footer__scroll-top {
         top: 269px;
     }
-    
-    .main-footer__scroll-top:before {
+
+    .main-footer__scroll-top-icon {
         left: -55px;
     }
-    
-    .main-footer__scroll-top:hover:before {
+
+    .main-footer__scroll-top:hover .main-footer__scroll-top-icon {
         left: -67px;
     }
 }
@@ -1539,22 +1585,22 @@ button {
         width: 414px;
         height: 414px;
     }
-    
+
     .hero__title {
         font-size: 5.925rem;
         line-height: 6.48rem;
     }
 
     .hero__title .hero__line--small-indent {
-        margin-left: 116px;
+        margin-left: 72px;
     }
 
     .hero__title .hero__line--medium-indent {
-        margin-left: 230px;
+        margin-left: 144px;
     }
 
     .hero__title .hero__line--large-indent {
-        margin-left: 460px;
+        margin-left: 288px;
     }
 
     .about__photo--1 {

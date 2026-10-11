@@ -1,74 +1,86 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web3 Design Studio</title>
-    <link rel="icon" type="image/svg+xml" href="assets/images/logo.svg">
+    <title>MobileVision — Студія дизайну мобільних застосунків</title>
+    <meta name="description" content="MobileVision — студія дизайну мобільних застосунків. Створюємо інтуїтивні інтерфейси, які користувачі полюблять. UX/UI дизайн, прототипування, дизайн-системи.">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="icon" sizes="any" href="assets/images/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
     <header class="main-header">
         <div class="main-header__inner d-flex content-wrap">
-            <img src="assets/images/logo.svg" alt="Web3 Design Studio logo">
-            <nav id="main-header__nav" class="nav">
+            <a href="index.html" class="main-header__logo-link" aria-label="Головна сторінка MobileVision">
+                <img src="assets/images/favicon.svg" alt="Логотип студії MobileVision">
+            </a>
+            <nav id="main-header__nav" class="nav" aria-label="Головне меню">
                 <ul class="nav__list d-flex">
-                    <li class="nav__item"><a href="#" class="nav__link">Home</a></li>
-                    <li class="nav__item"><a href="#" class="nav__link">About</a></li>
-                    <li class="nav__item"><a href="#" class="nav__link">Contact</a></li>
+                    <li class="nav__item"><a href="index.html" class="nav__link">Головна</a></li>
+                    <li class="nav__item"><a href="#about" class="nav__link">Про нас</a></li>
+                    <li class="nav__item"><a href="#contact" class="nav__link">Контакти</a></li>
                     <li class="nav__item">
-                        <a href="#" class="nav__link">
-                            Career
+                        <a href="#contact" class="nav__link">
+                            Кар'єра
                             <span class="badge d-flex item-center">2</span>
                         </a>
                     </li>
                 </ul>
             </nav>
-            <button id="menu-btn" class="menu-btn d-flex">
-                <span id="menu-btn__text" class="menu-btn__text">Menu</span>
-                <img src="assets/images/icons/burger-menu.svg" alt="" id="menu-btn__img">
+            <button id="menu-btn" class="menu-btn d-flex" type="button" aria-label="Відкрити меню" aria-haspopup="dialog" aria-expanded="false" aria-controls="menu-overlay">
+                <span id="menu-btn__text" class="menu-btn__text">Меню</span>
+                <svg class="menu-btn__icon" width="21" height="21" aria-hidden="true">
+                    <use id="menu-btn__use" href="assets/images/icons-sprite.svg#icon-burger-menu"></use>
+                </svg>
             </button>
         </div>
-        <div id="menu-overlay" class="menu-overlay">
+        <div id="menu-overlay" class="menu-overlay" role="dialog" aria-modal="true" aria-label="Мобільне меню навігації" aria-hidden="true">
             <div class="menu-overlay__inner d-flex content-wrap">
-                <nav class="menu-overlay__nav d-flex">
+                <nav class="menu-overlay__nav d-flex" aria-label="Мобільне меню">
                     <ul class="menu-overlay__list d-flex item-center">
                         <li class="menu-overlay__item">
-                            <a href="#" class="menu-overlay__link">Home</a>
+                            <a href="index.html" class="menu-overlay__link">Головна</a>
                         </li>
                         <li class="menu-overlay__item">
-                            <a href="#" class="menu-overlay__link">About</a>
+                            <a href="#about" class="menu-overlay__link">Про нас</a>
                         </li>
                         <li class="menu-overlay__item">
-                            <a href="#" class="menu-overlay__link">Contact</a>
+                            <a href="#contact" class="menu-overlay__link">Контакти</a>
                         </li>
                         <li class="menu-overlay__item">
-                            <a href="#" class="menu-overlay__link">
-                                Career
+                            <a href="#contact" class="menu-overlay__link">
+                                Кар'єра
                                 <span class="badge d-flex item-center">2</span>
                             </a>
                         </li>
                     </ul>
-                    <a href="mailto:hello@thirdweb.studio" class="menu-overlay__email link-arrow">hello@thirdweb.studio</a>
+                    <a href="mailto:hello@mobilevision.studio" class="menu-overlay__email link-arrow">
+                        hello@mobilevision.studio
+                        <svg class="link-arrow__icon" width="30" height="30" aria-hidden="true">
+                            <use href="assets/images/icons-sprite.svg#icon-arrow-right"></use>
+                        </svg>
+                    </a>
                 </nav>
                 <div class="menu-overlay__info d-flex">
                     <div class="menu-overlay__col">
-                        <p class="menu-overlay__col-title">Our projects</p>
+                        <p class="menu-overlay__col-title">Наші проєкти</p>
                         <ul class="menu-overlay__col-list">
-                            <li><a href="#" class="menu-overlay__col-link">WingRiders</a></li>
-                            <li><a href="#" class="menu-overlay__col-link">Trackee</a></li>
-                            <li><a href="#" class="menu-overlay__col-link">Worldcoin</a></li>
-                            <li><a href="#" class="menu-overlay__col-link">Audience+</a></li>
+                            <li><a href="#projects" class="menu-overlay__col-link">WingRiders</a></li>
+                            <li><a href="#projects" class="menu-overlay__col-link">Trackee</a></li>
+                            <li><a href="#projects" class="menu-overlay__col-link">Worldcoin</a></li>
+                            <li><a href="#projects" class="menu-overlay__col-link">Audience+</a></li>
                         </ul>
                     </div>
                     <div class="menu-overlay__col">
-                        <p class="menu-overlay__col-title">Follow us</p>
+                        <p class="menu-overlay__col-title">Ми в соцмережах</p>
                         <ul class="menu-overlay__col-list">
-                            <li><a href="#" class="menu-overlay__col-link">Facebook</a></li>
-                            <li><a href="#" class="menu-overlay__col-link">Instagram</a></li>
-                            <li><a href="#" class="menu-overlay__col-link">Dribbble</a></li>
-                            <li><a href="#" class="menu-overlay__col-link">Linkedin+</a></li>
+                            <li><a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="menu-overlay__col-link">Facebook</a></li>
+                            <li><a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="menu-overlay__col-link">Instagram</a></li>
+                            <li><a href="https://dribbble.com" target="_blank" rel="noopener noreferrer" class="menu-overlay__col-link">Dribbble</a></li>
+                            <li><a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="menu-overlay__col-link">LinkedIn</a></li>
                         </ul>
                     </div>
                 </div>
@@ -76,39 +88,51 @@
         </div>
     </header>
     <main>
-        <section class="hero">
+        <section class="hero" id="hero">
             <div class="hero__inner d-flex content-wrap">
                 <div class="hero__content d-flex">
                     <h1 class="hero__title">
-                        <span class="hero__line hero__line--small-indent">Design studio</span>
-                        <span class="hero__line hero__line--large-indent">for the</span>
-                        <span class="hero__line hero__line--medium-indent">web3 world</span>
+                        <span class="hero__line hero__line--small-indent">Студія дизайну</span>
+                        <span class="hero__line hero__line--large-indent">мобільних</span>
+                        <span class="hero__line hero__line--medium-indent">застосунків</span>
                     </h1>
                     <div class="hero__scroll-block d-flex">
-                        <a href="#backers" class="hero__scroll-link"></a>
+                        <a href="#backers" class="hero__scroll-link" aria-label="Прокрутити до партнерів">
+                            <svg class="hero__scroll-icon" width="40" height="39" aria-hidden="true">
+                                <use href="assets/images/icons-sprite.svg#icon-arrow-down"></use>
+                            </svg>
+                        </a>
                         <p class="hero__desc text-sm">
-                            We help companies design their products to be ready for web3 world
+                            Допомагаємо компаніям створювати мобільні продукти, готові підкорити ринок
                         </p>
                     </div>
                 </div>
-                <div class="hero__image-bg"></div>
+                <div class="hero__image-bg" role="img" aria-label="Фонова графіка мобільного інтерфейсу"></div>
             </div>
         </section>
         <div id="backers" class="logo-strip">
             <div class="logo-strip__inner content-wrap">
-                <p class="logo-strip__label text-sm">Our clients are backed by:</p>
+                <p class="logo-strip__label text-sm">Нам довіряють:</p>
                 <ul class="logo-strip__list d-flex">
                     <li class="logo-strip__item d-flex item-center">
-                        <img src="assets/images/backers/y-combinator.svg" alt="Y Combinator" class="logo-strip__logo">
+                        <svg class="logo-strip__logo" role="img" aria-label="Spotify">
+                            <use href="assets/images/icons-sprite.svg#logo-spotify"></use>
+                        </svg>
                     </li>
                     <li class="logo-strip__item d-flex item-center">
-                        <img src="assets/images/backers/coinbase.svg" alt="Coinbase" class="logo-strip__logo">
+                        <svg class="logo-strip__logo" role="img" aria-label="Airbnb">
+                            <use href="assets/images/icons-sprite.svg#logo-airbnb"></use>
+                        </svg>
                     </li>
                     <li class="logo-strip__item d-flex item-center">
-                        <img src="assets/images/backers/a16z.svg" alt="a16z" class="logo-strip__logo">
+                        <svg class="logo-strip__logo" role="img" aria-label="Slack">
+                            <use href="assets/images/icons-sprite.svg#logo-slack"></use>
+                        </svg>
                     </li>
                     <li class="logo-strip__item d-flex item-center">
-                        <img src="assets/images/backers/blockchange.svg" alt="BlockChange" class="logo-strip__logo">
+                        <svg class="logo-strip__logo" role="img" aria-label="Netflix">
+                            <use href="assets/images/icons-sprite.svg#logo-netflix"></use>
+                        </svg>
                     </li>
                 </ul>
             </div>
@@ -116,107 +140,115 @@
         <section class="text-media">
             <div class="text-media__inner d-flex content-wrap">
                 <div class="text-media__content">
-                    <h2 class="text-media__title">What is Web3 studio?</h2>
+                    <h2 class="text-media__title">Що таке MobileVision?</h2>
                     <p class="text-media__desc text-sm">
-                        Things around crypto, NFTs and web3 as a whole are unbelievably interesting.
-                        Unfortunately, the overall usability as well as the quality of the UI is often still not up to the task.
-                        To achieve mass adoption, overcoming those hurdles will be key. And this is where our story begins.
+                        Мобільні технології та інноваційні сервіси розвиваються з неймовірною швидкістю.
+                        На жаль, зручність використання та якість UI багатьох мобільних застосунків усе ще не відповідають очікуванням користувачів.
+                        Подолання цих бар'єрів — ключ до лояльності аудиторії. Саме тут розпочинається наша історія.
                     </p>
                 </div>
                 <div class="text-media__media d-flex item-center">
-                    <img src="assets/images/infinity-shape.svg" alt="Passion in the new wave of crypto. High-quality design craft.">
+                    <img src="assets/images/infinity-shape.svg" alt="Пристрасть до мобільних інновацій та висока майстерність дизайну">
                 </div>
             </div>
             <div class="glow"></div>
         </section>
-        <section class="projects">
+        <section class="projects" id="projects">
             <div class="projects__inner content-wrap">
-                <h2 class="title-display">Projects</h2>
+                <h2 class="title-display">Проєкти</h2>
                 <div class="projects__grid d-flex">
                     <div class="projects__col">
-                        <a href="#" class="projects__item">
-                            <img src="assets/images/projects/project-portfolio.jpg" alt="Project Name: WingRiders" class="projects__img">
+                        <a href="#projects" class="projects__item" aria-label="Проєкт WingRiders: децентралізований фінансовий інтерфейс">
+                            <img src="assets/images/projects/project-portfolio.webp" alt="Мобільний інтерфейс WingRiders з фінансовим портфоліо" class="projects__img">
                         </a>
-                        <a href="#" class="projects__item">
-                            <img src="assets/images/projects/project-stats.jpg" alt="Project Name: Trackee app" class="projects__img">
+                        <a href="#projects" class="projects__item" aria-label="Проєкт Trackee: додаток фінансової аналітики">
+                            <img src="assets/images/projects/project-stats.webp" alt="Мобільний додаток Trackee з графіками та статистикою балансу" class="projects__img">
                         </a>
                         <div class="projects__item projects__item--text">
-                            <p class="projects__name">How we design web3 products</p>
-                            <span class="projects__badge">coming soon</span>
+                            <p class="projects__name">Як ми створюємо мобільні продукти</p>
+                            <span class="projects__badge">скоро</span>
                         </div>
                     </div>
                     <div class="projects__col">
-                        <a href="#" class="projects__item">
-                            <img src="assets/images/projects/project-wallet.jpg" alt="Project Name: Worldcoin app" class="projects__img">
+                        <a href="#projects" class="projects__item" aria-label="Проєкт Worldcoin: цифровий мобільний гаманець">
+                            <img src="assets/images/projects/project-wallet.webp" alt="Мобільний інтерфейс Worldcoin з балансом та діями надсилання" class="projects__img">
                         </a>
-                        <a href="#" class="projects__item">
-                            <img src="assets/images/projects/project-audience.jpg" alt="Project Name: Audience+" class="projects__img">
+                        <a href="#projects" class="projects__item" aria-label="Проєкт Audience+: брендинг та айдентика">
+                            <img src="assets/images/projects/project-audience.webp" alt="Брендинг та візуальний стиль для сервісу Audience+" class="projects__img">
                         </a>
                     </div>
                 </div>
             </div>
         </section>
-        <section class="slider">
+        <section class="slider" id="slider">
             <div class="slider__inner content-wrap">
-                <h2 class="slider__title title-display">Other projects</h2>
+                <h2 class="slider__title title-display">Інші проєкти</h2>
                 <div class="swiper slider__swiper">
                     <ul class="swiper-wrapper slider__list"></ul>
                 </div>
                 <div class="slider__bottom d-flex">
                     <ul id="slider__indicators" class="slider__indicators d-flex"></ul>
                     <div class="slider__controls">
-                        <button id="slider__btn--prev" class="slider__btn slider__btn--prev"></button>
-                        <button id="slider__btn--next" class="slider__btn slider__btn--next"></button>
+                        <button id="slider__btn--prev" class="slider__btn slider__btn--prev" type="button" aria-label="Попередній слайд">
+                            <svg class="slider__btn-icon" width="38" height="40" aria-hidden="true">
+                                <use href="assets/images/icons-sprite.svg#icon-chevron-left"></use>
+                            </svg>
+                        </button>
+                        <button id="slider__btn--next" class="slider__btn slider__btn--next" type="button" aria-label="Наступний слайд">
+                            <svg class="slider__btn-icon" width="38" height="40" aria-hidden="true">
+                                <use href="assets/images/icons-sprite.svg#icon-chevron-right"></use>
+                            </svg>
+                        </button>
                     </div>
                 </div>
             </div>
         </section>
-        <section class="services">
+        <section class="services" id="services">
             <div class="decor-shapes content-wrap"></div>
             <div class="services__inner content-wrap">
-                <h2 class="services__title title-display">How we can help grow</h2>
+                <h2 class="services__title title-display">Як ми допоможемо зростати</h2>
                 <div class="services__body d-flex">
-                    <ul class="services__list">
-                        <li class="services__item services__item--active">
-                            <button class="services__btn">Product clarity</button>
+                    <ul class="services__list" role="tablist" aria-label="Категорії послуг">
+                        <li class="services__item services__item--active" role="presentation">
+                            <button id="tab-service-1" class="services__btn" type="button" role="tab" aria-selected="true" aria-controls="panel-service-1">Аналітика та стратегія</button>
                         </li>
-                        <li class="services__item">
-                            <button class="services__btn">UX/UI design</button>
+                        <li class="services__item" role="presentation">
+                            <button id="tab-service-2" class="services__btn" type="button" role="tab" aria-selected="false" aria-controls="panel-service-2">UX/UI дизайн</button>
                         </li>
-                        <li class="services__item">
-                            <button class="services__btn">Maintain process</button>
+                        <li class="services__item" role="presentation">
+                            <button id="tab-service-3" class="services__btn" type="button" role="tab" aria-selected="false" aria-controls="panel-service-3">Підтримка та розвиток</button>
                         </li>
                     </ul>
-                    <div class="services__panel services__panel--active services__panel--visible item-center">
-                        <img src="assets/images/service-photo.jpg" alt="" class="services__img">
+                    <div id="panel-service-1" class="services__panel services__panel--active services__panel--visible item-center" role="tabpanel" aria-labelledby="tab-service-1">
+                        <img src="assets/images/service-photo.webp" alt="Процес прототипування та аналітики інтерфейсу мобільного застосунку" class="services__img">
                         <div class="services__content d-flex">
-                            <p class="services__desc">Are you at the idea stage? We will help you identify the critical MVP product scope.</p>
+                            <p class="services__desc">Ви на етапі ідеї? Ми допоможемо визначити критичний обсяг функцій для запуску успішного MVP.</p>
                             <ul class="services__tags">
-                                <li class="services__tag">product goal&vision</li>
-                                <li class="services__tag">brand voice</li>
-                                <li class="services__tag">product positioning</li>
+                                <li class="services__tag">ціль продукту</li>
+                                <li class="services__tag">аналіз ринку</li>
+                                <li class="services__tag">позиціонування</li>
                             </ul>
                         </div>
                     </div>
-                    <div class="services__panel item-center">
-                        <img src="https://picsum.photos/seed/uxdesign/636/443" alt="" class="services__img">
+                    <div id="panel-service-2" class="services__panel item-center" role="tabpanel" aria-labelledby="tab-service-2">
+                        <img src="assets/images/service-photo-2.webp" alt="Процес створення візуального UX/UI дизайну та тестування" class="services__img">
                         <div class="services__content d-flex">
-                            <p class="services__desc">Need a flawless interface? We design intuitive Web3 experiences that users love.</p>
+                            <p class="services__desc">Потрібен бездоганний інтерфейс? Створюємо інтуїтивні мобільні застосунки, які полюблять користувачі.</p>
                             <ul class="services__tags">
-                                <li class="services__tag">user research</li>
-                                <li class="services__tag">wireframing</li>
-                                <li class="services__tag">visual design</li>
+                                <li class="services__tag">дослідження користувачів</li>
+                                <li class="services__tag">прототипування</li>
+                                <li class="services__tag">візуальний дизайн</li>
                             </ul>
                         </div>
                     </div>
-                    <div class="services__panel item-center">
-                        <img src="https://picsum.photos/seed/process/636/443" alt="" class="services__img">
+                    <div id="panel-service-3" class="services__panel item-center" role="tabpanel" aria-labelledby="tab-service-3">
+                        <img src="assets/images/service-photo-3.webp" alt="Підтримка та розвиток масштабованої дизайн-системи" class="services__img">
                         <div class="services__content d-flex">
-                            <p class="services__desc">Ready to scale up? We build robust design systems to keep your product consistent.</p>
+                            <p class="services__desc">Готові до масштабування? Будуємо надійні дизайн-системи для стабільного та цілісного розвитку продукту.</p>
                             <ul class="services__tags">
-                                <li class="services__tag">design system</li>
-                                <li class="services__tag">continuous updates</li>
-                                <li class="services__tag">QA support</li>
+                                <li class="services__tag">дизайн-система</li>
+                                <li class="services__tag">постійні оновлення</li>
+                                <li class="services__tag">QA підтримка</li>
                             </ul>
                         </div>
                     </div>
@@ -224,64 +256,77 @@
             </div>
             <div class="glow"></div>
         </section>
-        <section class="about">
+        <section class="about" id="about">
             <div class="about__inner content-wrap">
                 <div class="about__content">
-                    <h2 class="about__title title-display">About</h2>
+                    <h2 class="about__title title-display">Про нас</h2>
                     <p class="about__desc">
-                        Team of product and brand designers that are really passionate about blockchain technology and good
-                        design. We are not just UI freaks! We advocate users for better product experience and common sense.
+                        Команда продуктових та бренд-дизайнерів, яка по-справжньому захоплена мобільними технологіями та якісним дизайном. Ми не просто створюємо гарну оболонку — ми відстоюємо інтереси користувачів заради бездоганного досвіду та здорового глузду.
                     </p>
-                    <a href="#" class="link-arrow">More about us</a>
+                    <a href="#contact" class="link-arrow">
+                        Більше про нас
+                        <svg class="link-arrow__icon" width="30" height="30" aria-hidden="true">
+                            <use href="assets/images/icons-sprite.svg#icon-arrow-right"></use>
+                        </svg>
+                    </a>
                 </div>
-                <img src="assets/images/team/team-1.jpg" alt="Team member" class="about__photo about__photo--1">
-                <img src="assets/images/team/team-2.jpg" alt="Team member" class="about__photo about__photo--2">
-                <img src="assets/images/team/team-3.jpg" alt="Team member" class="about__photo about__photo--3">
+                <img src="assets/images/team/team-1.webp" alt="Член команди студії MobileVision" class="about__photo about__photo--1">
+                <img src="assets/images/team/team-2.webp" alt="Член команди студії MobileVision" class="about__photo about__photo--2">
+                <img src="assets/images/team/team-3.webp" alt="Член команди студії MobileVision" class="about__photo about__photo--3">
             </div>
             <div class="decor-shape decor-shape--triangle"></div>
             <div class="decor-shape decor-shape--arc"></div>
             <div class="decor-shape decor-shape--square"></div>
         </section>
     </main>
-    <footer class="main-footer">
+    <footer class="main-footer" id="contact">
         <div class="main-footer__inner content-wrap d-flex">
             <div class="main-footer__info">
-                <h2 class="main-footer__title">Web3 product studio</h2>
+                <h2 class="main-footer__title">MobileVision studio</h2>
                 <p class="main-footer__desc text-sm">
-                    Feel free to reach out if you want to collaborate
-                    with us, or simply have a chat.
+                    Напишіть нам, якщо хочете співпрацювати з нами або просто поспілкуватися про ваш проєкт.
                 </p>
-                <a href="mailto:hello@thirdweb.studio" class="main-footer__email link-arrow">hello@thirdweb.studio</a>
+                <a href="mailto:hello@mobilevision.studio" class="main-footer__email link-arrow">
+                    hello@mobilevision.studio
+                    <svg class="link-arrow__icon" width="30" height="30" aria-hidden="true">
+                        <use href="assets/images/icons-sprite.svg#icon-arrow-right"></use>
+                    </svg>
+                </a>
             </div>
-            <nav class="main-footer__nav d-flex">
+            <nav class="main-footer__nav d-flex" aria-label="Навігація у підвалі">
                 <div class="main-footer__nav-col">
-                    <h3 class="main-footer__nav-title">Our projects</h3>
+                    <h3 class="main-footer__nav-title">Наші проєкти</h3>
                     <ul class="main-footer__nav-list">
-                        <li><a href="#" class="main-footer__nav-link">WingRiders</a></li>
-                        <li><a href="#" class="main-footer__nav-link">Trackee</a></li>
-                        <li><a href="#" class="main-footer__nav-link">Worldcoin</a></li>
-                        <li><a href="#" class="main-footer__nav-link">Audience+</a></li>
+                        <li><a href="#projects" class="main-footer__nav-link">WingRiders</a></li>
+                        <li><a href="#projects" class="main-footer__nav-link">Trackee</a></li>
+                        <li><a href="#projects" class="main-footer__nav-link">Worldcoin</a></li>
+                        <li><a href="#projects" class="main-footer__nav-link">Audience+</a></li>
                     </ul>
                 </div>
                 <div class="main-footer__nav-col">
-                    <h3 class="main-footer__nav-title">Follow us</h3>
+                    <h3 class="main-footer__nav-title">Ми в соцмережах</h3>
                     <ul class="main-footer__nav-list">
-                        <li><a href="#" class="main-footer__nav-link">Facebook</a></li>
-                        <li><a href="#" class="main-footer__nav-link">Instagram</a></li>
-                        <li><a href="#" class="main-footer__nav-link">Dribbble</a></li>
-                        <li><a href="#" class="main-footer__nav-link">Linkedin</a></li>
+                        <li><a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="main-footer__nav-link">Facebook</a></li>
+                        <li><a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="main-footer__nav-link">Instagram</a></li>
+                        <li><a href="https://dribbble.com" target="_blank" rel="noopener noreferrer" class="main-footer__nav-link">Dribbble</a></li>
+                        <li><a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="main-footer__nav-link">LinkedIn</a></li>
                     </ul>
                 </div>
             </nav>
-            <button class="main-footer__scroll-top">Back to top</button>
+            <button class="main-footer__scroll-top" type="button" aria-label="Прокрутити сторінку нагору">
+                <svg class="main-footer__scroll-top-icon" width="40" height="39" aria-hidden="true">
+                    <use href="assets/images/icons-sprite.svg#icon-arrow-up"></use>
+                </svg>
+                Нагору
+            </button>
         </div>
-        <div class="main-footer__circles">
+        <div class="main-footer__circles" aria-hidden="true">
             <div class="main-footer__circle main-footer__circle--green"></div>
             <div class="main-footer__circle main-footer__circle--blue"></div>
             <div class="main-footer__circle main-footer__circle--purple"></div>
         </div>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
-    <script src="assets/js/script.js"></script>
+    <script src="assets/js/script.js" defer></script>
 </body>
 </html>

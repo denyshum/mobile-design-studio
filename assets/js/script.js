@@ -3,46 +3,72 @@ const mainHeaderNav = document.getElementById("main-header__nav");
 const menuBtn = document.getElementById("menu-btn");
 const menuOverlay = document.getElementById("menu-overlay");
 const menuBtnText = document.getElementById("menu-btn__text");
-const menuBtnImg = document.getElementById("menu-btn__img");
+const menuBtnUse = document.getElementById("menu-btn__use");
 const body = document.body;
 
-menuBtn.addEventListener("click", () => {
-    // Визначаємо поточний стан меню
-    const isOpen = menuOverlay.classList.contains("menu-overlay--open");
+function closeMenu() {
+    if (!menuOverlay || !menuOverlay.classList.contains("menu-overlay--open")) return;
+    menuBtn?.classList.add("menu-btn--hidden");
+    menuOverlay.classList.remove("menu-overlay--open");
+    menuOverlay.setAttribute("aria-hidden", "true");
+    menuBtn?.setAttribute("aria-expanded", "false");
+    body.classList.remove("no-scroll");
+    mainHeaderNav?.classList.remove("nav--hidden");
 
-    // Запускаємо анімацію зникнення кнопки для плавної підміни контенту
-    menuBtn.classList.add("menu-btn--hidden");
+    setTimeout(() => {
+        if (menuBtnText) menuBtnText.textContent = "Меню";
+        if (menuBtnUse) {
+            menuBtnUse.setAttribute("href", "assets/images/icons-sprite.svg#icon-burger-menu");
+            menuBtnUse.setAttribute("xlink:href", "assets/images/icons-sprite.svg#icon-burger-menu");
+        }
+        menuBtn?.classList.remove("menu-btn--hidden");
+    }, 200);
+}
 
-    if (!isOpen) {
-        // Відкриття меню
-        menuOverlay.classList.add("menu-overlay--open");
-        body.classList.add("no-scroll"); // Блокуємо прокрутку сторінки
+function openMenu() {
+    if (!menuOverlay) return;
+    menuBtn?.classList.add("menu-btn--hidden");
+    menuOverlay.classList.add("menu-overlay--open");
+    menuOverlay.setAttribute("aria-hidden", "false");
+    menuBtn?.setAttribute("aria-expanded", "true");
+    body.classList.add("no-scroll");
+    mainHeaderNav?.classList.add("nav--hidden");
 
-        // Приховуємо основну навігацію в шапці
-        mainHeaderNav.classList.add("nav--hidden");
+    setTimeout(() => {
+        if (menuBtnText) menuBtnText.textContent = "Закрити";
+        if (menuBtnUse) {
+            menuBtnUse.setAttribute("href", "assets/images/icons-sprite.svg#icon-close");
+            menuBtnUse.setAttribute("xlink:href", "assets/images/icons-sprite.svg#icon-close");
+        }
+        menuBtn?.classList.remove("menu-btn--hidden");
+    }, 200);
+}
 
-        // Оновлюємо текст/іконку та повертаємо кнопку після завершення fade-out (200мс)
-        setTimeout(() => {
-            menuBtnText.textContent = "Close";
-            menuBtnImg.src = "assets/images/icons/close.svg";
-            menuBtn.classList.remove("menu-btn--hidden");
-        }, 200);
-    } else {
-        // Закриття меню
-        menuOverlay.classList.remove("menu-overlay--open");
-        body.classList.remove("no-scroll");
+if (menuBtn && menuOverlay) {
+    menuBtn.addEventListener("click", () => {
+        const isOpen = menuOverlay.classList.contains("menu-overlay--open");
+        if (isOpen) {
+            closeMenu();
+        } else {
+            openMenu();
+        }
+    });
 
-        // Повертаємо основну навігацію в шапці
-        mainHeaderNav.classList.remove("nav--hidden");
+    // Закриття меню при натисканні на навігаційне посилання
+    menuOverlay.querySelectorAll('a').forEach(link => {
+        link.addEventListener("click", () => {
+            closeMenu();
+        });
+    });
 
-        // Відновлюємо початковий текст/іконку та повертаємо кнопку після затримки (200мс)
-        setTimeout(() => {
-            menuBtnText.textContent = "Menu";
-            menuBtnImg.src = "assets/images/icons/burger-menu.svg";
-            menuBtn.classList.remove("menu-btn--hidden");
-        }, 200);
-    }
-});
+    // Закриття меню клавішею Escape для доступності
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && menuOverlay.classList.contains("menu-overlay--open")) {
+            closeMenu();
+            menuBtn.focus();
+        }
+    });
+}
 
 // Слайдер "Other projects"
 (function () {
@@ -51,16 +77,16 @@ menuBtn.addEventListener("click", () => {
     const indicatorsEl = document.getElementById('slider__indicators');
 
     if (!swiperEl || !wrapper || !indicatorsEl) return;
-    
+
     const projectsData = [
-        { src: "assets/images/projects/other-project-1.jpg", alt: "Investment app - mobile design", link: "#" },
-        { src: "assets/images/projects/other-project-2.jpg", alt: "Investment app - desktop design", link: "#" },
-        { src: "assets/images/projects/other-project-3.jpg", alt: "Corporate card landing page design", link: "#" },
-        { src: "https://picsum.photos/seed/project4/928/696", alt: "Project 4", link: "#" },
-        { src: "https://picsum.photos/seed/project5/928/696", alt: "Project 5", link: "#" },
-        { src: "https://picsum.photos/seed/project6/928/696", alt: "Project 6", link: "#" },
-        { src: "https://picsum.photos/seed/project7/928/696", alt: "Project 7", link: "#" },
-        { src: "https://picsum.photos/seed/project8/928/696", alt: "Project 8", link: "#" }
+        { src: "assets/images/projects/other-project-1.webp", alt: "InvestApp — мобільний застосунок для інвестицій", link: "#projects" },
+        { src: "assets/images/projects/other-project-2.webp", alt: "PayFlow — дизайн банківського вебсервісу", link: "#projects" },
+        { src: "assets/images/projects/other-project-3.webp", alt: "Soll — корпоративні картки для бізнесу", link: "#projects" },
+        { src: "assets/images/projects/other-project-4.webp", alt: "Концепт інтерфейсу криптогаманця", link: "#projects" },
+        { src: "assets/images/projects/other-project-5.webp", alt: "Концепт фінансової панелі аналітики", link: "#projects" },
+        { src: "assets/images/projects/other-project-6.webp", alt: "Дизайн мобільного трекера звичок", link: "#projects" },
+        { src: "assets/images/projects/other-project-7.webp", alt: "Мобільний UI для бронювання подій", link: "#projects" },
+        { src: "assets/images/projects/other-project-8.webp", alt: "Мобільний застосунок сервісу доставки", link: "#projects" }
     ];
 
     // Рендер слайдів
@@ -83,9 +109,20 @@ menuBtn.addEventListener("click", () => {
     projectsData.forEach((_, index) => {
         const li = document.createElement('li');
         li.className = 'slider__indicator' + (index === 0 ? ' slider__indicator--active' : '');
+        li.setAttribute('role', 'button');
+        li.setAttribute('tabindex', '0');
+        li.setAttribute('aria-label', `Перейти до слайду ${index + 1}`);
 
-        li.addEventListener('click', () => {
+        const goToSlide = () => {
             if (swiperInstance) swiperInstance.slideToLoop(index);
+        };
+
+        li.addEventListener('click', goToSlide);
+        li.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                goToSlide();
+            }
         });
         indicatorsEl.appendChild(li);
     });
@@ -247,6 +284,7 @@ if (aboutSection && aboutPhotos.length > 0) {
 // Перемикач вкладок у секції Services з послідовною анімацією
 const tabItems = document.querySelectorAll('.services__item');
 const tabPanels = document.querySelectorAll('.services__panel');
+const tabBtns = document.querySelectorAll('.services__btn');
 
 let isAnimating = false; // Блокування для запобігання накладанню анімацій при швидких кліках
 const animationDuration = 350; // Тривалість анімації (має відповідати значенню transition в CSS)
@@ -263,11 +301,15 @@ if (tabItems.length > 0 && tabPanels.length > 0) {
             const currentActivePanel = document.querySelector('.services__panel--visible');
             const newPanel = tabPanels[index];
 
-            // Оновлюємо активний стан пунктів меню
+            // Оновлюємо активний стан пунктів меню та атрибути ARIA
             if (currentActiveItem) {
                 currentActiveItem.classList.remove('services__item--active');
+                const prevBtn = currentActiveItem.querySelector('.services__btn');
+                if (prevBtn) prevBtn.setAttribute('aria-selected', 'false');
             }
             item.classList.add('services__item--active');
+            const newBtn = item.querySelector('.services__btn');
+            if (newBtn) newBtn.setAttribute('aria-selected', 'true');
 
             // Запускаємо зникнення поточної панелі
             if (currentActivePanel) {
@@ -293,6 +335,28 @@ if (tabItems.length > 0 && tabPanels.length > 0) {
 
                     }, 20);
                 }, animationDuration);
+            }
+        });
+    });
+
+    // Клавіатурна навігація для вкладок згідно WAI-ARIA
+    tabBtns.forEach((btn, idx) => {
+        btn.addEventListener('keydown', (e) => {
+            let targetIdx = null;
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                targetIdx = (idx + 1) % tabBtns.length;
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                targetIdx = (idx - 1 + tabBtns.length) % tabBtns.length;
+            } else if (e.key === 'Home') {
+                targetIdx = 0;
+            } else if (e.key === 'End') {
+                targetIdx = tabBtns.length - 1;
+            }
+
+            if (targetIdx !== null) {
+                e.preventDefault();
+                tabBtns[targetIdx].focus();
+                tabItems[targetIdx].click();
             }
         });
     });
