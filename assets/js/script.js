@@ -10,6 +10,8 @@ function closeMenu() {
     if (!menuOverlay || !menuOverlay.classList.contains("menu-overlay--open")) return;
     menuBtn?.classList.add("menu-btn--hidden");
     menuOverlay.classList.remove("menu-overlay--open");
+    if (menuOverlay.contains(document.activeElement)) menuBtn?.focus({ preventScroll: true });
+    menuOverlay.inert = true;
     menuOverlay.setAttribute("aria-hidden", "true");
     menuBtn?.setAttribute("aria-expanded", "false");
     body.classList.remove("no-scroll");
@@ -28,6 +30,7 @@ function closeMenu() {
 function openMenu() {
     if (!menuOverlay) return;
     menuBtn?.classList.add("menu-btn--hidden");
+    menuOverlay.inert = false;
     menuOverlay.classList.add("menu-overlay--open");
     menuOverlay.setAttribute("aria-hidden", "false");
     menuBtn?.setAttribute("aria-expanded", "true");
