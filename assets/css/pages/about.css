@@ -1,0 +1,501 @@
+.detail-content {
+    overflow-wrap: anywhere;
+    line-height: 1.55;
+}
+
+.detail-content h1,
+.detail-content h2,
+.detail-content h3 {
+    color: var(--text-strong);
+    font-weight: 500;
+    letter-spacing: -.035em;
+    line-height: 1.12;
+}
+
+.detail-content h1 {
+    font-size: 2.875rem;
+    letter-spacing: -.045em;
+}
+
+.detail-content h2 {
+    font-size: 2rem;
+}
+
+.detail-content h3 {
+    margin-bottom: 0.75rem;
+    font-size: 1.375rem;
+    line-height: 1.22;
+}
+
+.text-block {
+    position: relative;
+    z-index: 2;
+    min-width: 0;
+}
+
+.media-frame {
+    min-width: 0;
+}
+
+.media-frame img,
+.card-grid__media img {
+    width: 100%;
+    height: 100%;
+}
+
+.media-frame img {
+    object-fit: contain;
+}
+
+.media-frame img[hidden],
+.card-grid img[hidden] {
+    display: none;
+}
+
+.page-intro {
+    position: relative;
+    padding-top: 7.5rem;
+    padding-bottom: 1.5rem;
+}
+
+.page-intro__text {
+    max-width: 20.625rem;
+    margin-top: 1.375rem;
+    font-size: 1.1875rem;
+    line-height: 1.4;
+}
+
+.page-intro__media {
+    display: none;
+}
+
+.page-section {
+    margin-top: 6.875rem;
+}
+
+.split-panel {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: center;
+    gap: 2.125rem;
+}
+
+.split-panel__media {
+    width: 100%;
+    max-height: 20.625rem;
+    aspect-ratio: 4 / 3;
+}
+
+.split-panel p {
+    max-width: 30.625rem;
+    margin-top: 1.5rem;
+}
+
+.linked-list {
+    position: relative;
+    margin-top: 2.25rem;
+}
+
+.staggered-list {
+    position: relative;
+    display: grid;
+    gap: 3.75rem;
+}
+
+.staggered-list > li {
+    display: grid;
+    grid-template-columns: 6.25rem 1fr;
+    align-items: center;
+    gap: 1.125rem;
+    min-width: 0;
+    min-height: 10rem;
+}
+
+.staggered-list__media {
+    width: 6.875rem;
+    aspect-ratio: 1;
+    margin-left: -0.625rem;
+}
+
+.staggered-list h3 {
+    font-size: 1.25rem;
+}
+
+.staggered-list p {
+    max-width: 24.375rem;
+    font-size: 0.9375rem;
+}
+
+.linked-list .connector-line {
+    display: none;
+}
+
+.alternating-flow {
+    position: relative;
+    margin-top: 2.8125rem;
+}
+
+.alternating-flow .connector-line {
+    width: 1.5625rem;
+    opacity: .4;
+}
+
+.alternating-list {
+    position: relative;
+    display: grid;
+    gap: 5.625rem;
+    list-style: none;
+}
+
+.alternating-list > li {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+    min-width: 0;
+}
+
+.alternating-list .text-block {
+    order: 2;
+    text-align: center;
+}
+
+.alternating-list .text-block p {
+    font-size: 0.9375rem;
+}
+
+.alternating-list__media {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr);
+    place-items: center;
+    order: 1;
+    height: 15rem;
+}
+
+.alternating-list__media img {
+    max-height: 100%;
+    min-height: 0;
+}
+
+.alternating-list__media .media-frame__image--compact {
+    width: 90%;
+}
+
+.card-grid__heading p {
+    max-width: 40rem;
+    margin-top: 1.5rem;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-top: 2.25rem;
+}
+
+.card-grid > li {
+    display: grid;
+    grid-template-columns: 5.75rem 1fr;
+    gap: 1.375rem;
+    align-items: center;
+}
+
+.card-grid__media {
+    width: 5.75rem;
+    height: 6.875rem;
+}
+
+.card-grid__media img {
+    object-fit: cover;
+    object-position: center 32%;
+}
+
+.card-grid h3 {
+    margin-bottom: 0.625rem;
+    font-size: 1.125rem;
+    letter-spacing: -.02em;
+}
+
+.card-grid p {
+    font-size: 0.875rem;
+}
+
+.action-panel {
+    margin-top: 7.5rem;
+}
+
+.detail-content .action-panel h2 {
+    max-width: none;
+    font-size: 2.5rem;
+    letter-spacing: -.045em;
+}
+
+.action-panel__list {
+    display: grid;
+    grid-template-columns: 1fr;
+    margin-top: 1.875rem;
+    border-top: 1px solid #ffffff40;
+}
+
+.action-panel__item {
+    display: flex;
+    min-height: 4.5rem;
+    padding: 1.375rem 0;
+    text-align: left;
+}
+
+.action-panel__item + .action-panel__item {
+    border-top: 1px solid #ffffff26;
+}
+
+@media screen and (min-width: 769px) {
+    .detail-content {
+        font-size: 1.25rem;
+    }
+
+    .detail-content h1 {
+        font-size: 4.75rem;
+        letter-spacing: -.055em;
+    }
+
+    .detail-content h2 {
+        max-width: 40.625rem;
+        font-size: 2.8125rem;
+    }
+
+    .detail-content h3 {
+        margin-bottom: 1.125rem;
+        font-size: 1.875rem;
+        line-height: 1.12;
+    }
+
+    .page-intro {
+        display: flex;
+        align-items: center;
+        min-height: 52.5rem;
+        padding: 0;
+    }
+
+    .page-intro .text-block {
+        width: 52%;
+        padding-bottom: 5.625rem;
+    }
+
+    .page-intro__text {
+        max-width: 33.75rem;
+        margin-top: 2rem;
+        font-size: 1.4375rem;
+    }
+
+    .page-intro__media {
+        display: block;
+        position: absolute;
+        top: 5rem;
+        right: 0;
+        width: 60%;
+        height: 47.5rem;
+    }
+
+    .page-section {
+        margin-top: 11.25rem;
+    }
+
+    .split-panel {
+        grid-template-columns: 1fr 1fr;
+        gap: 2.5rem;
+        min-height: 33.75rem;
+        margin-top: 5rem;
+    }
+
+    .split-panel__media {
+        max-height: none;
+    }
+
+    .split-panel p {
+        margin-top: 1.875rem;
+    }
+
+    .linked-list {
+        margin-top: 3.75rem;
+    }
+
+    .staggered-list {
+        gap: 4.375rem;
+    }
+
+    .staggered-list > li {
+        grid-template-columns: 11.875rem 1fr;
+        gap: 1.25rem;
+        max-width: 40.625rem;
+        min-height: 15.625rem;
+    }
+
+    .staggered-list > li:nth-child(2) {
+        margin-left: min(5rem, max(0rem, 100% - 25rem));
+    }
+
+    .staggered-list > li:nth-child(3) {
+        margin-left: min(10rem, max(0rem, 100% - 25rem));
+    }
+
+    .staggered-list__media {
+        width: 11.875rem;
+        margin-left: 0;
+    }
+
+    .staggered-list p {
+        font-size: 1.25rem;
+    }
+
+    .linked-list .connector-line {
+        display: block;
+    }
+
+    .alternating-flow {
+        margin-top: 4.6875rem;
+    }
+
+    .alternating-flow .connector-line {
+        left: 25%;
+        width: 50%;
+        opacity: .23;
+    }
+
+    .alternating-list > li {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3.125rem;
+        align-items: center;
+        min-height: 23.125rem;
+    }
+
+    .alternating-list .text-block {
+        order: 0;
+    }
+
+    .alternating-list .text-block p {
+        font-size: 1.25rem;
+    }
+
+    .alternating-list__media {
+        order: 0;
+        height: 23.125rem;
+    }
+
+    .alternating-list > li:nth-child(even) .text-block {
+        grid-column: 2;
+        grid-row: 1;
+    }
+
+    .alternating-list > li:nth-child(even) .media-frame {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .card-grid__heading p {
+        margin-top: 1.625rem;
+    }
+
+    .card-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.75rem;
+        margin-top: 3.125rem;
+    }
+
+    .card-grid > li {
+        display: block;
+    }
+
+    .card-grid__media {
+        width: 100%;
+        height: 17.5rem;
+    }
+
+    .card-grid h3 {
+        margin: 1.5rem 0 0.75rem;
+        font-size: 1.5rem;
+    }
+
+    .card-grid p {
+        font-size: 1.125rem;
+    }
+
+    .action-panel {
+        margin-top: 13.75rem;
+    }
+
+    .detail-content .action-panel h2 {
+        font-size: 4rem;
+    }
+
+    .action-panel__list {
+        grid-template-columns: 1fr 1fr;
+        gap: 2.5rem;
+        margin-top: 2.625rem;
+        padding-top: 1.875rem;
+    }
+
+    .action-panel__item {
+        min-height: auto;
+        padding: 0 1.875rem 0 0;
+    }
+
+    .action-panel__item + .action-panel__item {
+        border-top: 0;
+    }
+}
+
+@media screen and (min-width: 1101px) {
+    .detail-content h1 {
+        font-size: 6.5rem;
+    }
+
+    .detail-content h2 {
+        font-size: 3.5rem;
+    }
+
+    .page-intro {
+        min-height: 63.125rem;
+    }
+
+    .page-intro__text {
+        font-size: 1.75rem;
+    }
+
+    .page-intro__media {
+        height: 56.25rem;
+    }
+
+    .split-panel {
+        gap: 5rem;
+    }
+
+    .staggered-list > li {
+        grid-template-columns: 15rem 1fr;
+        gap: 2.25rem;
+        max-width: 50rem;
+    }
+
+    .staggered-list > li:nth-child(2) {
+        margin-left: min(15rem, max(0rem, 100% - 25rem));
+    }
+
+    .staggered-list > li:nth-child(3) {
+        margin-left: min(30rem, max(0rem, 100% - 25rem));
+    }
+
+    .staggered-list__media {
+        width: 15rem;
+    }
+
+    .alternating-list > li {
+        gap: 8.125rem;
+    }
+
+    .card-grid__media {
+        height: 22.5rem;
+    }
+
+    .detail-content .action-panel h2 {
+        font-size: 5rem;
+    }
+}

@@ -1,0 +1,63 @@
+.error-state {
+    padding-top: 7.5rem;
+    text-align: center;
+}
+
+.error-state__code {
+    margin: 1.5rem 0 2.75rem;
+    padding-right: .08em;
+    color: #f4f1fc;
+    font-size: min(clamp(7.5rem, 37vw, 22rem), 41vw);
+    font-weight: 500;
+    line-height: .9;
+    letter-spacing: -.08em;
+    white-space: nowrap;
+}
+
+.error-state__code span {
+    color: #b69bed;
+}
+
+.error-state h1 {
+    color: var(--text-strong);
+    font-size: 2rem;
+    font-weight: 500;
+    line-height: 1.12;
+    letter-spacing: -.045em;
+    overflow-wrap: anywhere;
+}
+
+.error-state p {
+    max-width: 29ch;
+    margin: 1.25rem auto 0;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    text-wrap: pretty;
+}
+
+.error-state .text-action {
+    margin-top: 2.25rem;
+}
+
+@media screen and (min-width: 769px) {
+    .error-state {
+        padding-top: 10rem;
+    }
+
+    .error-state__code {
+        margin: 0 0 3rem;
+    }
+
+    .error-state h1 {
+        font-size: 3rem;
+    }
+
+    .error-state p {
+        margin-top: 1.5rem;
+        font-size: 1.25rem;
+    }
+
+    .error-state .text-action {
+        margin-top: 2.75rem;
+    }
+}

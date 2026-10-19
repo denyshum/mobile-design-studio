@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="uk">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кар’єра — MobileVision</title>
+    <meta name="description" content="Доступні вакансії MobileVision. Дізнайтеся про роботу й очікування від дизайнерів та етапи знайомства.">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="icon" sizes="any" href="assets/images/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+    <link rel="stylesheet" href="assets/css/common.css">
+    <link rel="stylesheet" href="assets/css/pages/careers.css">
+    <script type="module" src="assets/js/pages/careers.js"></script>
+</head>
+    <body class="detail-page" data-careers-effects>
+    <header class="main-header">
+        <div class="main-header__inner d-flex content-wrap">
+            <a href="index.html" class="main-header__logo-link" aria-label="Головна сторінка MobileVision">
+                <img src="assets/images/favicon.svg" alt="Логотип студії MobileVision">
+            </a>
+            <nav id="main-header__nav" class="nav" aria-label="Головне меню">
+                <ul class="nav__list d-flex">
+                    <li class="nav__item"><a href="index.html" class="nav__link">Головна</a></li>
+                    <li class="nav__item"><a href="portfolio.html" class="nav__link">Портфоліо</a></li>
+                    <li class="nav__item"><a href="about.html" class="nav__link">Про студію</a></li>
+                    <li class="nav__item">
+                        <a href="careers.html" class="nav__link" aria-current="page">
+                            Кар’єра
+                            <span class="badge d-flex item-center" data-vacancy-count hidden></span>
+                        </a>
+                    </li>
+                    <li class="nav__item"><a href="#contact" class="nav__link">Контакти</a></li>
+                </ul>
+            </nav>
+            <button id="menu-btn" class="menu-btn d-flex" type="button" aria-label="Відкрити меню" aria-haspopup="dialog" aria-expanded="false" aria-controls="menu-overlay">
+                <span id="menu-btn__text" class="menu-btn__text">Меню</span>
+                <svg class="menu-btn__icon" width="21" height="21" aria-hidden="true">
+                    <use id="menu-btn__use" href="assets/images/icons-sprite.svg#icon-burger-menu"></use>
+                </svg>
+            </button>
+        </div>
+        <div id="menu-overlay" class="menu-overlay" role="dialog" aria-modal="true" aria-label="Мобільне меню навігації" aria-hidden="true" inert>
+            <div class="menu-overlay__inner d-flex content-wrap">
+                <nav class="menu-overlay__nav d-flex" aria-label="Мобільне меню">
+                    <ul class="menu-overlay__list d-flex item-center">
+                        <li class="menu-overlay__item">
+                            <a href="index.html" class="menu-overlay__link">Головна</a>
+                        </li>
+                        <li class="menu-overlay__item">
+                            <a href="portfolio.html" class="menu-overlay__link">Портфоліо</a>
+                        </li>
+                        <li class="menu-overlay__item">
+                            <a href="about.html" class="menu-overlay__link">Про студію</a>
+                        </li>
+                        <li class="menu-overlay__item">
+                            <a href="careers.html" class="menu-overlay__link" aria-current="page">
+                                Кар’єра
+                                <span class="badge d-flex item-center" data-vacancy-count hidden></span>
+                            </a>
+                        </li>
+                        <li class="menu-overlay__item">
+                            <a href="#contact" class="menu-overlay__link">Контакти</a>
+                        </li>
+                    </ul>
+                    <a href="mailto:hello@mobilevision.studio" class="menu-overlay__email link-arrow">
+                        hello@mobilevision.studio
+                        <svg class="link-arrow__icon" width="30" height="30" aria-hidden="true">
+                            <use href="assets/images/icons-sprite.svg#icon-arrow-right"></use>
+                        </svg>
+                    </a>
+                </nav>
+                <div class="menu-overlay__info d-flex">
+                    <div class="menu-overlay__col">
+                        <p class="menu-overlay__col-title">Наші проєкти</p>
+                        <ul class="menu-overlay__col-list">
+                            <li><a href="project.html?id=wingriders" class="menu-overlay__col-link" data-project-link="wingriders">WingRiders</a></li>
+                            <li><a href="project.html?id=trackee" class="menu-overlay__col-link" data-project-link="trackee">Trackee</a></li>
+                            <li><a href="project.html?id=worldcoin" class="menu-overlay__col-link" data-project-link="worldcoin">Worldcoin</a></li>
+                            <li><a href="project.html?id=audience-plus" class="menu-overlay__col-link" data-project-link="audience-plus">Audience+</a></li>
+                        </ul>
+                    </div>
+                    <div class="menu-overlay__col">
+                        <p class="menu-overlay__col-title">Ми в соцмережах</p>
+                        <ul class="menu-overlay__col-list">
+                            <li><a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="menu-overlay__col-link">Facebook</a></li>
+                            <li><a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="menu-overlay__col-link">Instagram</a></li>
+                            <li><a href="https://dribbble.com" target="_blank" rel="noopener noreferrer" class="menu-overlay__col-link">Dribbble</a></li>
+                            <li><a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="menu-overlay__col-link">LinkedIn</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+        <main class="hiring-content section-wrap" data-careers-view>
+            <div class="overview-view" hidden>
+                <section class="page-lead" aria-labelledby="page-heading">
+                    <h1 id="page-heading">Кар’єра</h1>
+                    <p>Долучайтеся до MobileVision, щоб створювати зрозумілі та виразні мобільні продукти</p>
+                </section>
+                <section id="vacancies" aria-label="Доступні вакансії">
+                    <div class="browse-list"></div>
+                    <div class="empty-list" hidden>
+                        <h2>Наразі відкритих вакансій немає</h2>
+                        <p>
+                            Перегляньте сторінку пізніше або
+                            <a href="#contact">напишіть нам</a>
+                        </p>
+                    </div>
+                </section>
+                <section class="meeting-section" aria-labelledby="meeting-heading">
+                    <h2 id="meeting-heading">Як познайомимося</h2>
+                    <ol class="stage-list">
+                        <li>
+                            <svg class="stage-icon" viewBox="0 0 64 64" aria-hidden="true">
+                                <use href="assets/images/icons-sprite.svg#icon-mail"></use>
+                            </svg>
+                            <div>
+                                <h3>Лист і портфоліо</h3>
+                                <p>Вкажіть бажану роль і надішліть посилання на портфоліо</p>
+                            </div>
+                        </li>
+                        <li>
+                            <svg class="stage-icon" viewBox="0 0 64 64" aria-hidden="true">
+                                <use href="assets/images/icons-sprite.svg#icon-conversation"></use>
+                            </svg>
+                            <div>
+                                <h3>Розмова</h3>
+                                <p>Поговоримо про ваш досвід, задачі та підходи до дизайну</p>
+                            </div>
+                        </li>
+                        <li>
+                            <svg class="stage-icon" viewBox="0 0 64 64" aria-hidden="true">
+                                <use href="assets/images/icons-sprite.svg#icon-agreement"></use>
+                            </svg>
+                            <div>
+                                <h3>Узгодження співпраці</h3>
+                                <p>Обговоримо очікування й домовимося про наступні кроки</p>
+                            </div>
+                        </li>
+                    </ol>
+                </section>
+            </div>
+            <div class="detail-view" hidden>
+                <a class="text-action text-action--back return-link" href="#vacancies" data-return-vacancies>
+                    <svg class="text-action__icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="assets/images/icons-sprite.svg#icon-arrow-diagonal" transform="rotate(225 12 12)"></use>
+                    </svg>
+                    До вакансій
+                </a>
+                <div data-vacancy-details></div>
+            </div>
+            <section class="empty-state vacancy-missing" hidden>
+                <h1>Вакансію не знайдено</h1>
+                <p>Ця роль наразі недоступна. Перегляньте актуальні вакансії або напишіть нам</p>
+                <a class="text-action empty-state__action return-link" href="#vacancies" data-return-vacancies>
+                    До вакансій
+                    <svg class="text-action__icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="assets/images/icons-sprite.svg#icon-arrow-diagonal" transform="rotate(45 12 12)"></use>
+                    </svg>
+                </a>
+            </section>
+            <noscript>
+                <section class="page-lead fallback-view">
+                    <h1>Кар’єра</h1>
+                    <div>
+                        <p>Щоб переглянути описи вакансій, увімкніть JavaScript. Щодо співпраці можна написати нам</p>
+                        <a class="text-action" href="mailto:hello@mobilevision.studio">hello@mobilevision.studio</a>
+                    </div>
+                </section>
+            </noscript>
+        </main>
+        <template id="vacancy-card">
+            <a class="browse-link" href="#vacancies" data-vacancy-link>
+                <div class="role-heading">
+                    <h2>Вакансія</h2>
+                    <p class="browse-link__facts" hidden></p>
+                </div>
+                <svg class="entry-card__arrow" viewBox="4.375 4.375 15.25 15.25" aria-hidden="true">
+                    <use width="24" height="24" href="assets/images/icons-sprite.svg#icon-arrow-diagonal"></use>
+                </svg>
+            </a>
+        </template>
+        <template id="vacancy-layout">
+            <article class="screen-role" hidden>
+                <div class="screen-role__heading">
+                    <h1>Вакансія</h1>
+                    <p class="screen-role__intro"></p>
+                    <p class="condition-line"></p>
+                </div>
+                <div class="role-content">
+                    <section class="role-content__section" data-vacancy-field="responsibilities">
+                        <h2>Що робити</h2>
+                        <ul></ul>
+                    </section>
+                    <section class="role-content__section" data-vacancy-field="expectations">
+                        <h2>Що очікуємо</h2>
+                        <ul></ul>
+                    </section>
+                    <section class="role-content__section" data-vacancy-field="collaboration">
+                        <h2>Як працюємо</h2>
+                        <ul></ul>
+                    </section>
+                    <a class="response-link text-action text-action--diagonal" href="mailto:hello@mobilevision.studio">
+                        Зв’язатись щодо вакансії
+                        <svg class="closing-panel__icon text-action__icon" viewBox="0 0 24 24" aria-hidden="true">
+                            <use href="assets/images/icons-sprite.svg#icon-arrow-diagonal"></use>
+                        </svg>
+                    </a>
+                </div>
+            </article>
+        </template>
+    <footer class="main-footer" id="contact">
+        <div class="main-footer__inner content-wrap d-flex">
+            <div class="main-footer__info">
+                <h2 class="main-footer__title">MobileVision studio</h2>
+                <p class="main-footer__desc text-sm">
+                    Напишіть нам, якщо хочете співпрацювати з нами або просто поспілкуватися про ваш проєкт.
+                </p>
+                <a href="mailto:hello@mobilevision.studio" class="main-footer__email link-arrow">
+                    hello@mobilevision.studio
+                    <svg class="link-arrow__icon" width="30" height="30" aria-hidden="true">
+                        <use href="assets/images/icons-sprite.svg#icon-arrow-right"></use>
+                    </svg>
+                </a>
+            </div>
+            <nav class="main-footer__nav d-flex" aria-label="Навігація у підвалі">
+                <div class="main-footer__nav-col">
+                    <h3 class="main-footer__nav-title">Наші проєкти</h3>
+                    <ul class="main-footer__nav-list">
+                        <li><a href="project.html?id=wingriders" class="main-footer__nav-link" data-project-link="wingriders">WingRiders</a></li>
+                        <li><a href="project.html?id=trackee" class="main-footer__nav-link" data-project-link="trackee">Trackee</a></li>
+                        <li><a href="project.html?id=worldcoin" class="main-footer__nav-link" data-project-link="worldcoin">Worldcoin</a></li>
+                        <li><a href="project.html?id=audience-plus" class="main-footer__nav-link" data-project-link="audience-plus">Audience+</a></li>
+                    </ul>
+                </div>
+                <div class="main-footer__nav-col">
+                    <h3 class="main-footer__nav-title">Ми в соцмережах</h3>
+                    <ul class="main-footer__nav-list">
+                        <li><a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="main-footer__nav-link">Facebook</a></li>
+                        <li><a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="main-footer__nav-link">Instagram</a></li>
+                        <li><a href="https://dribbble.com" target="_blank" rel="noopener noreferrer" class="main-footer__nav-link">Dribbble</a></li>
+                        <li><a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="main-footer__nav-link">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </nav>
+            <button class="main-footer__scroll-top" type="button" aria-label="Прокрутити сторінку нагору">
+                <svg class="main-footer__scroll-top-icon" width="40" height="39" aria-hidden="true">
+                    <use href="assets/images/icons-sprite.svg#icon-arrow-up"></use>
+                </svg>
+                Нагору
+            </button>
+        </div>
+        <div class="main-footer__circles" aria-hidden="true">
+            <div class="main-footer__circle main-footer__circle--green"></div>
+            <div class="main-footer__circle main-footer__circle--blue"></div>
+            <div class="main-footer__circle main-footer__circle--purple"></div>
+        </div>
+    </footer>
+
+    </body>
+</html>

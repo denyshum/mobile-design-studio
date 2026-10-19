@@ -8,8 +8,11 @@
     <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
     <link rel="icon" sizes="any" href="assets/images/favicon.ico">
     <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css">
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12.2.0/swiper-bundle.min.css">
+    <link rel="stylesheet" href="assets/css/common.css">
+    <link rel="stylesheet" href="assets/css/pages/home.css">
+    <script src="https://cdn.jsdelivr.net/npm/swiper@12.2.0/swiper-bundle.min.js" defer></script>
+    <script type="module" src="assets/js/pages/home.js"></script>
 </head>
 <body>
     <header class="main-header">
@@ -19,15 +22,16 @@
             </a>
             <nav id="main-header__nav" class="nav" aria-label="Головне меню">
                 <ul class="nav__list d-flex">
-                    <li class="nav__item"><a href="index.html" class="nav__link">Головна</a></li>
-                    <li class="nav__item"><a href="#about" class="nav__link">Про нас</a></li>
-                    <li class="nav__item"><a href="#contact" class="nav__link">Контакти</a></li>
+                    <li class="nav__item"><a href="index.html" class="nav__link" aria-current="page">Головна</a></li>
+                    <li class="nav__item"><a href="portfolio.html" class="nav__link">Портфоліо</a></li>
+                    <li class="nav__item"><a href="about.html" class="nav__link">Про студію</a></li>
                     <li class="nav__item">
-                        <a href="#contact" class="nav__link">
-                            Кар'єра
-                            <span class="badge d-flex item-center">2</span>
+                        <a href="careers.html" class="nav__link">
+                            Кар&#39;єра
+                            <span class="badge d-flex item-center" data-vacancy-count hidden></span>
                         </a>
                     </li>
+                    <li class="nav__item"><a href="#contact" class="nav__link">Контакти</a></li>
                 </ul>
             </nav>
             <button id="menu-btn" class="menu-btn d-flex" type="button" aria-label="Відкрити меню" aria-haspopup="dialog" aria-expanded="false" aria-controls="menu-overlay">
@@ -42,19 +46,22 @@
                 <nav class="menu-overlay__nav d-flex" aria-label="Мобільне меню">
                     <ul class="menu-overlay__list d-flex item-center">
                         <li class="menu-overlay__item">
-                            <a href="index.html" class="menu-overlay__link">Головна</a>
+                            <a href="index.html" class="menu-overlay__link" aria-current="page">Головна</a>
                         </li>
                         <li class="menu-overlay__item">
-                            <a href="#about" class="menu-overlay__link">Про нас</a>
+                            <a href="portfolio.html" class="menu-overlay__link">Портфоліо</a>
+                        </li>
+                        <li class="menu-overlay__item">
+                            <a href="about.html" class="menu-overlay__link">Про студію</a>
+                        </li>
+                        <li class="menu-overlay__item">
+                            <a href="careers.html" class="menu-overlay__link">
+                                Кар&#39;єра
+                                <span class="badge d-flex item-center" data-vacancy-count hidden></span>
+                            </a>
                         </li>
                         <li class="menu-overlay__item">
                             <a href="#contact" class="menu-overlay__link">Контакти</a>
-                        </li>
-                        <li class="menu-overlay__item">
-                            <a href="#contact" class="menu-overlay__link">
-                                Кар'єра
-                                <span class="badge d-flex item-center">2</span>
-                            </a>
                         </li>
                     </ul>
                     <a href="mailto:hello@mobilevision.studio" class="menu-overlay__email link-arrow">
@@ -68,10 +75,10 @@
                     <div class="menu-overlay__col">
                         <p class="menu-overlay__col-title">Наші проєкти</p>
                         <ul class="menu-overlay__col-list">
-                            <li><a href="#projects" class="menu-overlay__col-link">WingRiders</a></li>
-                            <li><a href="#projects" class="menu-overlay__col-link">Trackee</a></li>
-                            <li><a href="#projects" class="menu-overlay__col-link">Worldcoin</a></li>
-                            <li><a href="#projects" class="menu-overlay__col-link">Audience+</a></li>
+                            <li><a href="project.html?id=wingriders" class="menu-overlay__col-link" data-project-link="wingriders">WingRiders</a></li>
+                            <li><a href="project.html?id=trackee" class="menu-overlay__col-link" data-project-link="trackee">Trackee</a></li>
+                            <li><a href="project.html?id=worldcoin" class="menu-overlay__col-link" data-project-link="worldcoin">Worldcoin</a></li>
+                            <li><a href="project.html?id=audience-plus" class="menu-overlay__col-link" data-project-link="audience-plus">Audience+</a></li>
                         </ul>
                     </div>
                     <div class="menu-overlay__col">
@@ -148,7 +155,11 @@
                     </p>
                 </div>
                 <div class="text-media__media d-flex item-center">
-                    <img src="assets/images/infinity-shape.svg" alt="Пристрасть до мобільних інновацій та висока майстерність дизайну">
+                    <div class="loop-diagram">
+                        <img src="assets/images/infinity-shape.svg" alt="" width="595" height="217">
+                        <p class="loop-diagram__label">Фокус на користувачі</p>
+                        <p class="loop-diagram__label">Майстерність дизайну</p>
+                    </div>
                 </div>
             </div>
             <div class="glow"></div>
@@ -158,10 +169,10 @@
                 <h2 class="title-display">Проєкти</h2>
                 <div class="projects__grid d-flex">
                     <div class="projects__col">
-                        <a href="#projects" class="projects__item" aria-label="Проєкт WingRiders: децентралізований фінансовий інтерфейс">
+                        <a href="project.html?id=wingriders" class="projects__item" data-project-link="wingriders" aria-label="Проєкт WingRiders: децентралізований фінансовий інтерфейс">
                             <img src="assets/images/projects/project-portfolio.webp" alt="Мобільний інтерфейс WingRiders з фінансовим портфоліо" class="projects__img">
                         </a>
-                        <a href="#projects" class="projects__item" aria-label="Проєкт Trackee: додаток фінансової аналітики">
+                        <a href="project.html?id=trackee" class="projects__item" data-project-link="trackee" aria-label="Проєкт Trackee: додаток фінансової аналітики">
                             <img src="assets/images/projects/project-stats.webp" alt="Мобільний додаток Trackee з графіками та статистикою балансу" class="projects__img">
                         </a>
                         <div class="projects__item projects__item--text">
@@ -170,10 +181,10 @@
                         </div>
                     </div>
                     <div class="projects__col">
-                        <a href="#projects" class="projects__item" aria-label="Проєкт Worldcoin: цифровий мобільний гаманець">
+                        <a href="project.html?id=worldcoin" class="projects__item" data-project-link="worldcoin" aria-label="Проєкт Worldcoin: цифровий мобільний гаманець">
                             <img src="assets/images/projects/project-wallet.webp" alt="Мобільний інтерфейс Worldcoin з балансом та діями надсилання" class="projects__img">
                         </a>
-                        <a href="#projects" class="projects__item" aria-label="Проєкт Audience+: брендинг та айдентика">
+                        <a href="project.html?id=audience-plus" class="projects__item" data-project-link="audience-plus" aria-label="Проєкт Audience+: брендинг та айдентика">
                             <img src="assets/images/projects/project-audience.webp" alt="Брендинг та візуальний стиль для сервісу Audience+" class="projects__img">
                         </a>
                     </div>
@@ -220,7 +231,7 @@
                         </li>
                     </ul>
                     <div id="panel-service-1" class="services__panel services__panel--active services__panel--visible item-center" role="tabpanel" aria-labelledby="tab-service-1">
-                        <img src="assets/images/service-photo.webp" alt="Процес прототипування та аналітики інтерфейсу мобільного застосунку" class="services__img">
+                        <img src="assets/images/service-photo.webp" alt="Паперові ескізи інтерфейсу, олівець і телефон на робочому столі" width="1200" height="800" class="services__img">
                         <div class="services__content d-flex">
                             <p class="services__desc">Ви на етапі ідеї? Ми допоможемо визначити критичний обсяг функцій для запуску успішного MVP.</p>
                             <ul class="services__tags">
@@ -231,7 +242,7 @@
                         </div>
                     </div>
                     <div id="panel-service-2" class="services__panel item-center" role="tabpanel" aria-labelledby="tab-service-2">
-                        <img src="assets/images/service-photo-2.webp" alt="Процес створення візуального UX/UI дизайну та тестування" class="services__img">
+                        <img src="assets/images/service-photo-2.webp" alt="Варіанти стилю кнопок у редакторі інтерфейсу" width="1200" height="674" class="services__img">
                         <div class="services__content d-flex">
                             <p class="services__desc">Потрібен бездоганний інтерфейс? Створюємо інтуїтивні мобільні застосунки, які полюблять користувачі.</p>
                             <ul class="services__tags">
@@ -242,7 +253,7 @@
                         </div>
                     </div>
                     <div id="panel-service-3" class="services__panel item-center" role="tabpanel" aria-labelledby="tab-service-3">
-                        <img src="assets/images/service-photo-3.webp" alt="Підтримка та розвиток масштабованої дизайн-системи" class="services__img">
+                        <img src="assets/images/service-photo-3.webp" alt="Обговорення коду на екрані ноутбука" width="1200" height="1800" class="services__img">
                         <div class="services__content d-flex">
                             <p class="services__desc">Готові до масштабування? Будуємо надійні дизайн-системи для стабільного та цілісного розвитку продукту.</p>
                             <ul class="services__tags">
@@ -263,7 +274,7 @@
                     <p class="about__desc">
                         Команда продуктових та бренд-дизайнерів, яка по-справжньому захоплена мобільними технологіями та якісним дизайном. Ми не просто створюємо гарну оболонку — ми відстоюємо інтереси користувачів заради бездоганного досвіду та здорового глузду.
                     </p>
-                    <a href="#contact" class="link-arrow">
+                    <a href="about.html" class="link-arrow">
                         Більше про нас
                         <svg class="link-arrow__icon" width="30" height="30" aria-hidden="true">
                             <use href="assets/images/icons-sprite.svg#icon-arrow-right"></use>
@@ -297,10 +308,10 @@
                 <div class="main-footer__nav-col">
                     <h3 class="main-footer__nav-title">Наші проєкти</h3>
                     <ul class="main-footer__nav-list">
-                        <li><a href="#projects" class="main-footer__nav-link">WingRiders</a></li>
-                        <li><a href="#projects" class="main-footer__nav-link">Trackee</a></li>
-                        <li><a href="#projects" class="main-footer__nav-link">Worldcoin</a></li>
-                        <li><a href="#projects" class="main-footer__nav-link">Audience+</a></li>
+                        <li><a href="project.html?id=wingriders" class="main-footer__nav-link" data-project-link="wingriders">WingRiders</a></li>
+                        <li><a href="project.html?id=trackee" class="main-footer__nav-link" data-project-link="trackee">Trackee</a></li>
+                        <li><a href="project.html?id=worldcoin" class="main-footer__nav-link" data-project-link="worldcoin">Worldcoin</a></li>
+                        <li><a href="project.html?id=audience-plus" class="main-footer__nav-link" data-project-link="audience-plus">Audience+</a></li>
                     </ul>
                 </div>
                 <div class="main-footer__nav-col">
@@ -326,7 +337,6 @@
             <div class="main-footer__circle main-footer__circle--purple"></div>
         </div>
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
-    <script src="assets/js/script.js" defer></script>
+
 </body>
 </html>

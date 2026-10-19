@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Про студію — MobileVision</title>
+    <meta name="description" content="Познайомтеся з MobileVision: підхід до UX/UI дизайну, принципи команди та етапи роботи над мобільними продуктами.">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="icon" sizes="any" href="assets/images/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+    <link rel="stylesheet" href="assets/css/common.css">
+    <link rel="stylesheet" href="assets/css/pages/about.css">
+    <script type="module" src="assets/js/pages/about.js"></script>
+</head>
+<body class="detail-page" data-scroll-effects>
+    <header class="main-header">
+        <div class="main-header__inner d-flex content-wrap">
+            <a href="index.html" class="main-header__logo-link" aria-label="Головна сторінка MobileVision">
+                <img src="assets/images/favicon.svg" alt="Логотип студії MobileVision">
+            </a>
+            <nav id="main-header__nav" class="nav" aria-label="Головне меню">
+                <ul class="nav__list d-flex">
+                    <li class="nav__item"><a href="index.html" class="nav__link">Головна</a></li>
+                    <li class="nav__item"><a href="portfolio.html" class="nav__link">Портфоліо</a></li>
+                    <li class="nav__item"><a href="about.html" class="nav__link" aria-current="page">Про студію</a></li>
+                    <li class="nav__item">
+                        <a href="careers.html" class="nav__link">
+                            Кар’єра
+                            <span class="badge d-flex item-center" data-vacancy-count hidden></span>
+                        </a>
+                    </li>
+                    <li class="nav__item"><a href="#contact" class="nav__link">Контакти</a></li>
+                </ul>
+            </nav>
+            <button id="menu-btn" class="menu-btn d-flex" type="button" aria-label="Відкрити меню" aria-haspopup="dialog" aria-expanded="false" aria-controls="menu-overlay">
+                <span id="menu-btn__text" class="menu-btn__text">Меню</span>
+                <svg class="menu-btn__icon" width="21" height="21" aria-hidden="true">
+                    <use id="menu-btn__use" href="assets/images/icons-sprite.svg#icon-burger-menu"></use>
+                </svg>
+            </button>
+        </div>
+        <div id="menu-overlay" class="menu-overlay" role="dialog" aria-modal="true" aria-label="Мобільне меню навігації" aria-hidden="true" inert>
+            <div class="menu-overlay__inner d-flex content-wrap">
+                <nav class="menu-overlay__nav d-flex" aria-label="Мобільне меню">
+                    <ul class="menu-overlay__list d-flex item-center">
+                        <li class="menu-overlay__item">
+                            <a href="index.html" class="menu-overlay__link">Головна</a>
+                        </li>
+                        <li class="menu-overlay__item">
+                            <a href="portfolio.html" class="menu-overlay__link">Портфоліо</a>
+                        </li>
+                        <li class="menu-overlay__item">
+                            <a href="about.html" class="menu-overlay__link" aria-current="page">Про студію</a>
+                        </li>
+                        <li class="menu-overlay__item">
+                            <a href="careers.html" class="menu-overlay__link">
+                                Кар’єра
+                                <span class="badge d-flex item-center" data-vacancy-count hidden></span>
+                            </a>
+                        </li>
+                        <li class="menu-overlay__item">
+                            <a href="#contact" class="menu-overlay__link">Контакти</a>
+                        </li>
+                    </ul>
+                    <a href="mailto:hello@mobilevision.studio" class="menu-overlay__email link-arrow">
+                        hello@mobilevision.studio
+                        <svg class="link-arrow__icon" width="30" height="30" aria-hidden="true">
+                            <use href="assets/images/icons-sprite.svg#icon-arrow-right"></use>
+                        </svg>
+                    </a>
+                </nav>
+                <div class="menu-overlay__info d-flex">
+                    <div class="menu-overlay__col">
+                        <p class="menu-overlay__col-title">Наші проєкти</p>
+                        <ul class="menu-overlay__col-list">
+                            <li><a href="project.html?id=wingriders" class="menu-overlay__col-link" data-project-link="wingriders">WingRiders</a></li>
+                            <li><a href="project.html?id=trackee" class="menu-overlay__col-link" data-project-link="trackee">Trackee</a></li>
+                            <li><a href="project.html?id=worldcoin" class="menu-overlay__col-link" data-project-link="worldcoin">Worldcoin</a></li>
+                            <li><a href="project.html?id=audience-plus" class="menu-overlay__col-link" data-project-link="audience-plus">Audience+</a></li>
+                        </ul>
+                    </div>
+                    <div class="menu-overlay__col">
+                        <p class="menu-overlay__col-title">Ми в соцмережах</p>
+                        <ul class="menu-overlay__col-list">
+                            <li><a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="menu-overlay__col-link">Facebook</a></li>
+                            <li><a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="menu-overlay__col-link">Instagram</a></li>
+                            <li><a href="https://dribbble.com" target="_blank" rel="noopener noreferrer" class="menu-overlay__col-link">Dribbble</a></li>
+                            <li><a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="menu-overlay__col-link">LinkedIn</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main class="detail-content">
+        <section class="page-intro section-wrap" aria-labelledby="studio-title">
+            <div class="text-block">
+                <h1 id="studio-title" tabindex="-1">Про студію</h1>
+                <p class="page-intro__text">MobileVision — студія дизайну мобільних застосунків</p>
+            </div>
+            <div class="media-frame page-intro__media" aria-hidden="true">
+                <img src="assets/images/studio/hero.webp" srcset="assets/images/studio/hero-640.webp 640w, assets/images/studio/hero.webp 1200w" sizes="(min-width: 1101px) 790px, (min-width: 769px) 60vw, 1px" alt="" width="1200" height="900" fetchpriority="high">
+                <span class="media-fallback" hidden>Зображення недоступне</span>
+            </div>
+        </section>
+        <section class="page-section split-panel section-wrap" aria-labelledby="approach-title">
+            <div class="media-frame split-panel__media" aria-hidden="true">
+                <img src="assets/images/studio/approach.webp" srcset="assets/images/studio/approach-480.webp 480w, assets/images/studio/approach.webp 960w" sizes="(min-width: 769px) 616px, 100vw" alt="" width="960" height="720" loading="lazy">
+                <span class="media-fallback" hidden>Зображення недоступне</span>
+            </div>
+            <div class="text-block">
+                <h2 id="approach-title" tabindex="-1">Дизайн починається з розуміння</h2>
+                <p>Перш ніж малювати екрани, визначаємо задачу продукту, контекст використання та очікування людей. Перетворюємо ці спостереження на сценарії, структуру й візуальну мову застосунку.</p>
+            </div>
+        </section>
+        <section class="page-section section-wrap" aria-labelledby="principles-title">
+            <h2 id="principles-title" tabindex="-1">Наші принципи</h2>
+            <div class="linked-list">
+                <svg class="connector-line" viewBox="0 0 1312 890" preserveAspectRatio="none" aria-hidden="true">
+                    <path d="M120 220C80 290 260 280 330 345"/>
+                    <path d="M360 540C310 625 500 620 570 675"/>
+                </svg>
+                <ul class="staggered-list">
+                    <li>
+                        <div class="media-frame staggered-list__media" aria-hidden="true">
+                            <img src="assets/images/studio/human.webp" srcset="assets/images/studio/human-320.webp 320w, assets/images/studio/human.webp 640w" sizes="(min-width: 1101px) 240px, (min-width: 769px) 190px, 110px" alt="" width="640" height="640" loading="lazy">
+                            <span class="media-fallback" hidden>Зображення недоступне</span>
+                        </div>
+                        <div class="text-block">
+                            <h3>Людина в центрі</h3>
+                            <p>Пояснюємо рішення через потреби користувача, а не лише через зовнішній вигляд</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="media-frame staggered-list__media" aria-hidden="true">
+                            <img src="assets/images/studio/clarity.webp" srcset="assets/images/studio/clarity-320.webp 320w, assets/images/studio/clarity.webp 640w" sizes="(min-width: 1101px) 240px, (min-width: 769px) 190px, 110px" alt="" width="640" height="640" loading="lazy">
+                            <span class="media-fallback" hidden>Зображення недоступне</span>
+                        </div>
+                        <div class="text-block">
+                            <h3>Ясність у деталях</h3>
+                            <p>Будуємо зрозумілу ієрархію, послідовні компоненти й передбачувані переходи</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="media-frame staggered-list__media" aria-hidden="true">
+                            <img src="assets/images/studio/collaboration.webp" srcset="assets/images/studio/collaboration-320.webp 320w, assets/images/studio/collaboration.webp 640w" sizes="(min-width: 1101px) 240px, (min-width: 769px) 190px, 110px" alt="" width="640" height="640" loading="lazy">
+                            <span class="media-fallback" hidden>Зображення недоступне</span>
+                        </div>
+                        <div class="text-block">
+                            <h3>Співпраця та розвиток</h3>
+                            <p>Обговорюємо рішення, перевіряємо припущення й розвиваємо продукт послідовно</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </section>
+        <section class="page-section section-wrap" aria-labelledby="process-title">
+            <h2 id="process-title" tabindex="-1">Як працюємо</h2>
+            <div class="alternating-flow">
+                <svg class="connector-line" viewBox="0 0 1200 1000" preserveAspectRatio="none" aria-hidden="true">
+                    <path d="M600 20C850 160 350 220 600 340S850 600 600 680S350 900 600 980"/>
+                </svg>
+                <ol class="alternating-list">
+                    <li>
+                        <div class="text-block">
+                            <h3>Знайомство із задачею</h3>
+                            <p>Цілі, аудиторія, обмеження</p>
+                        </div>
+                        <div class="media-frame alternating-list__media" aria-hidden="true">
+                            <img src="assets/images/studio/discovery.svg" alt="" width="500" height="400" loading="lazy">
+                            <span class="media-fallback" hidden>Зображення недоступне</span>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="text-block">
+                            <h3>Сценарії та прототип</h3>
+                            <p>Структура й ключові взаємодії</p>
+                        </div>
+                        <div class="media-frame alternating-list__media" aria-hidden="true">
+                            <img src="assets/images/studio/prototype.svg" alt="" width="500" height="400" loading="lazy">
+                            <span class="media-fallback" hidden>Зображення недоступне</span>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="text-block">
+                            <h3>Візуальний дизайн</h3>
+                            <p>Екрани та компоненти</p>
+                        </div>
+                        <div class="media-frame alternating-list__media" aria-hidden="true">
+                            <img src="assets/images/studio/hero.webp" srcset="assets/images/studio/hero-640.webp 640w, assets/images/studio/hero.webp 1200w" sizes="(min-width: 769px) 590px, 100vw" alt="" width="1200" height="900" loading="lazy">
+                            <span class="media-fallback" hidden>Зображення недоступне</span>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="text-block">
+                            <h3>Передача й розвиток</h3>
+                            <p>Матеріали для реалізації та наступні кроки</p>
+                        </div>
+                        <div class="media-frame alternating-list__media" aria-hidden="true">
+                            <img class="media-frame__image--compact" src="assets/images/studio/handoff.webp" srcset="assets/images/studio/handoff-480.webp 480w, assets/images/studio/handoff.webp 1000w" sizes="(min-width: 769px) 590px, 100vw" alt="" width="1000" height="1000" loading="lazy">
+                            <span class="media-fallback" hidden>Зображення недоступне</span>
+                        </div>
+                    </li>
+                </ol>
+            </div>
+        </section>
+        <section class="page-section section-wrap" aria-labelledby="team-title">
+            <div class="card-grid__heading">
+                <h2 id="team-title" tabindex="-1">Команда</h2>
+                <p>Працюємо на перетині досліджень, продуктового мислення та візуального дизайну</p>
+            </div>
+            <ul class="card-grid">
+                <li>
+                    <div class="card-grid__media">
+                        <img src="assets/images/team/team-1.webp" alt="Портрет учасника команди студії" width="540" height="640" loading="lazy">
+                        <span class="media-fallback" hidden>Зображення недоступне</span>
+                    </div>
+                    <div>
+                        <h3>UX-дослідження</h3>
+                        <p>Потреби й сценарії</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="card-grid__media">
+                        <img src="assets/images/team/team-2.webp" alt="Портрет учасника команди студії" width="540" height="640" loading="lazy">
+                        <span class="media-fallback" hidden>Зображення недоступне</span>
+                    </div>
+                    <div>
+                        <h3>Продуктовий дизайн</h3>
+                        <p>Структура та прототипи</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="card-grid__media">
+                        <img src="assets/images/team/team-3.webp" alt="Портрет учасника команди студії" width="540" height="640" loading="lazy">
+                        <span class="media-fallback" hidden>Зображення недоступне</span>
+                    </div>
+                    <div>
+                        <h3>UI та айдентика</h3>
+                        <p>Візуальна мова й компоненти</p>
+                    </div>
+                </li>
+            </ul>
+        </section>
+        <section class="page-section action-panel section-wrap" aria-labelledby="join-title">
+            <h2 id="join-title" tabindex="-1">Хочете створювати<br>разом із нами?</h2>
+            <div class="action-panel__list">
+                <a class="action-panel__item text-action text-action--diagonal" href="careers.html#vacancies">
+                    Переглянути вакансії
+                    <svg class="diagonal text-action__icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="assets/images/icons-sprite.svg#icon-arrow-diagonal"></use>
+                    </svg>
+                </a>
+                <a class="action-panel__item text-action text-action--diagonal" href="#contact">
+                    Обговорити проєкт
+                    <svg class="diagonal text-action__icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="assets/images/icons-sprite.svg#icon-arrow-diagonal"></use>
+                    </svg>
+                </a>
+            </div>
+        </section>
+    </main>
+    <footer class="main-footer" id="contact">
+        <div class="main-footer__inner content-wrap d-flex">
+            <div class="main-footer__info">
+                <h2 class="main-footer__title">MobileVision studio</h2>
+                <p class="main-footer__desc text-sm">
+                    Напишіть нам, якщо хочете співпрацювати з нами або просто поспілкуватися про ваш проєкт.
+                </p>
+                <a href="mailto:hello@mobilevision.studio" class="main-footer__email link-arrow">
+                    hello@mobilevision.studio
+                    <svg class="link-arrow__icon" width="30" height="30" aria-hidden="true">
+                        <use href="assets/images/icons-sprite.svg#icon-arrow-right"></use>
+                    </svg>
+                </a>
+            </div>
+            <nav class="main-footer__nav d-flex" aria-label="Навігація у підвалі">
+                <div class="main-footer__nav-col">
+                    <h3 class="main-footer__nav-title">Наші проєкти</h3>
+                    <ul class="main-footer__nav-list">
+                        <li><a href="project.html?id=wingriders" class="main-footer__nav-link" data-project-link="wingriders">WingRiders</a></li>
+                        <li><a href="project.html?id=trackee" class="main-footer__nav-link" data-project-link="trackee">Trackee</a></li>
+                        <li><a href="project.html?id=worldcoin" class="main-footer__nav-link" data-project-link="worldcoin">Worldcoin</a></li>
+                        <li><a href="project.html?id=audience-plus" class="main-footer__nav-link" data-project-link="audience-plus">Audience+</a></li>
+                    </ul>
+                </div>
+                <div class="main-footer__nav-col">
+                    <h3 class="main-footer__nav-title">Ми в соцмережах</h3>
+                    <ul class="main-footer__nav-list">
+                        <li><a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="main-footer__nav-link">Facebook</a></li>
+                        <li><a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="main-footer__nav-link">Instagram</a></li>
+                        <li><a href="https://dribbble.com" target="_blank" rel="noopener noreferrer" class="main-footer__nav-link">Dribbble</a></li>
+                        <li><a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="main-footer__nav-link">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </nav>
+            <button class="main-footer__scroll-top" type="button" aria-label="Прокрутити сторінку нагору">
+                <svg class="main-footer__scroll-top-icon" width="40" height="39" aria-hidden="true">
+                    <use href="assets/images/icons-sprite.svg#icon-arrow-up"></use>
+                </svg>
+                Нагору
+            </button>
+        </div>
+        <div class="main-footer__circles" aria-hidden="true">
+            <div class="main-footer__circle main-footer__circle--green"></div>
+            <div class="main-footer__circle main-footer__circle--blue"></div>
+            <div class="main-footer__circle main-footer__circle--purple"></div>
+        </div>
+    </footer>
+
+</body>
+</html>

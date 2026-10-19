@@ -1,0 +1,337 @@
+.hiring-content [hidden] {
+    display: none;
+}
+
+.hiring-content {
+    padding-top: 7.5rem;
+    overflow-wrap: anywhere;
+    line-height: 1.6;
+}
+
+.hiring-content h1,
+.hiring-content h2,
+.hiring-content h3 {
+    color: #fff;
+    font-weight: 500;
+    letter-spacing: -.04em;
+    line-height: 1.15;
+}
+
+.hiring-content h1 {
+    font-size: clamp(3.25rem, 8vw, 7rem);
+    letter-spacing: -.06em;
+}
+
+.hiring-content h2 {
+    font-size: clamp(2rem, 3.5vw, 3.5rem);
+}
+
+.page-lead {
+    display: grid;
+    gap: 1.75rem;
+    padding-block: 1.5rem 3rem;
+}
+
+.page-lead > p {
+    max-width: 30rem;
+    font-size: 1.25rem;
+    line-height: 1.5;
+}
+
+.browse-list {
+    display: grid;
+}
+
+.browse-link {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1rem;
+    padding-block: 1.75rem;
+    font-size: clamp(2rem, 4.5vw, 4.5rem);
+    border-bottom: 1px solid #ffffff36;
+    transition: border-color var(--motion-card) ease;
+}
+
+.browse-link:first-child {
+    border-top: 1px solid #ffffff36;
+}
+
+.browse-link h2 {
+    font-size: inherit;
+    letter-spacing: -.05em;
+    transition: color var(--motion-card) ease;
+}
+
+.browse-link > .entry-card__arrow {
+    width: 1cap;
+    height: 1cap;
+    margin-top: 0;
+    stroke-width: 1.25;
+}
+
+.browse-link__facts {
+    margin-top: 1rem;
+    color: #aaa3b0;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.condition-line > span,
+.browse-link__facts > span {
+    padding-inline: .5rem;
+    color: #706578;
+}
+
+.meeting-section {
+    padding-top: 4.5rem;
+}
+
+.stage-list {
+    display: grid;
+    gap: 2rem;
+    margin-top: 2.5rem;
+    list-style: none;
+}
+
+.stage-list > li {
+    display: grid;
+    grid-template-columns: 4rem minmax(0, 1fr);
+    align-items: start;
+    gap: 1.5rem;
+}
+
+.stage-icon {
+    width: 4rem;
+    max-width: 100%;
+    height: auto;
+    margin-top: calc((1.15em - 1cap) / 2);
+    color: #fff;
+    font-size: 1.5rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.stage-list h3 {
+    margin-bottom: .875rem;
+    font-size: 1.5rem;
+}
+
+.stage-list p {
+    max-width: 28rem;
+    font-size: 1rem;
+    line-height: 1.55;
+}
+
+.hiring-content:has(> .detail-view:not([hidden])) {
+    padding-top: 6rem;
+}
+
+.screen-role {
+    display: grid;
+    gap: 3.5rem;
+}
+
+.screen-role__heading {
+    max-width: 58rem;
+    margin-inline: auto;
+    text-align: center;
+}
+
+.screen-role__heading h1 {
+    max-width: 65rem;
+    font-size: clamp(2.75rem, 6vw, 6rem);
+}
+
+.screen-role__intro {
+    max-width: 39rem;
+    margin: 1.5rem auto 0;
+    font-size: 1.25rem;
+}
+
+.condition-line {
+    margin: 1.5rem auto 0;
+    color: #aaa3b0;
+    font-size: 1rem;
+}
+
+.role-content {
+    display: grid;
+    align-content: start;
+    gap: 2rem 1.5rem;
+}
+
+.role-content__section {
+    padding-block: 1.5rem;
+    border-top: 1px solid #ffffff36;
+}
+
+.role-content__section > h2 {
+    margin-bottom: 1.25rem;
+    font-size: 1.5rem;
+    letter-spacing: -.035em;
+}
+
+.role-content__section > ul {
+    display: grid;
+    gap: .625rem;
+    max-width: 43rem;
+    padding-left: 1.125rem;
+    list-style: disc;
+}
+
+.role-content__section li::marker {
+    color: #9481b4;
+}
+
+.response-link {
+    grid-column: 1 / -1;
+    margin-top: 2rem;
+}
+
+.empty-list {
+    padding-block: 2rem;
+    border-top: 1px solid #ffffff36;
+    border-bottom: 1px solid #ffffff36;
+}
+
+.empty-list h2 {
+    max-width: 50rem;
+    font-size: clamp(1.75rem, 4vw, 3rem);
+}
+
+.empty-list p {
+    max-width: 42rem;
+    margin-top: 1.5rem;
+    font-size: 1.125rem;
+}
+
+.empty-list p a {
+    color: #fff;
+    text-decoration: underline;
+    text-underline-offset: .25em;
+}
+
+.hiring-content .vacancy-missing {
+    margin-inline: auto;
+    padding-block: 2rem 3.5rem;
+}
+
+.fallback-view .text-action {
+    margin-top: 1.5rem;
+}
+
+.browse-link:focus-visible > .entry-card__arrow {
+    transform: translate(.25rem, -.25rem);
+}
+
+@media (min-width: 769px) {
+    .hiring-content,
+    .hiring-content:has(> .detail-view:not([hidden])) {
+        padding-top: 9rem;
+    }
+
+    .page-lead {
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+        gap: 4rem;
+        padding-block: 3rem 4rem;
+    }
+
+    .page-lead > p {
+        font-size: 1.5rem;
+    }
+
+    .browse-link {
+        gap: 3rem;
+        padding-block: 2.25rem;
+    }
+
+    .meeting-section {
+        padding-top: 6rem;
+    }
+
+    .stage-list {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 3rem;
+    }
+
+    .stage-list > li {
+        grid-template-columns: minmax(0, 1fr);
+        justify-items: start;
+        gap: 2rem;
+    }
+
+    .stage-icon {
+        width: 7rem;
+        margin-top: 0;
+    }
+
+    .stage-list h3 {
+        font-size: 1.75rem;
+    }
+
+    .stage-list p {
+        font-size: 1.125rem;
+    }
+
+    .screen-role {
+        gap: 5rem;
+    }
+
+    .screen-role__heading h1 {
+        font-size: clamp(3.25rem, 5vw, 5rem);
+    }
+
+    .screen-role__intro {
+        max-width: 48rem;
+        font-size: 1.5rem;
+    }
+
+    .condition-line {
+        font-size: 1.0625rem;
+    }
+
+    .role-content {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 3rem 2.5rem;
+        font-size: 1.125rem;
+    }
+
+    .role-content__section {
+        padding-block: 1.75rem 0;
+    }
+
+    .role-content__section > h2 {
+        font-size: 1.75rem;
+    }
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .browse-link:hover {
+        border-color: #c8b9f4;
+    }
+
+    .browse-link:hover h2 {
+        color: #c8b9f4;
+    }
+
+    .browse-link:hover > .entry-card__arrow {
+        transform: translate(.25rem, -.25rem);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .browse-link,
+    .browse-link h2,
+    .browse-link > .entry-card__arrow {
+        transition: none;
+    }
+
+    .browse-link:is(:hover, :focus-visible) > .entry-card__arrow {
+        transform: none;
+    }
+}
