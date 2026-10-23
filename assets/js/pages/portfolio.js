@@ -1,3 +1,4 @@
+import { initBriefForm } from '../components/brief-form.js';
 import { initCommon } from '../common.js';
 import { projects as collection } from '../data/projects.js';
 import { fillImage, projectUrl } from '../components/projects.js';
@@ -34,6 +35,7 @@ function renderCatalog() {
 
 renderCatalog();
 initCommon();
+initBriefForm();
 if (document.body.hasAttribute('data-reveal-effects')) {
     mountMotion('revealEffects', ({ signal, onCleanup }) => {
         const reveals = createReveals({ signal });

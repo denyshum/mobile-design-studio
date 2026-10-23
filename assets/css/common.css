@@ -401,7 +401,7 @@ button {
     width: 100%;
     min-height: 10rem;
     padding: 1.5rem;
-    font-size: 0.875rem;
+    font-size: .875rem;
     text-align: center;
     background: #111;
     border: 1px solid #ffffff26;
@@ -567,6 +567,233 @@ button {
     font-size: .9rem;
 }
 
+.brief {
+    display: none;
+    flex-direction: column;
+    width: calc(100% - 1.5rem);
+    max-width: 53.75rem;
+    max-height: calc(100dvh - 1.5rem);
+    margin: auto;
+    overflow: hidden;
+    color: var(--text-strong);
+    background: #1d1d22;
+    border: 1px solid #48484f;
+    border-radius: 1.25rem;
+    box-shadow: 0 1.75rem 6rem #000b;
+}
+
+.brief[open] {
+    display: flex;
+}
+
+.brief::backdrop {
+    background: rgb(0 0 0 / .8);
+    backdrop-filter: blur(4px);
+}
+
+.brief__header {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: .75rem;
+    max-height: 50dvh;
+    padding: 1.5rem 1.25rem .5rem;
+    overflow: auto;
+}
+
+.brief__header h2 {
+    min-width: 0;
+    font-size: 2rem;
+    font-weight: 500;
+    letter-spacing: -.045em;
+    line-height: 1.08;
+    overflow-wrap: anywhere;
+}
+
+.brief__scroll {
+    min-height: 0;
+    padding: 0 1.25rem 1.5rem;
+    overflow: auto;
+    overscroll-behavior: contain;
+}
+
+.brief__lead {
+    margin-top: .5rem;
+    margin-bottom: 2rem;
+    color: var(--text-main);
+    font-size: .9375rem;
+    line-height: 1.5;
+}
+
+.fields {
+    display: grid;
+    gap: 1.25rem;
+}
+
+.field {
+    min-width: 0;
+}
+
+.field label {
+    display: block;
+    margin-bottom: .625rem;
+    font-size: .875rem;
+    line-height: 1.45;
+}
+
+.field small {
+    display: inline-block;
+    margin-left: .375rem;
+    color: var(--text-main);
+    font-size: .75rem;
+}
+
+.field input,
+.field select,
+.field textarea {
+    display: block;
+    width: 100%;
+    min-height: 3rem;
+    padding: .75rem;
+    color: #fff;
+    font-family: var(--font-main);
+    font-size: 1rem;
+    line-height: 1.4;
+    background: #29292f;
+    border: 1px solid #4c4c55;
+    border-radius: .625rem;
+    transition: border-color var(--motion-text) ease, background-color var(--motion-text) ease, box-shadow var(--motion-text) ease;
+}
+
+.field select {
+    padding-right: .25rem;
+    text-overflow: ellipsis;
+}
+
+.field select option {
+    color: #fff;
+    background: #29292f;
+}
+
+.field textarea {
+    min-height: 6.25rem;
+    resize: vertical;
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+    color: #999;
+    opacity: 1;
+}
+
+.field [aria-invalid="true"] {
+    border-color: #e99ca4;
+}
+
+.field input:focus-visible,
+.field select:focus-visible,
+.field textarea:focus-visible {
+    outline: 2px solid transparent;
+    outline-offset: 0;
+    border-color: #c8b9f4;
+    box-shadow: 0 0 0 .1875rem rgb(200 185 244 / .16);
+}
+
+.field__error {
+    margin-top: .5rem;
+    color: #f2a9b0;
+    font-size: .8125rem;
+    line-height: 1.5;
+}
+
+.brief__bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+    margin-top: 2rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #414148;
+}
+
+.brief__bottom p {
+    color: var(--text-main);
+    font-size: .75rem;
+    line-height: 1.5;
+}
+
+.brief__submit {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: .75rem;
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 1rem 1.25rem;
+    overflow-wrap: anywhere;
+    color: #151518;
+    font-size: 1.125rem;
+    font-weight: 500;
+    line-height: 1.2;
+    background: #e9e5f2;
+    border-radius: .625rem;
+    transition: background-color var(--motion-text) ease, box-shadow var(--motion-text) ease;
+}
+
+.brief__submit .text-action__icon {
+    filter: brightness(0);
+}
+
+.brief__header,
+.brief__scroll,
+.image-viewer__header,
+.image-viewer__rail {
+    scrollbar-width: thin;
+    scrollbar-color: #62626f transparent;
+}
+
+.dialog-close {
+    position: sticky;
+    top: 0;
+    display: grid;
+    flex: 0 0 auto;
+    align-self: flex-start;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    color: #d8d3e0;
+    border-radius: 50%;
+    transition: color var(--motion-text) ease, box-shadow var(--motion-text) ease;
+}
+
+.dialog-close:before {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border: 1px solid transparent;
+    border-radius: inherit;
+    transition: background-color var(--motion-text) ease, border-color var(--motion-text) ease;
+    pointer-events: none;
+}
+
+.dialog-close svg {
+    position: relative;
+    z-index: 1;
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.dialog-close:focus-visible {
+    outline-offset: 2px;
+}
+
+.field [aria-invalid="true"]:focus-visible {
+    border-color: #e99ca4;
+    box-shadow: 0 0 0 .1875rem rgb(233 156 164 / .16);
+}
+
 @media screen and (min-width: 481px) {
     .text-sm {
         font-size: 1rem;
@@ -658,6 +885,47 @@ button {
 
     .main-footer__scroll-top:hover .main-footer__scroll-top-icon {
         left: -59px;
+    }
+}
+
+@media (min-width: 700px) {
+    .brief__submit {
+        width: auto;
+        min-width: 0;
+    }
+
+    .brief__header {
+        gap: 2rem;
+        padding: 2.5rem 2.5rem .5rem;
+    }
+
+    .brief__header h2 {
+        font-size: 3rem;
+    }
+
+    .brief__scroll {
+        padding: 0 2.5rem 2.25rem;
+    }
+
+    .brief__lead {
+        font-size: 1rem;
+    }
+
+    .fields {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 1.5rem 2rem;
+    }
+
+    .field--description,
+    .field--url {
+        grid-column: 1 / -1;
+    }
+
+    .brief__bottom {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 2rem;
     }
 }
 
@@ -987,6 +1255,42 @@ button {
     .text-action--diagonal:not(:disabled):hover .text-action__icon {
         transform: translate(4px, -4px);
     }
+
+    .dialog-close:hover {
+        color: #f1edf7;
+    }
+
+    .dialog-close:hover:before {
+        background: #ffffff10;
+        border-color: #ffffff24;
+    }
+
+    .field input:not(:focus-visible):hover,
+    .field select:not(:focus-visible):hover,
+    .field textarea:not(:focus-visible):hover {
+        background: #2e2e35;
+        border-color: #84818e;
+    }
+
+    .brief__submit:hover {
+        background: #d8cbed;
+    }
+
+    .brief__submit:hover .text-action__icon {
+        transform: translateX(.125rem);
+    }
+}
+
+@media (forced-colors: active) {
+    .dialog-close {
+        color: ButtonText;
+    }
+
+    .field input:focus-visible,
+    .field select:focus-visible,
+    .field textarea:focus-visible {
+        outline-color: Highlight;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -997,9 +1301,9 @@ button {
     *,
     *:before,
     *:after {
-        animation-duration: 0.01ms !important;
+        animation-duration: .01ms !important;
         animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
+        transition-duration: .01ms !important;
         scroll-behavior: auto !important;
     }
 
@@ -1009,6 +1313,10 @@ button {
     }
 
     .text-action--diagonal:not(:disabled):is(:hover, :focus-visible) .text-action__icon {
+        transform: none;
+    }
+
+    .brief__submit:hover .text-action__icon {
         transform: none;
     }
 }

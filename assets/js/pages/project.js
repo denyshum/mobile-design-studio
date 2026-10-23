@@ -1,3 +1,5 @@
+import { initImageViewer } from '../components/image-viewer.js';
+import { initBriefForm } from '../components/brief-form.js';
 import { initCommon } from '../common.js';
 import { findProject, fillImage } from '../components/projects.js';
 import { watchImage } from '../components/image-fallback.js';
@@ -52,6 +54,7 @@ function renderProject() {
             document.querySelector('meta[name="description"]').content = 'Проєкт не знайдено. Поверніться до портфоліо MobileVision, щоб переглянути роботи студії.';
         }
         main.replaceChildren(content);
+        initImageViewer(record);
         document.querySelectorAll('template').forEach(template => {
             template.remove();
         });
@@ -60,6 +63,7 @@ function renderProject() {
 
 renderProject();
 initCommon();
+initBriefForm();
 if (document.body.hasAttribute('data-project-effects')) {
     const seen = new WeakSet();
     mountMotion('projectEffects', ({ signal, onCleanup }) => {

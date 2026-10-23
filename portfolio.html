@@ -110,7 +110,7 @@
             <h2>Маєте ідею<br>мобільного продукту?</h2>
             <div class="closing-panel__bottom">
                 <p>Розкажіть, яку задачу потрібно вирішити</p>
-                <a href="#contact" class="text-action text-action--diagonal">
+                <a href="#contact" class="text-action text-action--diagonal" data-open-brief>
                     Обговорити проєкт
                     <svg class="closing-panel__icon text-action__icon" viewBox="0 0 24 24" aria-hidden="true">
                         <use href="assets/images/icons-sprite.svg#icon-arrow-diagonal"></use>
@@ -188,6 +188,69 @@
             <div class="main-footer__circle main-footer__circle--purple"></div>
         </div>
     </footer>
+    <dialog class="brief" aria-labelledby="brief-title">
+        <div class="brief__header">
+            <h2 id="brief-title">Обговорити проєкт</h2>
+            <button class="brief__close dialog-close" type="button" aria-label="Закрити форму" data-close-dialog autofocus>
+                <svg width="24" height="24" aria-hidden="true">
+                    <use href="assets/images/icons-sprite.svg#icon-close-plain"></use>
+                </svg>
+            </button>
+        </div>
+        <div class="brief__scroll">
+            <p class="brief__lead">Розкажіть про задачу — ми зв’яжемося з вами.</p>
+            <form novalidate>
+                <div class="fields">
+                    <div class="field">
+                        <label for="brief-name">Ім’я <span>*</span></label>
+                        <input id="brief-name" name="name" type="text" autocomplete="given-name" required maxlength="80" placeholder="Як до вас звертатися" aria-describedby="brief-name-error">
+                        <p class="field__error" id="brief-name-error" aria-live="polite" hidden></p>
+                    </div>
+                    <div class="field">
+                        <label for="brief-service">Що вам потрібно? <small>необов’язково</small></label>
+                        <select id="brief-service" name="service" aria-describedby="brief-service-error">
+                            <option value="">Оберіть напрям</option>
+                            <option value="new-design">Дизайн нового застосунку</option>
+                            <option value="redesign">Редизайн наявного застосунку</option>
+                            <option value="research">Дослідження та прототип</option>
+                            <option value="design-system">Дизайн-система та супровід</option>
+                            <option value="undecided">Ще не визначився</option>
+                        </select>
+                        <p class="field__error" id="brief-service-error" aria-live="polite" hidden></p>
+                    </div>
+                    <div class="field">
+                        <label for="brief-email">Email <span>*</span></label>
+                        <input id="brief-email" name="email" type="email" autocomplete="email" required maxlength="254" placeholder="you@example.com" aria-describedby="brief-email-error">
+                        <p class="field__error" id="brief-email-error" aria-live="polite" hidden></p>
+                    </div>
+                    <div class="field">
+                        <label for="brief-phone">Телефон <small>необов’язково</small></label>
+                        <input id="brief-phone" name="phone" type="tel" autocomplete="tel" placeholder="Номер телефону" aria-describedby="brief-phone-error">
+                        <p class="field__error" id="brief-phone-error" aria-live="polite" hidden></p>
+                    </div>
+                    <div class="field field--description">
+                        <label for="brief-description">Коротко про задачу <span>*</span></label>
+                        <textarea id="brief-description" name="description" required minlength="10" maxlength="2000" placeholder="Яку ідею або задачу ви хочете опрацювати?" aria-describedby="brief-description-error"></textarea>
+                        <p class="field__error" id="brief-description-error" aria-live="polite" hidden></p>
+                    </div>
+                    <div class="field field--url">
+                        <label for="brief-url">Посилання на продукт або матеріали <small>необов’язково</small></label>
+                        <input id="brief-url" name="url" type="text" inputmode="url" maxlength="2000" placeholder="https://" aria-describedby="brief-url-error">
+                        <p class="field__error" id="brief-url-error" aria-live="polite" hidden></p>
+                    </div>
+                </div>
+                <div class="brief__bottom">
+                    <p>* — обов’язкові поля</p>
+                    <button class="brief__submit" type="submit">
+                        Надіслати запит
+                        <svg class="text-action__icon" viewBox="0 0 39 40" aria-hidden="true">
+                            <use href="assets/images/icons-sprite.svg#icon-arrow-right"></use>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </dialog>
 
 </body>
 </html>

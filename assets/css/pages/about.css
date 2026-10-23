@@ -22,7 +22,7 @@
 }
 
 .detail-content h3 {
-    margin-bottom: 0.75rem;
+    margin-bottom: .75rem;
     font-size: 1.375rem;
     line-height: 1.22;
 }
@@ -114,7 +114,7 @@
 .staggered-list__media {
     width: 6.875rem;
     aspect-ratio: 1;
-    margin-left: -0.625rem;
+    margin-left: -.625rem;
 }
 
 .staggered-list h3 {
@@ -123,7 +123,7 @@
 
 .staggered-list p {
     max-width: 24.375rem;
-    font-size: 0.9375rem;
+    font-size: .9375rem;
 }
 
 .linked-list .connector-line {
@@ -160,7 +160,7 @@
 }
 
 .alternating-list .text-block p {
-    font-size: 0.9375rem;
+    font-size: .9375rem;
 }
 
 .alternating-list__media {
@@ -210,13 +210,13 @@
 }
 
 .card-grid h3 {
-    margin-bottom: 0.625rem;
+    margin-bottom: .625rem;
     font-size: 1.125rem;
     letter-spacing: -.02em;
 }
 
 .card-grid p {
-    font-size: 0.875rem;
+    font-size: .875rem;
 }
 
 .action-panel {
@@ -411,7 +411,7 @@
     }
 
     .card-grid h3 {
-        margin: 1.5rem 0 0.75rem;
+        margin: 1.5rem 0 .75rem;
         font-size: 1.5rem;
     }
 

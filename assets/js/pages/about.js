@@ -1,8 +1,10 @@
+import { initBriefForm } from '../components/brief-form.js';
 import { initCommon } from '../common.js';
 import { mountMotion } from '../components/motion.js';
 import { createReveals } from '../components/reveal.js';
 
 initCommon();
+initBriefForm();
 if (document.body.hasAttribute('data-scroll-effects')) {
     mountMotion('scrollEffects', ({ signal, onCleanup }) => {
         const reveals = createReveals({ signal, rootMargin: '0px 0px 40px 0px' });
