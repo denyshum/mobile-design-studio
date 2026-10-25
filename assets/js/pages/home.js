@@ -1,8 +1,10 @@
 import { initCommon } from '../common.js';
-import { projects } from '../data/projects.js';
-import { projectUrl, fillImage, findProject } from '../components/projects.js';
+import { collectionResource } from '../data/projects.js';
+import { bindResource, dataPanel } from '../components/data-state.js';
+import { watchCover } from '../components/image-fallback.js';
+import { projectUrl, fillImage } from '../components/projects.js';
 
-function initSlider() {
+function initSlider(projectsData) {
     const swiperEl = document.querySelector('.slider__swiper');
     const wrapper = swiperEl?.querySelector('.swiper-wrapper');
     const indicatorsEl = document.getElementById('slider__indicators');
@@ -11,7 +13,6 @@ function initSlider() {
         return;
     }
 
-    const projectsData = projects.sliderIds.map(findProject).filter(Boolean);
 
     if (!projectsData.length) {
         swiperEl.closest('.slider')?.remove();
@@ -26,10 +27,11 @@ function initSlider() {
         const link = document.createElement('a');
         link.href = projectUrl(item);
         const image = document.createElement('img');
-        fillImage(image, item, false);
+        fillImage(image, item);
         image.className = 'slider__img';
         link.append(image);
         li.append(link);
+        watchCover(image);
         wrapper.appendChild(li);
     });
 
@@ -72,9 +74,12 @@ function initSlider() {
     if (typeof window.Swiper !== 'function') {
         return;
     }
-    swiperInstance = new window.Swiper('.slider__swiper', {
-        loop: true,
-        autoplay: {
+    swiperEl.swiper?.destroy(true, true);
+    swiperInstance = new window.Swiper(swiperEl, {
+        loop: projectsData.length > 1,
+        // Зміна висоти обкладинки не має скидати вибраний слайд
+        resizeObserver: false,
+        autoplay: projectsData.length < 2 ? false : {
             delay: 3000,
             disableOnInteraction: false,
             pauseOnMouseEnter: true,
@@ -102,6 +107,79 @@ function initSlider() {
                 updateIndicators(this.realIndex);
             }
         }
+    });
+}
+
+
+function initCollections() {
+    const featured = document.querySelector('[data-featured]');
+    const slider = document.querySelector('.slider__swiper');
+    const sliderBottom = document.querySelector('.slider__bottom');
+    const sliderSection = document.querySelector('.slider');
+    const note = document.getElementById('featured-note');
+    function globalEmpty() {
+        featured.classList.add('data-region--state');
+        featured.replaceChildren(dataPanel('catalog', 'empty'));
+        sliderSection.hidden = true;
+    }
+    bindResource(collectionResource('home_featured'), {
+        host: featured,
+        kind: 'featured',
+        result: () => document.querySelector('.projects h2'),
+        onState: ({ status }) => {
+            if (status !== 'success') {
+                featured.append(note.content.cloneNode(true));
+            }
+        },
+        render: ({ records, hasProjects }) => {
+            if (!hasProjects) {
+                globalEmpty();
+                return;
+            }
+            if (!records.length) {
+                featured.classList.add('data-region--state');
+                featured.replaceChildren(dataPanel('featured', 'empty'), note.content.cloneNode(true));
+                return;
+            }
+            const columns = [document.createElement('div'), document.createElement('div')];
+            columns.forEach(column => {
+                column.className = 'projects__col';
+            });
+            records.forEach(record => {
+                const link = document.createElement('a');
+                link.className = 'projects__item';
+                link.href = projectUrl(record);
+                link.setAttribute('aria-label', 'Проєкт ' + record.name + ': ' + record.description.toLowerCase());
+                const image = document.createElement('img');
+                image.className = 'projects__img';
+                fillImage(image, record);
+                link.append(image);
+                columns[record.position <= 2 ? 0 : 1].append(link);
+                watchCover(image);
+            });
+            columns[0].append(note.content.cloneNode(true));
+            featured.replaceChildren(...columns.filter(column => column.children.length));
+        },
+    });
+    const wrapper = slider.querySelector('.swiper-wrapper');
+    bindResource(collectionResource('home_slider'), {
+        host: slider,
+        kind: 'slider',
+        result: () => document.querySelector('.slider h2'),
+        onState: ({ status, data }) => {
+            sliderBottom.hidden = status !== 'success' || data.records.length < 2;
+        },
+        render: ({ records, hasProjects }) => {
+            if (!hasProjects) {
+                globalEmpty();
+            } else if (!records.length) {
+                slider.classList.add('data-region--state');
+                slider.replaceChildren(dataPanel('slider', 'empty'));
+            } else {
+                slider.replaceChildren(wrapper);
+                initSlider(records);
+            }
+        },
     });
 }
 
@@ -257,5 +335,5 @@ function initHome() {
 }
 
 initCommon();
-initSlider();
+initCollections();
 initHome();

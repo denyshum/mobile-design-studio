@@ -1,16 +1,16 @@
 import { initImageViewer } from '../components/image-viewer.js';
 import { initBriefForm } from '../components/brief-form.js';
 import { initCommon } from '../common.js';
-import { findProject, fillImage } from '../components/projects.js';
-import { watchImage } from '../components/image-fallback.js';
+import { fillImage } from '../components/projects.js';
+import { watchCover } from '../components/image-fallback.js';
 import { mountMotion } from '../components/motion.js';
 import { createReveals } from '../components/reveal.js';
+import { projectResource } from '../data/projects.js';
+import { bindResource } from '../components/data-state.js';
 
-function renderProject() {
+function renderProject(record) {
     const main = document.querySelector('.case-content');
     if (main) {
-        const id = new URLSearchParams(location.search).get('id');
-        const record = findProject(id);
         const template = document.getElementById(record ? 'detail-layout' : 'empty-layout');
         const content = template.content.cloneNode(true);
         main.classList.toggle('case-content--empty', !record);
@@ -19,14 +19,15 @@ function renderProject() {
             content.querySelector('.case-heading__category').textContent = record.category;
             content.querySelector('.summary-panel__intro').textContent = record.description;
             const cover = content.querySelector('.cover-media');
-            const image = cover.querySelector('img');
+            const image = document.createElement('img');
+            cover.querySelector('[data-project-image]').replaceWith(image);
             cover.classList.add('cover-media--framed');
             if (record.image) {
                 fillImage(image, record);
             } else {
                 image.removeAttribute('src');
             }
-            watchImage(image);
+            watchCover(image);
             const facts = content.querySelector('.fact-list');
             (record.facts || []).forEach(fact => {
                 if (!fact.label?.trim() || !fact.value?.trim()) {
@@ -55,18 +56,34 @@ function renderProject() {
         }
         main.replaceChildren(content);
         initImageViewer(record);
-        document.querySelectorAll('template').forEach(template => {
-            template.remove();
-        });
+        bindBrief?.(main);
+        projectMotion?.restart();
     }
 }
 
-renderProject();
+let projectMotion;
 initCommon();
-initBriefForm();
+const main = document.querySelector('.case-content');
+bindResource(projectResource(new URLSearchParams(location.search).get('id')), {
+    host: main,
+    kind: 'project',
+    render: renderProject,
+    result: () => main.querySelector('h1'),
+    renderState: panel => {
+        main.classList.remove('case-content--empty');
+        const shell = document.createElement('div');
+        shell.className = 'section-wrap';
+        const back = document.getElementById('detail-layout').content.querySelector('.text-action--back').cloneNode(true);
+        shell.append(back, panel);
+        main.replaceChildren(shell);
+        document.title = panel.querySelector('h1').textContent + ' — MobileVision';
+        document.querySelector('meta[name="description"]').content = panel.querySelector('p').textContent;
+    },
+});
+const bindBrief = initBriefForm();
 if (document.body.hasAttribute('data-project-effects')) {
     const seen = new WeakSet();
-    mountMotion('projectEffects', ({ signal, onCleanup }) => {
+    projectMotion = mountMotion('projectEffects', ({ signal, onCleanup }) => {
         const reveals = createReveals({ signal, seen });
         onCleanup(reveals.stop);
         const tracked = [];

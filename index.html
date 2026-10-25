@@ -75,10 +75,10 @@
                     <div class="menu-overlay__col">
                         <p class="menu-overlay__col-title">Наші проєкти</p>
                         <ul class="menu-overlay__col-list">
-                            <li><a href="project.html?id=wingriders" class="menu-overlay__col-link" data-project-link="wingriders">WingRiders</a></li>
-                            <li><a href="project.html?id=trackee" class="menu-overlay__col-link" data-project-link="trackee">Trackee</a></li>
-                            <li><a href="project.html?id=worldcoin" class="menu-overlay__col-link" data-project-link="worldcoin">Worldcoin</a></li>
-                            <li><a href="project.html?id=audience-plus" class="menu-overlay__col-link" data-project-link="audience-plus">Audience+</a></li>
+                            <li><a href="project.html?id=wingriders" class="menu-overlay__col-link" data-project-link="wingriders" hidden>WingRiders</a></li>
+                            <li><a href="project.html?id=trackee" class="menu-overlay__col-link" data-project-link="trackee" hidden>Trackee</a></li>
+                            <li><a href="project.html?id=worldcoin" class="menu-overlay__col-link" data-project-link="worldcoin" hidden>Worldcoin</a></li>
+                            <li><a href="project.html?id=audience-plus" class="menu-overlay__col-link" data-project-link="audience-plus" hidden>Audience+</a></li>
                         </ul>
                     </div>
                     <div class="menu-overlay__col">
@@ -167,28 +167,14 @@
         <section class="projects" id="projects">
             <div class="projects__inner content-wrap">
                 <h2 class="title-display">Проєкти</h2>
-                <div class="projects__grid d-flex">
-                    <div class="projects__col">
-                        <a href="project.html?id=wingriders" class="projects__item" data-project-link="wingriders" aria-label="Проєкт WingRiders: децентралізований фінансовий інтерфейс">
-                            <img src="assets/images/projects/project-portfolio.webp" alt="Мобільний інтерфейс WingRiders з фінансовим портфоліо" class="projects__img">
-                        </a>
-                        <a href="project.html?id=trackee" class="projects__item" data-project-link="trackee" aria-label="Проєкт Trackee: додаток фінансової аналітики">
-                            <img src="assets/images/projects/project-stats.webp" alt="Мобільний додаток Trackee з графіками та статистикою балансу" class="projects__img">
-                        </a>
-                        <div class="projects__item projects__item--text">
-                            <p class="projects__name">Як ми створюємо мобільні продукти</p>
-                            <span class="projects__badge">скоро</span>
-                        </div>
+                <div class="projects__grid d-flex" data-featured></div>
+                <template id="featured-note">
+                    <div class="projects__item projects__item--text">
+                        <p class="projects__name">Як ми створюємо мобільні продукти</p>
+                        <span class="projects__badge">скоро</span>
                     </div>
-                    <div class="projects__col">
-                        <a href="project.html?id=worldcoin" class="projects__item" data-project-link="worldcoin" aria-label="Проєкт Worldcoin: цифровий мобільний гаманець">
-                            <img src="assets/images/projects/project-wallet.webp" alt="Мобільний інтерфейс Worldcoin з балансом та діями надсилання" class="projects__img">
-                        </a>
-                        <a href="project.html?id=audience-plus" class="projects__item" data-project-link="audience-plus" aria-label="Проєкт Audience+: брендинг та айдентика">
-                            <img src="assets/images/projects/project-audience.webp" alt="Брендинг та візуальний стиль для сервісу Audience+" class="projects__img">
-                        </a>
-                    </div>
-                </div>
+                </template>
+                <noscript><p>Увімкніть JavaScript, щоб переглянути проєкти</p></noscript>
             </div>
         </section>
         <section class="slider" id="slider">
@@ -308,10 +294,10 @@
                 <div class="main-footer__nav-col">
                     <h3 class="main-footer__nav-title">Наші проєкти</h3>
                     <ul class="main-footer__nav-list">
-                        <li><a href="project.html?id=wingriders" class="main-footer__nav-link" data-project-link="wingriders">WingRiders</a></li>
-                        <li><a href="project.html?id=trackee" class="main-footer__nav-link" data-project-link="trackee">Trackee</a></li>
-                        <li><a href="project.html?id=worldcoin" class="main-footer__nav-link" data-project-link="worldcoin">Worldcoin</a></li>
-                        <li><a href="project.html?id=audience-plus" class="main-footer__nav-link" data-project-link="audience-plus">Audience+</a></li>
+                        <li><a href="project.html?id=wingriders" class="main-footer__nav-link" data-project-link="wingriders" hidden>WingRiders</a></li>
+                        <li><a href="project.html?id=trackee" class="main-footer__nav-link" data-project-link="trackee" hidden>Trackee</a></li>
+                        <li><a href="project.html?id=worldcoin" class="main-footer__nav-link" data-project-link="worldcoin" hidden>Worldcoin</a></li>
+                        <li><a href="project.html?id=audience-plus" class="main-footer__nav-link" data-project-link="audience-plus" hidden>Audience+</a></li>
                     </ul>
                 </div>
                 <div class="main-footer__nav-col">

@@ -207,6 +207,11 @@
     flex-direction: column;
 }
 
+.projects__col {
+    flex: 1;
+    min-width: 0;
+}
+
 .projects__col:not(:last-child) {
     margin-bottom: 16px;
 }
@@ -221,6 +226,7 @@
 }
 
 .projects__img {
+    height: auto;
     transition: transform .4s ease;
 }
 

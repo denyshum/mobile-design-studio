@@ -3,6 +3,11 @@
     overflow-wrap: anywhere;
 }
 
+.case-content > .section-wrap {
+    container-type: inline-size;
+    container-name: case-layout;
+}
+
 .case-heading {
     margin-bottom: 2rem;
 }
@@ -645,6 +650,12 @@
 
     .case-content.case-content--empty {
         padding-top: 6.25rem;
+    }
+}
+
+@container case-layout (max-width: 34rem) {
+    .media-summary {
+        grid-template-columns: minmax(0, 1fr);
     }
 }
 

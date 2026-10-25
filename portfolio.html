@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Портфоліо — MobileVision</title>
-    <meta name="description" content="Портфоліо MobileVision: 12 робіт із дизайну мобільних інтерфейсів, цифрових сервісів та візуальних систем.">
+    <meta name="description" content="Портфоліо MobileVision: дизайн мобільних інтерфейсів, цифрових сервісів та візуальних систем.">
     <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
     <link rel="icon" sizes="any" href="assets/images/favicon.ico">
     <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
@@ -73,10 +73,10 @@
                     <div class="menu-overlay__col">
                         <p class="menu-overlay__col-title">Наші проєкти</p>
                         <ul class="menu-overlay__col-list">
-                            <li><a href="project.html?id=wingriders" class="menu-overlay__col-link" data-project-link="wingriders">WingRiders</a></li>
-                            <li><a href="project.html?id=trackee" class="menu-overlay__col-link" data-project-link="trackee">Trackee</a></li>
-                            <li><a href="project.html?id=worldcoin" class="menu-overlay__col-link" data-project-link="worldcoin">Worldcoin</a></li>
-                            <li><a href="project.html?id=audience-plus" class="menu-overlay__col-link" data-project-link="audience-plus">Audience+</a></li>
+                            <li><a href="project.html?id=wingriders" class="menu-overlay__col-link" data-project-link="wingriders" hidden>WingRiders</a></li>
+                            <li><a href="project.html?id=trackee" class="menu-overlay__col-link" data-project-link="trackee" hidden>Trackee</a></li>
+                            <li><a href="project.html?id=worldcoin" class="menu-overlay__col-link" data-project-link="worldcoin" hidden>Worldcoin</a></li>
+                            <li><a href="project.html?id=audience-plus" class="menu-overlay__col-link" data-project-link="audience-plus" hidden>Audience+</a></li>
                         </ul>
                     </div>
                     <div class="menu-overlay__col">
@@ -102,7 +102,7 @@
         <section class="catalog-section section-wrap" id="projects-list" aria-labelledby="list-title">
             <div class="catalog-section__label">
                 <h2 id="list-title">Усі проєкти</h2>
-                <span data-project-count>12 робіт</span>
+                <span data-project-count>—</span>
             </div>
             <div class="entry-grid" data-project-catalog></div>
         </section>
@@ -125,7 +125,7 @@
     <template id="project-card-template">
         <a class="entry-card" href="project.html">
             <div class="entry-card__media">
-                <img src="assets/images/projects/project-portfolio.webp" alt="Зображення проєкту" loading="lazy">
+                <span data-project-image></span>
                 <span class="media-fallback" hidden>Зображення недоступне</span>
             </div>
             <div class="entry-card__body">
@@ -159,10 +159,10 @@
                 <div class="main-footer__nav-col">
                     <h3 class="main-footer__nav-title">Наші проєкти</h3>
                     <ul class="main-footer__nav-list">
-                        <li><a href="project.html?id=wingriders" class="main-footer__nav-link" data-project-link="wingriders">WingRiders</a></li>
-                        <li><a href="project.html?id=trackee" class="main-footer__nav-link" data-project-link="trackee">Trackee</a></li>
-                        <li><a href="project.html?id=worldcoin" class="main-footer__nav-link" data-project-link="worldcoin">Worldcoin</a></li>
-                        <li><a href="project.html?id=audience-plus" class="main-footer__nav-link" data-project-link="audience-plus">Audience+</a></li>
+                        <li><a href="project.html?id=wingriders" class="main-footer__nav-link" data-project-link="wingriders" hidden>WingRiders</a></li>
+                        <li><a href="project.html?id=trackee" class="main-footer__nav-link" data-project-link="trackee" hidden>Trackee</a></li>
+                        <li><a href="project.html?id=worldcoin" class="main-footer__nav-link" data-project-link="worldcoin" hidden>Worldcoin</a></li>
+                        <li><a href="project.html?id=audience-plus" class="main-footer__nav-link" data-project-link="audience-plus" hidden>Audience+</a></li>
                     </ul>
                 </div>
                 <div class="main-footer__nav-col">

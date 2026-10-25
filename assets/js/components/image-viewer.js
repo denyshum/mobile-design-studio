@@ -24,7 +24,7 @@ export function initImageViewer(record) {
     const wheelSensitivity = .001;
     const maxWheelDelta = 120;
     let zoomDraft = false;
-    const source = sitePath('assets/images/projects/' + record.image);
+    const source = record.image;
     dialog.querySelector('#image-viewer-title').textContent = record.name;
     dialog.querySelector('.image-viewer__name').textContent = record.name;
     dialog.querySelector('.image-viewer__category').textContent = record.category;

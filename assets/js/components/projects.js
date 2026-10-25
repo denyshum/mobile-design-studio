@@ -1,16 +1,12 @@
 import { sitePath } from './paths.js';
-import { projects } from '../data/projects.js';
-
-export function findProject(id) {
-    return projects.records.find(record => record.id === id);
-}
+import { navigationProjects } from '../data/projects.js';
 
 export function projectUrl(record) {
     return sitePath('project.html?id=' + encodeURIComponent(record.id));
 }
 
 export function fillImage(image, record, withDimensions = true) {
-    image.src = sitePath('assets/images/projects/' + record.image);
+    image.src = record.image;
     image.alt = record.imageAlt;
     if (withDimensions) {
         image.width = record.imageWidth;
@@ -19,22 +15,16 @@ export function fillImage(image, record, withDimensions = true) {
 }
 
 export function syncProjectLinks() {
-    const collection = projects;
-    let featuredIndex = 0;
-    document.querySelectorAll('[data-project-link]').forEach(link => {
-        const id = link.classList.contains('projects__item') ? collection.featuredIds[featuredIndex++] : link.dataset.projectLink;
-        const record = findProject(id);
-        if (!record) {
-            link.remove();
-            return;
-        }
-        link.href = projectUrl(record);
-        const image = link.querySelector('img');
-        if (image) {
-            fillImage(image, record, false);
-            link.setAttribute('aria-label', 'Проєкт ' + record.name + ': ' + record.description.toLowerCase());
-        } else {
-            link.textContent = record.name;
-        }
+    const links = [...document.querySelectorAll('[data-project-link]')].filter(link => link.dataset.projectLink);
+    navigationProjects.subscribe(({ status, data }) => {
+        links.forEach(link => {
+            const record = status === 'success' ? data.find(item => item.id === link.dataset.projectLink) : null;
+            link.hidden = !record;
+            if (record) {
+                link.href = projectUrl(record);
+                link.textContent = record.name;
+            }
+        });
     });
+    navigationProjects.load();
 }

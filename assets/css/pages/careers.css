@@ -228,7 +228,28 @@
     transform: translate(.25rem, -.25rem);
 }
 
+.hiring-content.data-missing-view {
+    display: grid;
+    align-items: center;
+    min-height: 100svh;
+    padding-block: 6rem 2rem;
+}
+
+.data-missing-view .vacancy-missing {
+    margin-inline: 0;
+    padding: 0;
+}
+
+.data-missing-view .vacancy-missing h1 {
+    font-size: clamp(2.75rem, 7vw, 6.5rem);
+    line-height: 1.04;
+}
+
 @media (min-width: 769px) {
+    .hiring-content.data-missing-view {
+        padding-top: 6.25rem;
+    }
+
     .hiring-content,
     .hiring-content:has(> .detail-view:not([hidden])) {
         padding-top: 9rem;

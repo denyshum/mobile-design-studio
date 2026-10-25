@@ -1,47 +1,22 @@
-// Спільна колекція відкритих вакансій
-export const vacancies = {
-    records: [
-        {
-            "id": "ux-ui-designer",
-            "name": "UX/UI дизайнер",
-            "intro": "Проєктуйте мобільні сценарії та інтерфейси, у яких складні задачі стають зрозумілими.",
-            "format": "Віддалена робота",
-            "employment": "Повна зайнятість",
-            "responsibilities": [
-                "Проєктувати сценарії та прототипи",
-                "Створювати мобільні екрани й компоненти у Figma",
-                "Узгоджувати рішення та готувати матеріали розробникам"
-            ],
-            "expectations": [
-                "Портфоліо інтерфейсів із поясненням рішень",
-                "Розуміння композиції, типографіки й адаптивності",
-                "Робота з компонентами та аргументація вибору"
-            ],
-            "collaboration": [
-                "Обговорення рішень і взаємний зворотний зв'язок",
-                "Розвиток мобільних продуктів"
-            ]
-        },
-        {
-            "id": "product-designer",
-            "name": "Продуктовий дизайнер",
-            "intro": "Поєднуйте потреби користувачів і цілі продукту — від формулювання задачі до перевірки рішення.",
-            "format": "Віддалена робота",
-            "employment": "Повна зайнятість",
-            "responsibilities": [
-                "Досліджувати задачі та формувати гіпотези",
-                "Будувати сценарії й перевіряти прототипи",
-                "Підтримувати послідовність інтерфейсу разом із командою"
-            ],
-            "expectations": [
-                "Портфоліо продуктових рішень",
-                "Уміння пов'язувати дизайн із потребами людей",
-                "Прототипування у Figma та робота зі зворотним зв'язком"
-            ],
-            "collaboration": [
-                "Спільне уточнення задач і пріоритетів",
-                "Розвиток продукту й дизайн-системи"
-            ]
+import { readRows, validId, text, unique } from './client.js';
+import { createResource } from './resource.js';
+
+export const vacancyResource = createResource(async signal => {
+    const rows = await readRows('vacancies', { select: 'id,name,intro,format,employment,responsibilities,expectations,collaboration,salary,experience,display_order', status: 'eq.open', order: 'display_order.asc,id.asc' }, signal);
+    return unique(rows.map(row => {
+        if (!validId(row.id) || !Number.isSafeInteger(row.display_order)) {
+            throw new Error('Несумісний запис вакансії');
         }
-    ]
-};
+        const record = { id: row.id };
+        for (const field of ['name', 'intro', 'format', 'employment', 'salary', 'experience']) {
+            record[field] = text(row[field], ['salary', 'experience'].includes(field));
+        }
+        for (const field of ['responsibilities', 'expectations', 'collaboration']) {
+            if (!Array.isArray(row[field])) {
+                throw new Error('Некоректний список');
+            }
+            record[field] = row[field].map(value => text(value));
+        }
+        return record;
+    }));
+});

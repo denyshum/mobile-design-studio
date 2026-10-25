@@ -105,16 +105,20 @@ export function initBriefForm() {
             url.value = /^[a-z][a-z0-9+.-]*:/i.test(value) ? value : 'https://' + value;
         }
     });
-    document.querySelectorAll('[data-open-brief]').forEach(link => {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = link.className;
-        button.dataset.openBrief = '';
-        button.append(...link.childNodes);
-        button.addEventListener('click', () => {
-            modal.open(button);
+    function bindOpeners(root = document) {
+        root.querySelectorAll('a[data-open-brief]').forEach(link => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = link.className;
+            button.dataset.openBrief = '';
+            button.append(...link.childNodes);
+            button.addEventListener('click', () => {
+                modal.open(button);
+            });
+            link.replaceWith(button);
         });
-        link.replaceWith(button);
-    });
+    }
+    bindOpeners();
+    return bindOpeners;
 }
 
