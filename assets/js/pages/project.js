@@ -10,10 +10,12 @@ import { bindResource } from '../components/data-state.js';
 
 function renderProject(record) {
     const main = document.querySelector('.case-content');
+
     if (main) {
         const template = document.getElementById(record ? 'detail-layout' : 'empty-layout');
         const content = template.content.cloneNode(true);
         main.classList.toggle('case-content--empty', !record);
+
         if (record) {
             content.querySelector('h1').textContent = record.name;
             content.querySelector('.case-heading__category').textContent = record.category;
@@ -22,17 +24,21 @@ function renderProject(record) {
             const image = document.createElement('img');
             cover.querySelector('[data-project-image]').replaceWith(image);
             cover.classList.add('cover-media--framed');
+
             if (record.image) {
                 fillImage(image, record);
             } else {
                 image.removeAttribute('src');
             }
+
             watchCover(image);
             const facts = content.querySelector('.fact-list');
+
             (record.facts || []).forEach(fact => {
                 if (!fact.label?.trim() || !fact.value?.trim()) {
                     return;
                 }
+
                 const row = document.createElement('div');
                 const label = document.createElement('dt');
                 const value = document.createElement('dd');
@@ -41,19 +47,24 @@ function renderProject(record) {
                 row.append(label, value);
                 facts.append(row);
             });
+
             if (!facts.children.length) {
                 facts.remove();
             }
+
             const paragraphs = content.querySelectorAll('.story-section p');
+
             [record.task, record.solution, record.result].forEach((text, index) => {
                 paragraphs[index].textContent = text;
             });
+
             document.title = record.name + ' — MobileVision';
             document.querySelector('meta[name="description"]').content = record.description;
         } else {
             document.title = 'Проєкт не знайдено — MobileVision';
             document.querySelector('meta[name="description"]').content = 'Проєкт не знайдено. Поверніться до портфоліо MobileVision, щоб переглянути роботи студії.';
         }
+
         main.replaceChildren(content);
         initImageViewer(record);
         bindBrief?.(main);
@@ -64,11 +75,14 @@ function renderProject(record) {
 let projectMotion;
 initCommon();
 const main = document.querySelector('.case-content');
+
 bindResource(projectResource(new URLSearchParams(location.search).get('id')), {
     host: main,
     kind: 'project',
     render: renderProject,
+
     result: () => main.querySelector('h1'),
+
     renderState: panel => {
         main.classList.remove('case-content--empty');
         const shell = document.createElement('div');
@@ -80,9 +94,12 @@ bindResource(projectResource(new URLSearchParams(location.search).get('id')), {
         document.querySelector('meta[name="description"]').content = panel.querySelector('p').textContent;
     },
 });
+
 const bindBrief = initBriefForm();
+
 if (document.body.hasAttribute('data-project-effects')) {
     const seen = new WeakSet();
+
     projectMotion = mountMotion('projectEffects', ({ signal, onCleanup }) => {
         const reveals = createReveals({ signal, seen });
         onCleanup(reveals.stop);
@@ -99,10 +116,12 @@ if (document.body.hasAttribute('data-project-effects')) {
         let lineLength = 0;
 
         let frame = 0;
+
         function resetLine() {
             if (!path) {
                 return;
             }
+
             path.style.removeProperty('stroke-dasharray');
             path.style.removeProperty('stroke-dashoffset');
             path.setAttribute('d', originalPath);
@@ -114,22 +133,28 @@ if (document.body.hasAttribute('data-project-effects')) {
 
         onCleanup(() => {
             cancelAnimationFrame(frame);
+
             for (const item of tracked) {
                 item.element.style.removeProperty('transform');
             }
+
             resetLine();
         });
+
         function normalizeLine() {
             const rect = svg.getBoundingClientRect();
+
             if (lineWidth === rect.width && lineHeight === rect.height) {
                 return;
             }
+
             lineWidth = rect.width;
             lineHeight = rect.height;
             let index = 0;
             // Контур M/C/S складається з пар координат; одиниці штриха мають збігатися з екранними
             const d = originalPath.replace(/-?\d*\.?\d+(?:e[-+]?\d+)?/gi, value => {
                 const scale = index++ % 2 === 0 ? lineWidth / sourceWidth : lineHeight / sourceHeight;
+
                 return String(Number(value) * scale);
             });
             svg.setAttribute('viewBox', '0 0 ' + lineWidth + ' ' + lineHeight);
@@ -139,6 +164,7 @@ if (document.body.hasAttribute('data-project-effects')) {
 
         function draw() {
             frame = 0;
+
             for (const item of tracked) {
                 const rect = item.anchor.getBoundingClientRect();
                 const transform = getComputedStyle(item.row).transform;
@@ -146,6 +172,7 @@ if (document.body.hasAttribute('data-project-effects')) {
                 const top = rect.top - shift;
                 const progress = Math.max(0, Math.min(1, (innerHeight * .9 - top) / (innerHeight * .45)));
                 item.progress = Math.max(item.progress, progress);
+
                 if (item.progress >= 1) {
                     item.element.style.removeProperty('transform');
                     seen.add(item.element);
@@ -153,29 +180,38 @@ if (document.body.hasAttribute('data-project-effects')) {
                     item.element.style.transform = 'translateY(' + (.75 * (1 - item.progress)) + 'rem) scale(' + (.97 + .03 * item.progress) + ')';
                 }
             }
+
             if (!path || !svg.getClientRects().length) {
                 resetLine();
+
                 return;
             }
+
             const rect = path.getBoundingClientRect();
             const revealY = innerHeight * .9;
+
             if (rect.bottom <= revealY) {
                 resetLine();
+
                 return;
             }
+
             normalizeLine();
             // Кінчик штриха прив’язаний до нижньої частини екрана, а не до частки довжини кривої
             const targetY = revealY - svg.getBoundingClientRect().top;
             let lower = 0;
             let upper = lineLength;
+
             for (let index = 0; index < 16; index++) {
                 const middle = (lower + upper) / 2;
+
                 if (path.getPointAtLength(middle).y < targetY) {
                     lower = middle;
                 } else {
                     upper = middle;
                 }
             }
+
             path.style.strokeDasharray = String(lineLength);
             path.style.strokeDashoffset = String(lineLength - lower);
         }
@@ -187,12 +223,14 @@ if (document.body.hasAttribute('data-project-effects')) {
         }
 
         reveals.add(document.querySelectorAll('.media-summary, .story-section, .closing-panel'));
+
         document.querySelectorAll('.story-section__media img').forEach(element => {
             const anchor = element.parentElement;
             const row = element.closest('.story-section');
             const complete = seen.has(element) || anchor.getBoundingClientRect().top < innerHeight;
             tracked.push({ element, anchor, row, progress: complete ? 1 : 0 });
         });
+
         addEventListener('scroll', schedule, { passive: true, signal });
         addEventListener('resize', schedule, { passive: true, signal });
 

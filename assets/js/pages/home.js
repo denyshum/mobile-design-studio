@@ -16,11 +16,13 @@ function initSlider(projectsData) {
 
     if (!projectsData.length) {
         swiperEl.closest('.slider')?.remove();
+
         return;
     }
 
     // Рендер слайдів
     wrapper.replaceChildren();
+
     projectsData.forEach(item => {
         const li = document.createElement('li');
         li.className = 'swiper-slide slider__item';
@@ -53,18 +55,21 @@ function initSlider(projectsData) {
         };
 
         li.addEventListener('click', goToSlide);
+
         li.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
                 goToSlide();
             }
         });
+
         indicatorsEl.appendChild(li);
     });
 
     // Оновлення активного індикатора
     const updateIndicators = (activeIndex) => {
         const items = indicatorsEl.querySelectorAll('.slider__indicator');
+
         items.forEach((item, i) => {
             item.classList.toggle('slider__indicator--active', i === activeIndex);
         });
@@ -74,7 +79,9 @@ function initSlider(projectsData) {
     if (typeof window.Swiper !== 'function') {
         return;
     }
+
     swiperEl.swiper?.destroy(true, true);
+
     swiperInstance = new window.Swiper(swiperEl, {
         loop: projectsData.length > 1,
         // Зміна висоти обкладинки не має скидати вибраний слайд
@@ -117,34 +124,45 @@ function initCollections() {
     const sliderBottom = document.querySelector('.slider__bottom');
     const sliderSection = document.querySelector('.slider');
     const note = document.getElementById('featured-note');
+
     function globalEmpty() {
         featured.classList.add('data-region--state');
         featured.replaceChildren(dataPanel('catalog', 'empty'));
         sliderSection.hidden = true;
     }
+
     bindResource(collectionResource('home_featured'), {
         host: featured,
         kind: 'featured',
+
         result: () => document.querySelector('.projects h2'),
+
         onState: ({ status }) => {
             if (status !== 'success') {
                 featured.append(note.content.cloneNode(true));
             }
         },
+
         render: ({ records, hasProjects }) => {
             if (!hasProjects) {
                 globalEmpty();
+
                 return;
             }
+
             if (!records.length) {
                 featured.classList.add('data-region--state');
                 featured.replaceChildren(dataPanel('featured', 'empty'), note.content.cloneNode(true));
+
                 return;
             }
+
             const columns = [document.createElement('div'), document.createElement('div')];
+
             columns.forEach(column => {
                 column.className = 'projects__col';
             });
+
             records.forEach(record => {
                 const link = document.createElement('a');
                 link.className = 'projects__item';
@@ -157,18 +175,24 @@ function initCollections() {
                 columns[record.position <= 2 ? 0 : 1].append(link);
                 watchCover(image);
             });
+
             columns[0].append(note.content.cloneNode(true));
             featured.replaceChildren(...columns.filter(column => column.children.length));
         },
     });
+
     const wrapper = slider.querySelector('.swiper-wrapper');
+
     bindResource(collectionResource('home_slider'), {
         host: slider,
         kind: 'slider',
+
         result: () => document.querySelector('.slider h2'),
+
         onState: ({ status, data }) => {
             sliderBottom.hidden = status !== 'success' || data.records.length < 2;
         },
+
         render: ({ records, hasProjects }) => {
             if (!hasProjects) {
                 globalEmpty();
@@ -238,6 +262,7 @@ function initHome() {
                 // Застосовуємо зміщення по осі Y для кожної фотографії
                 aboutPhotos.forEach((photo, index) => {
                     const speed = speeds[index];
+
                     if (speed !== undefined) {
                         photo.style.transform = `translateY(${scrolled * speed}px)`;
                     }
@@ -273,12 +298,15 @@ function initHome() {
                 if (currentActiveItem) {
                     currentActiveItem.classList.remove('services__item--active');
                     const prevBtn = currentActiveItem.querySelector('.services__btn');
+
                     if (prevBtn) {
                         prevBtn.setAttribute('aria-selected', 'false');
                     }
                 }
+
                 item.classList.add('services__item--active');
                 const newBtn = item.querySelector('.services__btn');
+
                 if (newBtn) {
                     newBtn.setAttribute('aria-selected', 'true');
                 }
@@ -314,6 +342,7 @@ function initHome() {
         tabBtns.forEach((btn, idx) => {
             btn.addEventListener('keydown', (e) => {
                 let targetIdx = null;
+
                 if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
                     targetIdx = (idx + 1) % tabBtns.length;
                 } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {

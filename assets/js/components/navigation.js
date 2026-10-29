@@ -10,14 +10,18 @@ export function initNavigation() {
     const body = document.body;
 
     let menuTimer;
+
     function setMenuOpen(open) {
         if (!menuOverlay || (!open && !menuOverlay.classList.contains('menu-overlay--open'))) {
             return;
         }
+
         menuBtn?.classList.add('menu-btn--hidden');
+
         if (!open && menuOverlay.contains(document.activeElement)) {
             menuBtn?.focus({ preventScroll: true });
         }
+
         menuOverlay.inert = !open;
         menuOverlay.classList.toggle('menu-overlay--open', open);
         menuOverlay.setAttribute('aria-hidden', String(!open));
@@ -25,15 +29,18 @@ export function initNavigation() {
         body.classList.toggle('no-scroll', open);
         mainHeaderNav?.classList.toggle('nav--hidden', open);
         clearTimeout(menuTimer);
+
         menuTimer = setTimeout(() => {
             if (menuBtnText) {
                 menuBtnText.textContent = open ? 'Закрити' : 'Меню';
             }
+
             if (menuBtnUse) {
                 const icon = sitePath('assets/images/icons-sprite.svg#' + (open ? 'icon-close' : 'icon-burger-menu'));
                 menuBtnUse.setAttribute('href', icon);
                 menuBtnUse.setAttribute('xlink:href', icon);
             }
+
             menuBtn?.classList.remove('menu-btn--hidden');
         }, 200);
     }
@@ -49,6 +56,7 @@ export function initNavigation() {
     if (menuBtn && menuOverlay) {
         menuBtn.addEventListener("click", () => {
             const isOpen = menuOverlay.classList.contains("menu-overlay--open");
+
             if (isOpen) {
                 closeMenu();
             } else {
@@ -68,24 +76,30 @@ export function initNavigation() {
             if (event.key !== 'Tab' || !menuOverlay.classList.contains('menu-overlay--open')) {
                 return;
             }
+
             const links = [...menuOverlay.querySelectorAll('a[href]')].filter(link => {
                 return link.getClientRects().length > 0;
             });
             const first = menuBtn;
             const last = links.at(-1) || menuBtn;
+
             // Під час відкриття visibility може оновитися лише в наступному кадрі
             const focusWhenVisible = target => {
                 if (!menuOverlay.classList.contains('menu-overlay--open')) {
                     return;
                 }
+
                 if (getComputedStyle(target).visibility !== 'visible') {
                     requestAnimationFrame(() => {
                         return focusWhenVisible(target);
                     });
+
                     return;
                 }
+
                 target.focus();
             };
+
             if (event.shiftKey && (document.activeElement === first || !menuOverlay.contains(document.activeElement))) {
                 event.preventDefault();
                 focusWhenVisible(last);
@@ -125,8 +139,10 @@ export function initNavigation() {
             if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
                 window.scrollTo({ top: 0, behavior: 'instant' });
                 document.querySelector('h1')?.focus({ preventScroll: true });
+
                 return;
             }
+
             document.documentElement.style.scrollBehavior = 'auto';
 
             const startPosition = window.scrollY;
@@ -170,15 +186,20 @@ export function initNavigation() {
             link.addEventListener('click', event => {
                 const target = document.getElementById(link.getAttribute('href').slice(1));
                 const heading = target?.querySelector('h1, h2');
+
                 if (!heading) {
                     return;
                 }
+
                 event.preventDefault();
                 const hash = link.getAttribute('href');
+
                 if (location.hash !== hash) {
                     history.pushState(null, '', hash);
                 }
+
                 target.scrollIntoView({ block: 'start' });
+
                 if (event.detail === 0) {
                     heading.setAttribute('tabindex', '-1');
                     heading.focus({ preventScroll: true });

@@ -3,14 +3,18 @@ import { createModal } from './modal.js';
 export function initBriefForm() {
     const dialog = document.querySelector('.brief');
     const modal = createModal(dialog);
+
     if (!modal) {
         return;
     }
+
     const form = dialog.querySelector('form');
     const controls = [...form.querySelectorAll('input, select, textarea')];
     const touched = new Set();
+
     function message(control) {
         const value = control.value.trim();
+
         switch (control.name) {
         case 'name':
             if (!value) {
@@ -48,8 +52,10 @@ export function initBriefForm() {
         case 'url':
             if (value) {
                 const candidate = /^[a-z][a-z0-9+.-]*:/i.test(value) ? value : 'https://' + value;
+
                 try {
                     const parsed = new URL(candidate);
+
                     if (!['http:', 'https:'].includes(parsed.protocol) || !parsed.hostname || candidate.length > 2000) {
                         return 'Вкажіть http/https-посилання або залиште поле порожнім.';
                     }
@@ -59,8 +65,10 @@ export function initBriefForm() {
             }
             break;
         }
+
         return '';
     }
+
     function validate(control) {
         control.setCustomValidity('');
         const text = message(control);
@@ -68,43 +76,55 @@ export function initBriefForm() {
         const error = document.getElementById(control.id + '-error');
         error.textContent = text;
         error.hidden = !text;
+
         if (text) {
             control.setAttribute('aria-invalid', 'true');
         } else {
             control.removeAttribute('aria-invalid');
         }
+
         return !text;
     }
+
     controls.forEach(control => {
         control.addEventListener('blur', () => {
             touched.add(control);
             validate(control);
         });
+
         control.addEventListener('input', () => {
             if (touched.has(control)) {
                 validate(control);
             }
         });
     });
+
     form.addEventListener('submit', event => {
         event.preventDefault();
         let firstInvalid;
+
         controls.forEach(control => {
             touched.add(control);
+
             if (!validate(control) && !firstInvalid) {
                 firstInvalid = control;
             }
         });
+
         if (firstInvalid) {
             firstInvalid.focus();
+
             return;
         }
+
         const url = form.elements.url;
         const value = url.value.trim();
+
         if (value) {
             url.value = /^[a-z][a-z0-9+.-]*:/i.test(value) ? value : 'https://' + value;
         }
     });
+
     function bindOpeners(root = document) {
         root.querySelectorAll('a[data-open-brief]').forEach(link => {
             const button = document.createElement('button');
@@ -112,13 +132,17 @@ export function initBriefForm() {
             button.className = link.className;
             button.dataset.openBrief = '';
             button.append(...link.childNodes);
+
             button.addEventListener('click', () => {
                 modal.open(button);
             });
+
             link.replaceWith(button);
         });
     }
+
     bindOpeners();
+
     return bindOpeners;
 }
 

@@ -13,14 +13,17 @@ const navigationType = performance.getEntriesByType('navigation')[0]?.type;
 let positionRestored = false;
 let userMoved = false;
 history.scrollRestoration = 'manual';
+
 for (const type of ['wheel', 'touchstart', 'pointerdown', 'keydown']) {
     addEventListener(type, () => {
         userMoved = true;
     }, { passive: true });
 }
+
 addEventListener('pagehide', () => {
     history.replaceState({ ...history.state, catalog: { scrollY: window.scrollY } }, '', location.href);
 });
+
 addEventListener('pageshow', event => {
     if (event.persisted && Number.isFinite(history.state?.catalog?.scrollY)) {
         window.scrollTo({ top: history.state.catalog.scrollY, behavior: 'instant' });
@@ -30,8 +33,10 @@ addEventListener('pageshow', event => {
 function renderCatalog(records) {
     const catalog = document.querySelector('[data-project-catalog]');
     const cardTemplate = document.getElementById('project-card-template');
+
     if (catalog && cardTemplate) {
         const cards = document.createDocumentFragment();
+
         records.forEach(record => {
             const card = cardTemplate.content.firstElementChild.cloneNode(true);
             card.href = projectUrl(record);
@@ -45,18 +50,23 @@ function renderCatalog(records) {
             watchCover(card.querySelector('img'));
             cards.append(card);
         });
+
         catalog.replaceChildren(cards);
         const count = records.length;
         const suffix = plural(count, ['робота', 'роботи', 'робіт']);
         document.querySelector('[data-project-count]').textContent = count + ' ' + suffix;
+
         if (!records.length) {
             catalog.classList.add('data-region--state');
             catalog.append(dataPanel('catalog', 'empty'));
         }
+
         document.querySelector('meta[name="description"]').content = count + ' ' + suffix + ' MobileVision. Перегляньте наші проєкти та рішення';
         catalogMotion?.restart();
+
         if (!positionRestored && !userMoved && Number.isFinite(restoredPosition) && ['back_forward', 'reload'].includes(navigationType)) {
             positionRestored = true;
+
             requestAnimationFrame(() => {
                 if (!userMoved) {
                     window.scrollTo({ top: restoredPosition, behavior: 'instant' });
@@ -68,18 +78,23 @@ function renderCatalog(records) {
 
 let catalogMotion;
 initCommon();
+
 bindResource(catalogResource, {
     host: document.querySelector('[data-project-catalog]'),
     kind: 'catalog',
     render: renderCatalog,
+
     result: () => document.getElementById('list-title'),
+
     onState: ({ status }) => {
         if (status !== 'success') {
             document.querySelector('[data-project-count]').textContent = '—';
         }
     },
 });
+
 initBriefForm();
+
 if (document.body.hasAttribute('data-reveal-effects')) {
     catalogMotion = mountMotion('revealEffects', ({ signal, onCleanup }) => {
         const reveals = createReveals({ signal });

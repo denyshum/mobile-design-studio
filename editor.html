@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Керування сайтом — MobileVision</title>
+    <meta name="description" content="Редактор проєктів, добірок і вакансій MobileVision">
+    <meta name="robots" content="noindex">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="icon" sizes="any" href="assets/images/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+    <link rel="stylesheet" href="assets/css/common.css">
+    <link rel="stylesheet" href="assets/css/pages/editor.css">
+    <script src="assets/vendor/editor/supabase.js" defer></script>
+    <script type="module" src="assets/js/pages/editor.js"></script>
+</head>
+<body class="editor-page">
+    <header class="main-header workspace-header">
+        <div class="main-header__inner d-flex content-wrap">
+            <a class="main-header__logo-link" href="index.html" aria-label="Сайт MobileVision"><img src="assets/images/favicon.svg" alt="MobileVision"></a>
+            <nav class="nav workspace-nav" aria-label="Розділи редактора" hidden>
+                <ul class="nav__list d-flex">
+                    <li><a class="nav__link" href="editor.html?view=projects">Проєкти</a></li>
+                    <li><a class="nav__link" href="editor.html?view=collections">Добірки</a></li>
+                    <li><a class="nav__link" href="editor.html?view=vacancies">Вакансії</a></li>
+                </ul>
+            </nav>
+            <div class="editor-actions">
+                <a class="menu-btn d-flex workspace-return" href="index.html"><span>На сайт</span><svg class="menu-btn__icon" viewBox="0 0 39 40" aria-hidden="true"><use href="assets/images/icons-sprite.svg#icon-arrow-right"></use></svg></a>
+                <button class="menu-btn d-flex workspace-signout workspace-exit" type="button" data-signout aria-label="Вийти з редактора" hidden><span>Вийти</span><svg class="menu-btn__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="assets/images/editor-icons.svg#logout"></use></svg></button>
+                <button class="menu-btn d-flex" type="button" data-menu aria-haspopup="dialog" aria-controls="workspace-menu" aria-expanded="false" hidden>Меню<svg class="menu-btn__icon" aria-hidden="true"><use href="assets/images/icons-sprite.svg#icon-burger-menu"></use></svg></button>
+            </div>
+        </div>
+    </header>
+    <dialog id="workspace-menu" class="workspace-menu" aria-label="Меню редактора">
+        <div class="main-header__inner d-flex content-wrap">
+            <a class="main-header__logo-link" href="index.html" aria-label="Сайт MobileVision"><img src="assets/images/favicon.svg" alt="MobileVision"></a>
+            <button class="menu-btn d-flex" type="button" data-close-dialog aria-label="Закрити меню">Закрити<svg class="menu-btn__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="assets/images/icons-sprite.svg#icon-close-plain"></use></svg></button>
+        </div>
+        <div class="workspace-menu__body section-wrap">
+            <nav class="workspace-menu__links" aria-label="Навігація редактора">
+                <a class="menu-overlay__link" href="editor.html?view=projects">Проєкти</a>
+                <a class="menu-overlay__link" href="editor.html?view=collections">Добірки</a>
+                <a class="menu-overlay__link" href="editor.html?view=vacancies">Вакансії</a>
+            </nav>
+            <div class="workspace-menu__footer">
+                <a class="plain-action" href="index.html">Переглянути сайт ↗</a>
+                <button class="menu-btn d-flex workspace-exit" type="button" data-signout aria-label="Вийти з редактора"><span>Вийти</span><svg class="menu-btn__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="assets/images/editor-icons.svg#logout"></use></svg></button>
+            </div>
+        </div>
+    </dialog>
+    <main class="editor-main section-wrap">
+        <noscript>
+            <h1>Вхід редактора</h1>
+            <p>Щоб керувати сайтом, увімкніть JavaScript у браузері.</p>
+        </noscript>
+    </main>
+    <dialog class="state-dialog" aria-labelledby="dialog-title" aria-describedby="dialog-description">
+        <div class="state-dialog__header">
+            <h2 id="dialog-title" tabindex="-1">Підтвердження дії</h2>
+            <button class="dialog-close" type="button" data-close-dialog aria-label="Закрити вікно"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/images/icons-sprite.svg#icon-close-plain"></use></svg></button>
+        </div>
+        <p id="dialog-description"></p>
+        <div data-dialog-content></div>
+        <div class="editor-actions" data-dialog-actions></div>
+    </dialog>
+</body>
+</html>

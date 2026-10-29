@@ -14,6 +14,7 @@ function normalize(record) {
     if (!validId(record.id) || !Number.isSafeInteger(record.display_order) || !Array.isArray(record.facts) || typeof record.image_path !== 'string' || !/^[a-zA-Z0-9/_-]+\.webp$/.test(record.image_path) || !Number.isSafeInteger(record.image_width) || !Number.isSafeInteger(record.image_height) || record.image_width <= 0 || record.image_height <= 0) {
         throw new Error('Несумісний запис проєкту');
     }
+
     return {
         id: record.id,
         name: text(record.name),
@@ -34,10 +35,12 @@ export const catalogResource = createResource(async signal => unique((await read
 export const projectPresence = createResource(async signal => (await readRows('projects', { select: 'id', published: 'eq.true', order: 'id.asc' }, signal, { first: true })).length > 0);
 export const navigationProjects = createResource(async signal => {
     const rows = await readRows('projects', { select: 'id,name', published: 'eq.true', id: 'in.(wingriders,trackee,worldcoin,audience-plus)', order: 'id.asc' }, signal);
+
     return unique(rows.map(record => {
         if (!validId(record.id)) {
             throw new Error('Некоректний ID');
         }
+
         return { id: record.id, name: text(record.name) };
     }));
 });
@@ -48,13 +51,17 @@ export function projectResource(id) {
             if (!validId(id)) {
                 return null;
             }
+
             const rows = await readRows('projects', { ...query, id: 'eq.' + id }, signal);
+
             if (rows.length > 1) {
                 throw new Error('Повтор ID');
             }
+
             return rows.length ? normalize(rows[0]) : null;
         }));
     }
+
     return details.get(id);
 }
 
@@ -62,6 +69,7 @@ export function collectionResource(collection) {
     if (!['home_featured', 'home_slider'].includes(collection)) {
         throw new Error('Невідома добірка');
     }
+
     if (!collections.has(collection)) {
         collections.set(collection, createResource(async signal => {
             const rows = await readRows('project_placements', { select: 'position,project:projects!inner(' + fields + ')', collection: 'eq.' + collection, 'project.published': 'eq.true', order: 'position.asc' }, signal);
@@ -70,22 +78,29 @@ export function collectionResource(collection) {
                 if (!Number.isSafeInteger(row.position) || row.position < 1 || (collection === 'home_featured' && row.position > 4) || positions.has(row.position)) {
                     throw new Error('Некоректна позиція добірки');
                 }
+
                 positions.add(row.position);
+
                 return { ...normalize(row.project), position: row.position };
             });
             unique(records);
             let hasProjects = true;
+
             if (!records.length && !hasKnownProjects()) {
                 const presence = await projectPresence.load();
+
                 if (!hasKnownProjects()) {
                     if (presence.status !== 'success') {
                         throw new Error('Наявність проєктів невідома');
                     }
+
                     hasProjects = presence.data;
                 }
             }
+
             return { records, hasProjects };
         }));
     }
+
     return collections.get(collection);
 }

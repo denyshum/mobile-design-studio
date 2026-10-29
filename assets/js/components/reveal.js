@@ -9,13 +9,16 @@ export function createReveals({ signal, seen, rootMargin = '0px 0px 32px 0px' })
     const observer = new IntersectionObserver(entries => {
         for (const entry of entries) {
             const state = pending.get(entry.target);
+
             if (!entry.isIntersecting || !state || state.started) {
                 continue;
             }
+
             if (entry.target.contains(document.activeElement)) {
                 show(entry.target);
                 continue;
             }
+
             state.started = true;
             entry.target.dataset.motionReveal = 'running';
             observer.unobserve(entry.target);
@@ -25,14 +28,17 @@ export function createReveals({ signal, seen, rootMargin = '0px 0px 32px 0px' })
 
     function show(element, remember = true) {
         const state = pending.get(element);
+
         if (state) {
             pending.delete(element);
             observer.unobserve(element);
             state.animation.cancel();
         }
+
         if (remember) {
             seen?.add(element);
         }
+
         element.dataset.motionReveal = 'shown';
     }
 
@@ -41,10 +47,12 @@ export function createReveals({ signal, seen, rootMargin = '0px 0px 32px 0px' })
             if (!element.getClientRects().length) {
                 continue;
             }
+
             if (seen?.has(element) || element.getBoundingClientRect().top < innerHeight || element.contains(document.activeElement)) {
                 show(element);
                 continue;
             }
+
             const animation = element.animate(typeof frames === 'function' ? frames(element) : frames, {
                 duration, delay: delay(element), easing: 'cubic-bezier(.2,.65,.3,1)', fill: 'both',
             });
@@ -52,6 +60,7 @@ export function createReveals({ signal, seen, rootMargin = '0px 0px 32px 0px' })
             animation.currentTime = 0;
             pending.set(element, { animation, started: false });
             element.dataset.motionReveal = 'pending';
+
             animation.finished.then(() => {
                 if (pending.get(element)?.animation === animation) {
                     show(element);
@@ -63,6 +72,7 @@ export function createReveals({ signal, seen, rootMargin = '0px 0px 32px 0px' })
                     console.error(error);
                 }
             });
+
             observer.observe(element);
         }
     }
@@ -77,9 +87,11 @@ export function createReveals({ signal, seen, rootMargin = '0px 0px 32px 0px' })
 
     function stop() {
         observer.disconnect();
+
         for (const element of [...pending.keys()]) {
             show(element, false);
         }
     }
+
     return { add, stop };
 }
