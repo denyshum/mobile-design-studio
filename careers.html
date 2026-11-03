@@ -15,16 +15,16 @@
     <body class="detail-page" data-careers-effects>
     <header class="main-header">
         <div class="main-header__inner d-flex content-wrap">
-            <a href="index.html" class="main-header__logo-link" aria-label="Головна сторінка MobileVision">
+            <a href="index.html" class="main-header__logo-link">
                 <img src="assets/images/favicon.svg" alt="Логотип студії MobileVision">
             </a>
-            <nav id="main-header__nav" class="nav" aria-label="Головне меню">
+            <nav id="main-header__nav" class="nav">
                 <ul class="nav__list d-flex">
                     <li class="nav__item"><a href="index.html" class="nav__link">Головна</a></li>
                     <li class="nav__item"><a href="portfolio.html" class="nav__link">Портфоліо</a></li>
                     <li class="nav__item"><a href="about.html" class="nav__link">Про студію</a></li>
                     <li class="nav__item">
-                        <a href="careers.html" class="nav__link" aria-current="page">
+                        <a href="careers.html" class="nav__link" data-current="page">
                             Кар’єра
                             <span class="badge d-flex item-center" data-vacancy-count hidden></span>
                         </a>
@@ -32,16 +32,16 @@
                     <li class="nav__item"><a href="#contact" class="nav__link">Контакти</a></li>
                 </ul>
             </nav>
-            <button id="menu-btn" class="menu-btn d-flex" type="button" aria-label="Відкрити меню" aria-haspopup="dialog" aria-expanded="false" aria-controls="menu-overlay">
+            <button id="menu-btn" class="menu-btn d-flex" type="button">
                 <span id="menu-btn__text" class="menu-btn__text">Меню</span>
-                <svg class="menu-btn__icon" width="21" height="21" aria-hidden="true">
+                <svg class="menu-btn__icon" width="21" height="21">
                     <use id="menu-btn__use" href="assets/images/icons-sprite.svg#icon-burger-menu"></use>
                 </svg>
             </button>
         </div>
-        <div id="menu-overlay" class="menu-overlay" role="dialog" aria-modal="true" aria-label="Мобільне меню навігації" aria-hidden="true" inert>
+        <div id="menu-overlay" class="menu-overlay" role="dialog" inert>
             <div class="menu-overlay__inner d-flex content-wrap">
-                <nav class="menu-overlay__nav d-flex" aria-label="Мобільне меню">
+                <nav class="menu-overlay__nav d-flex">
                     <ul class="menu-overlay__list d-flex item-center">
                         <li class="menu-overlay__item">
                             <a href="index.html" class="menu-overlay__link">Головна</a>
@@ -53,7 +53,7 @@
                             <a href="about.html" class="menu-overlay__link">Про студію</a>
                         </li>
                         <li class="menu-overlay__item">
-                            <a href="careers.html" class="menu-overlay__link" aria-current="page">
+                            <a href="careers.html" class="menu-overlay__link" data-current="page">
                                 Кар’єра
                                 <span class="badge d-flex item-center" data-vacancy-count hidden></span>
                             </a>
@@ -64,7 +64,7 @@
                     </ul>
                     <a href="mailto:hello@mobilevision.studio" class="menu-overlay__email link-arrow">
                         hello@mobilevision.studio
-                        <svg class="link-arrow__icon" width="30" height="30" aria-hidden="true">
+                        <svg class="link-arrow__icon" width="30" height="30">
                             <use href="assets/images/icons-sprite.svg#icon-arrow-right"></use>
                         </svg>
                     </a>
@@ -94,11 +94,11 @@
     </header>
         <main class="hiring-content section-wrap" data-careers-view>
             <div class="overview-view" hidden>
-                <section class="page-lead" aria-labelledby="page-heading">
+                <section class="page-lead">
                     <h1 id="page-heading">Кар’єра</h1>
                     <p>Долучайтеся до MobileVision, щоб створювати зрозумілі та виразні мобільні продукти</p>
                 </section>
-                <section id="vacancies" aria-label="Доступні вакансії">
+                <section id="vacancies">
                     <div class="browse-list"></div>
                     <div class="empty-list" hidden>
                         <h2>Наразі відкритих вакансій немає</h2>
@@ -108,11 +108,11 @@
                         </p>
                     </div>
                 </section>
-                <section class="meeting-section" aria-labelledby="meeting-heading">
-                    <h2 id="meeting-heading">Як познайомимося</h2>
+                <section class="meeting-section">
+                    <h2>Як познайомимося</h2>
                     <ol class="stage-list">
                         <li>
-                            <svg class="stage-icon" viewBox="0 0 64 64" aria-hidden="true">
+                            <svg class="stage-icon" viewBox="0 0 64 64">
                                 <use href="assets/images/icons-sprite.svg#icon-mail"></use>
                             </svg>
                             <div>
@@ -121,7 +121,7 @@
                             </div>
                         </li>
                         <li>
-                            <svg class="stage-icon" viewBox="0 0 64 64" aria-hidden="true">
+                            <svg class="stage-icon" viewBox="0 0 64 64">
                                 <use href="assets/images/icons-sprite.svg#icon-conversation"></use>
                             </svg>
                             <div>
@@ -130,7 +130,7 @@
                             </div>
                         </li>
                         <li>
-                            <svg class="stage-icon" viewBox="0 0 64 64" aria-hidden="true">
+                            <svg class="stage-icon" viewBox="0 0 64 64">
                                 <use href="assets/images/icons-sprite.svg#icon-agreement"></use>
                             </svg>
                             <div>
@@ -143,7 +143,7 @@
             </div>
             <div class="detail-view" hidden>
                 <a class="text-action text-action--back return-link" href="#vacancies" data-return-vacancies>
-                    <svg class="text-action__icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <svg class="text-action__icon" viewBox="0 0 24 24">
                         <use href="assets/images/icons-sprite.svg#icon-arrow-diagonal" transform="rotate(225 12 12)"></use>
                     </svg>
                     До вакансій
@@ -155,7 +155,7 @@
                 <p>Ця роль наразі недоступна. Перегляньте актуальні вакансії або напишіть нам</p>
                 <a class="text-action empty-state__action return-link" href="#vacancies" data-return-vacancies>
                     До вакансій
-                    <svg class="text-action__icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <svg class="text-action__icon" viewBox="0 0 24 24">
                         <use href="assets/images/icons-sprite.svg#icon-arrow-diagonal" transform="rotate(45 12 12)"></use>
                     </svg>
                 </a>
@@ -175,7 +175,7 @@
                 <div class="role-heading">
                     <h2>Вакансія</h2>
                 </div>
-                <svg class="entry-card__arrow" viewBox="4.375 4.375 15.25 15.25" aria-hidden="true">
+                <svg class="entry-card__arrow" viewBox="4.375 4.375 15.25 15.25">
                     <use width="24" height="24" href="assets/images/icons-sprite.svg#icon-arrow-diagonal"></use>
                 </svg>
             </a>
@@ -202,7 +202,7 @@
                     </section>
                     <a class="response-link text-action text-action--diagonal" href="mailto:hello@mobilevision.studio">
                         Зв’язатись щодо вакансії
-                        <svg class="closing-panel__icon text-action__icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <svg class="closing-panel__icon text-action__icon" viewBox="0 0 24 24">
                             <use href="assets/images/icons-sprite.svg#icon-arrow-diagonal"></use>
                         </svg>
                     </a>
@@ -218,12 +218,12 @@
                 </p>
                 <a href="mailto:hello@mobilevision.studio" class="main-footer__email link-arrow">
                     hello@mobilevision.studio
-                    <svg class="link-arrow__icon" width="30" height="30" aria-hidden="true">
+                    <svg class="link-arrow__icon" width="30" height="30">
                         <use href="assets/images/icons-sprite.svg#icon-arrow-right"></use>
                     </svg>
                 </a>
             </div>
-            <nav class="main-footer__nav d-flex" aria-label="Навігація у підвалі">
+            <nav class="main-footer__nav d-flex">
                 <div class="main-footer__nav-col">
                     <h3 class="main-footer__nav-title">Наші проєкти</h3>
                     <ul class="main-footer__nav-list">
@@ -243,14 +243,14 @@
                     </ul>
                 </div>
             </nav>
-            <button class="main-footer__scroll-top" type="button" aria-label="Прокрутити сторінку нагору">
-                <svg class="main-footer__scroll-top-icon" width="40" height="39" aria-hidden="true">
+            <button class="main-footer__scroll-top" type="button"><span class="visually-hidden">Прокрутити сторінку нагору</span>
+                <svg class="main-footer__scroll-top-icon" width="40" height="39">
                     <use href="assets/images/icons-sprite.svg#icon-arrow-up"></use>
                 </svg>
                 Нагору
             </button>
         </div>
-        <div class="main-footer__circles" aria-hidden="true">
+        <div class="main-footer__circles">
             <div class="main-footer__circle main-footer__circle--green"></div>
             <div class="main-footer__circle main-footer__circle--blue"></div>
             <div class="main-footer__circle main-footer__circle--purple"></div>

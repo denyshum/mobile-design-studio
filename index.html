@@ -17,12 +17,12 @@
 <body>
     <header class="main-header">
         <div class="main-header__inner d-flex content-wrap">
-            <a href="index.html" class="main-header__logo-link" aria-label="Головна сторінка MobileVision">
+            <a href="index.html" class="main-header__logo-link">
                 <img src="assets/images/favicon.svg" alt="Логотип студії MobileVision">
             </a>
-            <nav id="main-header__nav" class="nav" aria-label="Головне меню">
+            <nav id="main-header__nav" class="nav">
                 <ul class="nav__list d-flex">
-                    <li class="nav__item"><a href="index.html" class="nav__link" aria-current="page">Головна</a></li>
+                    <li class="nav__item"><a href="index.html" class="nav__link" data-current="page">Головна</a></li>
                     <li class="nav__item"><a href="portfolio.html" class="nav__link">Портфоліо</a></li>
                     <li class="nav__item"><a href="about.html" class="nav__link">Про студію</a></li>
                     <li class="nav__item">
@@ -34,19 +34,19 @@
                     <li class="nav__item"><a href="#contact" class="nav__link">Контакти</a></li>
                 </ul>
             </nav>
-            <button id="menu-btn" class="menu-btn d-flex" type="button" aria-label="Відкрити меню" aria-haspopup="dialog" aria-expanded="false" aria-controls="menu-overlay">
+            <button id="menu-btn" class="menu-btn d-flex" type="button">
                 <span id="menu-btn__text" class="menu-btn__text">Меню</span>
-                <svg class="menu-btn__icon" width="21" height="21" aria-hidden="true">
+                <svg class="menu-btn__icon" width="21" height="21">
                     <use id="menu-btn__use" href="assets/images/icons-sprite.svg#icon-burger-menu"></use>
                 </svg>
             </button>
         </div>
-        <div id="menu-overlay" class="menu-overlay" role="dialog" aria-modal="true" aria-label="Мобільне меню навігації" aria-hidden="true" inert>
+        <div id="menu-overlay" class="menu-overlay" role="dialog" inert>
             <div class="menu-overlay__inner d-flex content-wrap">
-                <nav class="menu-overlay__nav d-flex" aria-label="Мобільне меню">
+                <nav class="menu-overlay__nav d-flex">
                     <ul class="menu-overlay__list d-flex item-center">
                         <li class="menu-overlay__item">
-                            <a href="index.html" class="menu-overlay__link" aria-current="page">Головна</a>
+                            <a href="index.html" class="menu-overlay__link" data-current="page">Головна</a>
                         </li>
                         <li class="menu-overlay__item">
                             <a href="portfolio.html" class="menu-overlay__link">Портфоліо</a>
@@ -66,7 +66,7 @@
                     </ul>
                     <a href="mailto:hello@mobilevision.studio" class="menu-overlay__email link-arrow">
                         hello@mobilevision.studio
-                        <svg class="link-arrow__icon" width="30" height="30" aria-hidden="true">
+                        <svg class="link-arrow__icon" width="30" height="30">
                             <use href="assets/images/icons-sprite.svg#icon-arrow-right"></use>
                         </svg>
                     </a>
@@ -104,8 +104,8 @@
                         <span class="hero__line hero__line--medium-indent">застосунків</span>
                     </h1>
                     <div class="hero__scroll-block d-flex">
-                        <a href="#backers" class="hero__scroll-link" aria-label="Прокрутити до партнерів">
-                            <svg class="hero__scroll-icon" width="40" height="39" aria-hidden="true">
+                        <a href="#backers" class="hero__scroll-link"><span class="visually-hidden">Прокрутити до партнерів</span>
+                            <svg class="hero__scroll-icon" width="40" height="39">
                                 <use href="assets/images/icons-sprite.svg#icon-arrow-down"></use>
                             </svg>
                         </a>
@@ -114,7 +114,7 @@
                         </p>
                     </div>
                 </div>
-                <div class="hero__image-bg" role="img" aria-label="Фонова графіка мобільного інтерфейсу"></div>
+                <div class="hero__image-bg"></div>
             </div>
         </section>
         <div id="backers" class="logo-strip">
@@ -122,22 +122,26 @@
                 <p class="logo-strip__label text-sm">Нам довіряють:</p>
                 <ul class="logo-strip__list d-flex">
                     <li class="logo-strip__item d-flex item-center">
-                        <svg class="logo-strip__logo" role="img" aria-label="Spotify">
+                        <svg class="logo-strip__logo" role="img">
+                            <title>Spotify</title>
                             <use href="assets/images/icons-sprite.svg#logo-spotify"></use>
                         </svg>
                     </li>
                     <li class="logo-strip__item d-flex item-center">
-                        <svg class="logo-strip__logo" role="img" aria-label="Airbnb">
+                        <svg class="logo-strip__logo" role="img">
+                            <title>Airbnb</title>
                             <use href="assets/images/icons-sprite.svg#logo-airbnb"></use>
                         </svg>
                     </li>
                     <li class="logo-strip__item d-flex item-center">
-                        <svg class="logo-strip__logo" role="img" aria-label="Slack">
+                        <svg class="logo-strip__logo" role="img">
+                            <title>Slack</title>
                             <use href="assets/images/icons-sprite.svg#logo-slack"></use>
                         </svg>
                     </li>
                     <li class="logo-strip__item d-flex item-center">
-                        <svg class="logo-strip__logo" role="img" aria-label="Netflix">
+                        <svg class="logo-strip__logo" role="img">
+                            <title>Netflix</title>
                             <use href="assets/images/icons-sprite.svg#logo-netflix"></use>
                         </svg>
                     </li>
@@ -186,13 +190,13 @@
                 <div class="slider__bottom d-flex">
                     <ul id="slider__indicators" class="slider__indicators d-flex"></ul>
                     <div class="slider__controls">
-                        <button id="slider__btn--prev" class="slider__btn slider__btn--prev" type="button" aria-label="Попередній слайд">
-                            <svg class="slider__btn-icon" width="38" height="40" aria-hidden="true">
+                        <button id="slider__btn--prev" class="slider__btn slider__btn--prev" type="button"><span class="visually-hidden">Попередній слайд</span>
+                            <svg class="slider__btn-icon" width="38" height="40">
                                 <use href="assets/images/icons-sprite.svg#icon-chevron-left"></use>
                             </svg>
                         </button>
-                        <button id="slider__btn--next" class="slider__btn slider__btn--next" type="button" aria-label="Наступний слайд">
-                            <svg class="slider__btn-icon" width="38" height="40" aria-hidden="true">
+                        <button id="slider__btn--next" class="slider__btn slider__btn--next" type="button"><span class="visually-hidden">Наступний слайд</span>
+                            <svg class="slider__btn-icon" width="38" height="40">
                                 <use href="assets/images/icons-sprite.svg#icon-chevron-right"></use>
                             </svg>
                         </button>
@@ -205,18 +209,18 @@
             <div class="services__inner content-wrap">
                 <h2 class="services__title title-display">Як ми допоможемо зростати</h2>
                 <div class="services__body d-flex">
-                    <ul class="services__list" role="tablist" aria-label="Категорії послуг">
-                        <li class="services__item services__item--active" role="presentation">
-                            <button id="tab-service-1" class="services__btn" type="button" role="tab" aria-selected="true" aria-controls="panel-service-1">Аналітика та стратегія</button>
+                    <ul class="services__list">
+                        <li class="services__item services__item--active">
+                            <button class="services__btn" type="button">Аналітика та стратегія</button>
                         </li>
-                        <li class="services__item" role="presentation">
-                            <button id="tab-service-2" class="services__btn" type="button" role="tab" aria-selected="false" aria-controls="panel-service-2">UX/UI дизайн</button>
+                        <li class="services__item">
+                            <button class="services__btn" type="button">UX/UI дизайн</button>
                         </li>
-                        <li class="services__item" role="presentation">
-                            <button id="tab-service-3" class="services__btn" type="button" role="tab" aria-selected="false" aria-controls="panel-service-3">Підтримка та розвиток</button>
+                        <li class="services__item">
+                            <button class="services__btn" type="button">Підтримка та розвиток</button>
                         </li>
                     </ul>
-                    <div id="panel-service-1" class="services__panel services__panel--active services__panel--visible item-center" role="tabpanel" aria-labelledby="tab-service-1">
+                    <div class="services__panel services__panel--active services__panel--visible item-center">
                         <img src="assets/images/service-photo.webp" alt="Паперові ескізи інтерфейсу, олівець і телефон на робочому столі" width="1200" height="800" class="services__img">
                         <div class="services__content d-flex">
                             <p class="services__desc">Ви на етапі ідеї? Ми допоможемо визначити критичний обсяг функцій для запуску успішного MVP.</p>
@@ -227,7 +231,7 @@
                             </ul>
                         </div>
                     </div>
-                    <div id="panel-service-2" class="services__panel item-center" role="tabpanel" aria-labelledby="tab-service-2">
+                    <div class="services__panel item-center">
                         <img src="assets/images/service-photo-2.webp" alt="Варіанти стилю кнопок у редакторі інтерфейсу" width="1200" height="674" class="services__img">
                         <div class="services__content d-flex">
                             <p class="services__desc">Потрібен бездоганний інтерфейс? Створюємо інтуїтивні мобільні застосунки, які полюблять користувачі.</p>
@@ -238,7 +242,7 @@
                             </ul>
                         </div>
                     </div>
-                    <div id="panel-service-3" class="services__panel item-center" role="tabpanel" aria-labelledby="tab-service-3">
+                    <div class="services__panel item-center">
                         <img src="assets/images/service-photo-3.webp" alt="Обговорення коду на екрані ноутбука" width="1200" height="1800" class="services__img">
                         <div class="services__content d-flex">
                             <p class="services__desc">Готові до масштабування? Будуємо надійні дизайн-системи для стабільного та цілісного розвитку продукту.</p>
@@ -262,7 +266,7 @@
                     </p>
                     <a href="about.html" class="link-arrow">
                         Більше про нас
-                        <svg class="link-arrow__icon" width="30" height="30" aria-hidden="true">
+                        <svg class="link-arrow__icon" width="30" height="30">
                             <use href="assets/images/icons-sprite.svg#icon-arrow-right"></use>
                         </svg>
                     </a>
@@ -285,12 +289,12 @@
                 </p>
                 <a href="mailto:hello@mobilevision.studio" class="main-footer__email link-arrow">
                     hello@mobilevision.studio
-                    <svg class="link-arrow__icon" width="30" height="30" aria-hidden="true">
+                    <svg class="link-arrow__icon" width="30" height="30">
                         <use href="assets/images/icons-sprite.svg#icon-arrow-right"></use>
                     </svg>
                 </a>
             </div>
-            <nav class="main-footer__nav d-flex" aria-label="Навігація у підвалі">
+            <nav class="main-footer__nav d-flex">
                 <div class="main-footer__nav-col">
                     <h3 class="main-footer__nav-title">Наші проєкти</h3>
                     <ul class="main-footer__nav-list">
@@ -310,14 +314,14 @@
                     </ul>
                 </div>
             </nav>
-            <button class="main-footer__scroll-top" type="button" aria-label="Прокрутити сторінку нагору">
-                <svg class="main-footer__scroll-top-icon" width="40" height="39" aria-hidden="true">
+            <button class="main-footer__scroll-top" type="button"><span class="visually-hidden">Прокрутити сторінку нагору</span>
+                <svg class="main-footer__scroll-top-icon" width="40" height="39">
                     <use href="assets/images/icons-sprite.svg#icon-arrow-up"></use>
                 </svg>
                 Нагору
             </button>
         </div>
-        <div class="main-footer__circles" aria-hidden="true">
+        <div class="main-footer__circles">
             <div class="main-footer__circle main-footer__circle--green"></div>
             <div class="main-footer__circle main-footer__circle--blue"></div>
             <div class="main-footer__circle main-footer__circle--purple"></div>

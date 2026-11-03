@@ -93,6 +93,15 @@ bindResource(catalogResource, {
     },
 });
 
+// Перший стан каталогу може перервати нативну плавну прокрутку до якоря
+if (navigationType === 'navigate' && location.hash === '#projects-list') {
+    requestAnimationFrame(() => {
+        if (!userMoved && location.hash === '#projects-list') {
+            document.getElementById('projects-list').scrollIntoView({ block: 'start', behavior: 'instant' });
+        }
+    });
+}
+
 initBriefForm();
 
 if (document.body.hasAttribute('data-reveal-effects')) {

@@ -15,7 +15,7 @@ export function createEditorDialog(dialog) {
         },
     });
     const title = dialog.querySelector('h2');
-    const description = dialog.querySelector('[aria-describedby]') || dialog.querySelector('#dialog-description');
+    const description = dialog.querySelector('#dialog-description');
     const content = dialog.querySelector('[data-dialog-content]');
     const commands = dialog.querySelector('[data-dialog-actions]');
     let closed;
@@ -49,14 +49,13 @@ export function createEditorDialog(dialog) {
 
     function setBusy(value) {
         busy = value;
-        dialog.setAttribute('aria-busy',String(value));
 
         for (const control of dialog.querySelectorAll('button')) {
             control.disabled = value;
         }
     }
 
-    function confirm({heading,text,label = 'Продовжити',danger = false,execute}) {
+    function confirm({heading,text,label = 'Продовжити',danger = false,busyLabel = 'Зберігаємо…',execute}) {
         return new Promise(resolve => {
             if (!open(heading,text,{onClose:() => resolve(false)})) {
                 resolve(false);
@@ -67,7 +66,7 @@ export function createEditorDialog(dialog) {
             const cancel = button('Скасувати',() => modal.close());
             const submit = button(label,async () => {
                 setBusy(true);
-                submit.textContent = 'Зберігаємо…';
+                submit.textContent = busyLabel;
 
                 try {
                     const saved = await execute();

@@ -1,3 +1,4 @@
+import { createBriefsController } from '../components/editor/briefs.js';
 import { createEditorClient, editorSessionKey, editorEventsKey } from '../data/editor.js';
 import { catalogResource } from '../data/projects.js';
 import { validId } from '../data/client.js';
@@ -20,6 +21,7 @@ const menu = createModal(menuNode,{closeAnimation:async () => {
     delete menuNode.dataset.closing;
 }});
 let client;
+let briefs;
 let mutations;
 let actor;
 let authorized = false;
@@ -34,21 +36,29 @@ let viewAbort = new AbortController();
 let historyIndex = history.state?.editorIndex || 0;
 let restoringHistory = false;
 let keyboardActivation = false;
-const routes = new Set(['projects','vacancies','collections','project-new','project-edit','vacancy-new','vacancy-edit','login']);
+const routes = new Set(['projects','vacancies','collections','project-new','project-edit','vacancy-new','vacancy-edit','briefs','login']);
 const channel = typeof BroadcastChannel === 'function' ? new BroadcastChannel(editorEventsKey) : null;
 
 function currentRoute() {
     const query = new URLSearchParams(location.search);
 
-    return {view:query.get('view') || 'projects',id:query.get('id')};
+    return {view:query.get('view') || 'projects',id:query.get('id'),filter:query.get('filter') || 'active'};
 }
 
 function pageTitle(view) {
+    if (view === 'briefs') {
+        return 'Звернення';
+    }
     return view.startsWith('vacancy') || view === 'vacancies' ? 'Вакансії' : view === 'collections' ? 'Добірки' : 'Проєкти';
 }
 
 function setHeader(value) {
     authorized = value;
+    if (value) {
+        briefs?.start();
+    } else {
+        briefs?.stop();
+    }
     header.querySelector('.workspace-nav').hidden = !value;
     header.querySelector('.workspace-signout').hidden = !value;
     header.querySelector('.workspace-return').hidden = value;
@@ -56,10 +66,10 @@ function setHeader(value) {
     const current = pageTitle(currentRoute().view);
 
     for (const link of document.querySelectorAll('.workspace-nav a,.workspace-menu__links a')) {
-        if (link.textContent === current) {
-            link.setAttribute('aria-current','page');
+        if (new URL(link.href).searchParams.get('view') === 'briefs' ? currentRoute().view === 'briefs' : link.textContent === current) {
+            link.setAttribute('data-current','page');
         } else {
-            link.removeAttribute('aria-current');
+            link.removeAttribute('data-current');
         }
     }
 }
@@ -75,7 +85,7 @@ function clearView() {
     main.replaceChildren();
     delete main.dataset.ready;
     main.classList.remove('editor-main--access');
-    document.body.classList.remove('editor-page--editing');
+    document.body.classList.remove('editor-page--editing', 'editor-page--brief-detail');
 }
 
 function focusHeading() {
@@ -92,7 +102,6 @@ function resource(title,text,action,label = 'Спробувати ще раз',{
 
     if (loading) {
         const spinner = el('span','loading-ring');
-        spinner.setAttribute('aria-hidden','true');
         node.append(spinner);
         node.setAttribute('role','status');
     }
@@ -138,7 +147,7 @@ async function canLeave() {
     });
 }
 
-async function navigate(view,id,{replace = false,focus = keyboardActivation,resetScroll = true,animate = true,record} = {}) {
+async function navigate(view,id,{replace = false,focus = keyboardActivation,resetScroll = true,animate = true,record,filter} = {}) {
     await menu.close();
 
     if (!routes.has(view) || !await canLeave()) {
@@ -153,6 +162,9 @@ async function navigate(view,id,{replace = false,focus = keyboardActivation,rese
 
     const target = new URL('editor.html',location.href);
     target.searchParams.set('view',view);
+    if (view === 'briefs') {
+        target.searchParams.set('filter',filter || currentRoute().filter || 'active');
+    }
 
     if (id) {
         target.searchParams.set('id',id);
@@ -178,7 +190,6 @@ async function loginView(error) {
     main.classList.add('editor-main--access');
     const shell = el('div','access-layout');
     const artwork = el('div','access-artwork');
-    artwork.setAttribute('aria-hidden','true');
     const login = el('form','login-form');
     shell.append(artwork,login);
     main.append(shell);
@@ -230,12 +241,10 @@ async function loginView(error) {
     const toggle = button('',() => {
         const visible = passwordInput.type === 'password';
         passwordInput.type = visible ? 'text' : 'password';
-        toggle.setAttribute('aria-label',visible ? 'Приховати пароль' : 'Показати пароль');
-        toggle.setAttribute('aria-pressed',String(visible));
+        toggle.title = visible ? 'Приховати пароль' : 'Показати пароль';
         toggle.replaceChildren(icon(visible ? 'eye-off' : 'eye'));
     },'icon-action password-toggle');
-    toggle.setAttribute('aria-label','Показати пароль');
-    toggle.setAttribute('aria-pressed','false');
+    toggle.title = 'Показати пароль';
     toggle.append(icon('eye'));
     passwordBox.append(passwordInput,toggle);
     const submit = button('Увійти',null,'primary-action');
@@ -243,7 +252,7 @@ async function loginView(error) {
     login.append(email,password,submit);
 
     for (const control of [emailInput,passwordInput]) {
-        control.addEventListener('input',() => control.removeAttribute('aria-invalid'));
+        control.addEventListener('input',() => control.removeAttribute('data-invalid'));
     }
 
     login.addEventListener('submit',async event => {
@@ -280,8 +289,8 @@ async function loginView(error) {
             email.before(errorNotice);
 
             if (!network) {
-                emailInput.setAttribute('aria-invalid','true');
-                passwordInput.setAttribute('aria-invalid','true');
+                emailInput.setAttribute('data-invalid','true');
+                passwordInput.setAttribute('data-invalid','true');
             }
         } finally {
             signingIn = false;
@@ -338,7 +347,6 @@ async function renderList(kind,image,signal) {
 
         signal.addEventListener('abort',() => menuObserver?.disconnect(),{once:true});
         const trigger = el('summary','record-action','Інші дії ⌄');
-        trigger.setAttribute('aria-label','Інші дії: ' + record.name);
         const items = el('div','record-menu__items');
         const visibilityButton = button(visible ? 'Приховати' : 'Опублікувати',async () => {
             const restoreFocus = rememberFocus(visibilityButton);
@@ -623,7 +631,12 @@ async function renderCurrent({focus = false,preserveScroll = true,animate = true
 
         let content;
 
-        if (['projects','vacancies'].includes(route.view)) {
+        if (route.view === 'briefs') {
+            await briefs.render({ ...route, signal });
+            if (signal.aborted || version !== viewVersion) {
+                return;
+            }
+        } else if (['projects','vacancies'].includes(route.view)) {
             const kind = route.view === 'projects' ? 'project' : 'vacancy';
             content = await renderList(kind,image,signal);
 
@@ -887,6 +900,10 @@ async function boot() {
 
     mutations = createMutationController(client,{
         onUncertain:(verify,message) => {
+            if (currentRoute().view === 'briefs') {
+                briefs.showUncertain(verify,message);
+                return;
+            }
             clearToast();
 
             if (!uncertainView) {
@@ -920,6 +937,11 @@ async function boot() {
         onAccessLost:accessLost,
 
         onSettled:async ({conflict = false,result} = {}) => {
+            if (currentRoute().view === 'briefs' && result?.result === 'deleted' && !conflict) {
+                await navigate('briefs',null,{replace:true,filter:currentRoute().filter});
+                toast('Звернення видалено');
+                return;
+            }
             if (uncertainView) {
                 main.replaceChildren(uncertainView);
                 uncertainView = null;
@@ -942,6 +964,8 @@ async function boot() {
 
         onConflict:() => navigate(currentRoute().view,currentRoute().id,{replace:true}),
     });
+
+    briefs = createBriefsController({ client, main, dialog:panel, navigate, mutations, onAccessLost:accessLost });
 
     client.auth.onAuthStateChange(event => {
         queueMicrotask(() => {
@@ -990,12 +1014,9 @@ async function boot() {
 
     menuTrigger.addEventListener('click',() => {
         if (menu.open(menuTrigger)) {
-            menuTrigger.setAttribute('aria-expanded','true');
             motion(menuNode,[{opacity:0},{opacity:1}]);
         }
     });
-
-    menuNode.addEventListener('close',() => menuTrigger.setAttribute('aria-expanded','false'));
 
     document.addEventListener('click',async event => {
         const link = event.target.closest('a');

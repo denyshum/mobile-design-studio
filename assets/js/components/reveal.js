@@ -1,4 +1,4 @@
-export const riseFrames = [
+const riseFrames = [
     { opacity: 0, transform: 'translateY(.75rem)' },
     { opacity: 1, transform: 'none' },
 ];

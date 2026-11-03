@@ -46,7 +46,7 @@ function initSlider(projectsData) {
         li.className = 'slider__indicator' + (index === 0 ? ' slider__indicator--active' : '');
         li.setAttribute('role', 'button');
         li.setAttribute('tabindex', '0');
-        li.setAttribute('aria-label', `Перейти до слайду ${index + 1}`);
+        li.title = `Перейти до слайду ${index + 1}`;
 
         const goToSlide = () => {
             if (swiperInstance) {
@@ -84,6 +84,7 @@ function initSlider(projectsData) {
 
     swiperInstance = new window.Swiper(swiperEl, {
         loop: projectsData.length > 1,
+        a11y: { enabled: false },
         // Зміна висоти обкладинки не має скидати вибраний слайд
         resizeObserver: false,
         autoplay: projectsData.length < 2 ? false : {
@@ -123,6 +124,29 @@ function initCollections() {
     const slider = document.querySelector('.slider__swiper');
     const sliderBottom = document.querySelector('.slider__bottom');
     const sliderSection = document.querySelector('.slider');
+
+    slider?.addEventListener('focusin', event => {
+        const swiper = slider.swiper;
+        const slide = event.target.closest('.swiper-slide');
+
+        if (!swiper || !slide || !event.target.matches(':focus-visible')) {
+            return;
+        }
+
+        const index = swiper.slides.indexOf(slide);
+
+        if (index < 0 || index === swiper.activeIndex) {
+            return;
+        }
+
+        slider.scrollLeft = 0;
+
+        if (swiper.params.loop) {
+            swiper.slideToLoop(Number(slide.dataset.swiperSlideIndex), 0);
+        } else {
+            swiper.slideTo(index, 0);
+        }
+    });
     const note = document.getElementById('featured-note');
 
     function globalEmpty() {
@@ -167,7 +191,6 @@ function initCollections() {
                 const link = document.createElement('a');
                 link.className = 'projects__item';
                 link.href = projectUrl(record);
-                link.setAttribute('aria-label', 'Проєкт ' + record.name + ': ' + record.description.toLowerCase());
                 const image = document.createElement('img');
                 image.className = 'projects__img';
                 fillImage(image, record);
@@ -294,22 +317,12 @@ function initHome() {
                 const currentActivePanel = document.querySelector('.services__panel--visible');
                 const newPanel = tabPanels[index];
 
-                // Оновлюємо активний стан пунктів меню та атрибути ARIA
+                // Оновлюємо активний стан вкладок
                 if (currentActiveItem) {
                     currentActiveItem.classList.remove('services__item--active');
-                    const prevBtn = currentActiveItem.querySelector('.services__btn');
-
-                    if (prevBtn) {
-                        prevBtn.setAttribute('aria-selected', 'false');
-                    }
                 }
 
                 item.classList.add('services__item--active');
-                const newBtn = item.querySelector('.services__btn');
-
-                if (newBtn) {
-                    newBtn.setAttribute('aria-selected', 'true');
-                }
 
                 // Запускаємо зникнення поточної панелі
                 if (currentActivePanel) {

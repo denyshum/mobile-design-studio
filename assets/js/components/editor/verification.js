@@ -14,7 +14,7 @@ function normalized(value) {
     return value;
 }
 
-export function sameContent(left,right) {
+function sameContent(left,right) {
     return JSON.stringify(normalized(left)) === JSON.stringify(normalized(right));
 }
 
@@ -30,6 +30,11 @@ export async function verifyMutation(client, operation) {
     const settled = Date.parse(access.server_time) > operation.expiresAt + 8000;
     let result;
     let matches = false;
+
+    if (action.startsWith('brief.')) {
+        const actual = await client.read('brief-operation', { id: operationId });
+        return { matches: Boolean(actual.operation), settled, result: actual.operation };
+    }
 
     if (action.endsWith('.create') || action.endsWith('.update') || action.endsWith('.visibility') || action.endsWith('.delete')) {
         const kind = action.startsWith('project.') ? 'project' : 'vacancy';

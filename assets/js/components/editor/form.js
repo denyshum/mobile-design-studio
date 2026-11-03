@@ -82,7 +82,7 @@ export function createContentForm({kind, record = null, image, onSave, onBack, o
                     row.querySelector('label').textContent = 'Пункт ' + (n + 1);
                 }
 
-                row.querySelector('.drag-handle')?.setAttribute('aria-label','Перемістити: ' + (facts ? 'факт ' : 'пункт ') + (n + 1));
+                row.querySelector('.drag-handle')?.setAttribute("title", 'Перемістити: ' + (facts ? 'факт ' : 'пункт ') + (n + 1));
             });
 
             addButton.disabled = list.querySelectorAll('.item-editor').length >= maximum;
@@ -135,8 +135,7 @@ export function createContentForm({kind, record = null, image, onSave, onBack, o
                 markDirty();
                 (next || addButton).focus();
             },'icon-action icon-action--danger');
-            remove.setAttribute('aria-label','Прибрати пункт');
-            remove.title = 'Прибрати';
+            remove.title = 'Прибрати пункт';
             remove.append(icon('trash'));
             row.append(controls,remove);
             list.append(row);
@@ -184,7 +183,7 @@ export function createContentForm({kind, record = null, image, onSave, onBack, o
         file.id = 'cover-file';
         file.type = 'file';
         file.accept = 'image/jpeg,image/png,image/webp';
-        file.setAttribute('aria-label','Обрати обкладинку');
+        file.title = 'Обрати обкладинку';
         const upload = el('label','cover-upload');
         upload.htmlFor = file.id;
         const prompt = el('span','cover-upload__prompt');
@@ -363,7 +362,7 @@ export function createContentForm({kind, record = null, image, onSave, onBack, o
             event.target.setCustomValidity('');
             fieldError(event.target,'');
 
-            if (!form.querySelector('[aria-invalid="true"]')) {
+            if (!form.querySelector('[data-invalid="true"]')) {
                 validationNotice?.remove();
             }
         }
@@ -391,7 +390,6 @@ export function createContentForm({kind, record = null, image, onSave, onBack, o
                 }
             }
 
-            form.setAttribute('aria-busy',String(value));
 
             if (!value) {
                 previousDisabled.clear();

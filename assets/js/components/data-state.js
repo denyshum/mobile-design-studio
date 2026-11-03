@@ -13,7 +13,6 @@ export function icon(name, className = 'text-action__icon') {
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('class', className);
     svg.setAttribute('viewBox', name === 'image-unavailable' ? '0 0 40 40' : '0 0 24 24');
-    svg.setAttribute('aria-hidden', 'true');
     const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
     use.setAttribute('href', sitePath('assets/images/icons-sprite.svg#icon-' + name));
     svg.append(use);
@@ -69,7 +68,6 @@ export function dataPanel(kind, status, retry) {
 
     if (loading) {
         const placeholders = document.createElement('div');
-        placeholders.setAttribute('aria-hidden', 'true');
         placeholders.className = kind === 'catalog' ? 'entry-grid data-state__placeholders' : kind === 'project' ? 'media-summary data-state__placeholders' : 'data-placeholder-grid' + (['vacancies', 'vacancy'].includes(kind) ? ' data-placeholder-grid--rows' : '');
 
         for (let index = 0; index < (kind === 'featured' ? 4 : kind === 'project' ? 1 : 2); index++) {
@@ -88,7 +86,6 @@ export function statusRegion(host) {
     const announcer = document.createElement('p');
     announcer.className = 'data-announcement';
     announcer.setAttribute('role', 'status');
-    announcer.setAttribute('aria-live', 'polite');
     host.after(announcer);
 
     return message => {
@@ -138,8 +135,6 @@ export function bindResource(resource, { host, kind, render, result, onState = (
         }
 
         const scroll = window.scrollY;
-        const busy = ['loading', 'retry'].includes(value.status);
-        host.setAttribute('aria-busy', String(busy));
         host.className = originalClass;
 
         if (value.status === 'success') {

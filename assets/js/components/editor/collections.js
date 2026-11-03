@@ -20,7 +20,7 @@ export function renderCollections({main, collections, records, image, dialog, sa
                 await dialog.close();
                 apply(record.id);
             },'picker-option',unavailable);
-            option.setAttribute('aria-pressed',String(current === record.id));
+            option.setAttribute('data-selected',String(current === record.id));
             option.append(image(record),el('strong','',record.name),el('small','',unavailable ? 'Уже в добірці' : record.published ? record.category : 'Не опубліковано'));
             choices.append(option);
         }
@@ -109,8 +109,7 @@ export function renderCollections({main, collections, records, image, dialog, sa
                 const caption = el('div','collection-caption');
                 const remove = button('',() => commit(values.filter((_,n) => n !== index)),'icon-action icon-action--danger');
                 remove.append(icon('trash'));
-                remove.title = 'Прибрати';
-                remove.setAttribute('aria-label','Прибрати ' + (record?.name || 'проєкт') + ' зі слайдера');
+                remove.title = 'Прибрати ' + (record?.name || 'проєкт') + ' зі слайдера';
                 caption.append(el('strong','',record?.name || 'Проєкт недоступний'),remove);
                 node.append(caption);
             }

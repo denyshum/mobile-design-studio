@@ -3,7 +3,7 @@ import { icon, focusResult } from './data-state.js';
 const watched = new WeakSet();
 const covers = new WeakSet();
 
-export function watchImage(image) {
+function watchImage(image) {
     if (watched.has(image) || covers.has(image)) {
         return;
     }
@@ -65,13 +65,9 @@ export function watchCover(image) {
         clearTimeout(timeout);
         host.dataset.mediaState = state;
         host.classList.toggle('data-cover-loading', state === 'loading');
-        host.setAttribute('aria-busy', String(state === 'loading'));
         message?.remove();
 
         if (state === 'success') {
-            host.removeAttribute('aria-label');
-            host.removeAttribute('role');
-
             if (wrapper) {
                 card.prepend(host);
                 wrapper.replaceWith(card);
@@ -92,13 +88,6 @@ export function watchCover(image) {
         message.className = 'data-cover-state';
         const text = document.createElement('p');
         text.textContent = state === 'loading' ? 'Завантажуємо…' : 'Зображення недоступне';
-        host.setAttribute('aria-label', state === 'loading' ? 'Завантажуємо зображення' : 'Зображення недоступне');
-        host.setAttribute('role', state === 'loading' ? 'img' : 'group');
-
-        if (state === 'loading') {
-            message.setAttribute('aria-hidden', 'true');
-        }
-
         message.append(text);
 
         if (state === 'error') {

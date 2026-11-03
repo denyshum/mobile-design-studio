@@ -333,7 +333,7 @@
     border-radius: .3125rem;
 }
 
-.image-viewer__modes [aria-pressed="true"] {
+.image-viewer__modes [data-selected="true"] {
     color: #19131f;
     background: #e9e0ff;
 }
@@ -410,6 +410,7 @@
 }
 
 /* Рамка у комірці сітки залишається нерухомою під час прокрутки */
+
 .image-viewer__content:has(> .image-viewer__stage:focus-visible):after {
     content: "";
     z-index: 1;
@@ -672,23 +673,13 @@
         border-color: #aa94c6;
     }
 
-    .image-viewer__modes button:not(:disabled):not([aria-pressed="true"]):hover,
+    .image-viewer__modes button:not(:disabled):not([data-selected="true"]):hover,
     .image-viewer__zoom button:not(:disabled):hover {
         color: #fff;
         background: #302a38;
     }
 
-    .image-viewer__modes [aria-pressed="true"]:hover {
+    .image-viewer__modes [data-selected="true"]:hover {
         background: #ddd0f7;
-    }
-}
-
-@media (forced-colors: active) {
-    .image-viewer__content:has(> .image-viewer__stage:focus-visible):after {
-        border-color: Highlight;
-    }
-
-    .image-viewer__zoom-value:focus-visible {
-        outline-color: Highlight;
     }
 }

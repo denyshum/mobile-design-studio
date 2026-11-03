@@ -60,7 +60,7 @@ export function createMutationController(client,{onAccessLost,onSettled,onConfli
         }
     }
 
-    async function run({action,payload,expected = null,operationId = crypto.randomUUID(),context,success,message = 'Зміни збережено'}) {
+    async function run({action,payload,expected = null,operationId = crypto.randomUUID(),context,success,message = 'Зміни збережено',quietBusy = false}) {
         if (busy || pending) {
             if (pending) {
                 announcePending();
@@ -72,7 +72,9 @@ export function createMutationController(client,{onAccessLost,onSettled,onConfli
         }
 
         busy = true;
-        toast('Зберігаємо…',{kind:'busy'});
+        if (!quietBusy) {
+            toast('Зберігаємо…',{kind:'busy'});
+        }
         let sent;
 
         try {

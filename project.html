@@ -15,13 +15,13 @@
 <body class="detail-page project-page" data-project-effects>
     <header class="main-header">
         <div class="main-header__inner d-flex content-wrap">
-            <a href="index.html" class="main-header__logo-link" aria-label="Головна сторінка MobileVision">
+            <a href="index.html" class="main-header__logo-link">
                 <img src="assets/images/favicon.svg" alt="Логотип студії MobileVision">
             </a>
-            <nav id="main-header__nav" class="nav" aria-label="Головне меню">
+            <nav id="main-header__nav" class="nav">
                 <ul class="nav__list d-flex">
                     <li class="nav__item"><a href="index.html" class="nav__link">Головна</a></li>
-                    <li class="nav__item"><a href="portfolio.html" class="nav__link" aria-current="location">Портфоліо</a></li>
+                    <li class="nav__item"><a href="portfolio.html" class="nav__link" data-current="location">Портфоліо</a></li>
                     <li class="nav__item"><a href="about.html" class="nav__link">Про студію</a></li>
                     <li class="nav__item">
                         <a href="careers.html" class="nav__link">
@@ -32,22 +32,22 @@
                     <li class="nav__item"><a href="#contact" class="nav__link">Контакти</a></li>
                 </ul>
             </nav>
-            <button id="menu-btn" class="menu-btn d-flex" type="button" aria-label="Відкрити меню" aria-haspopup="dialog" aria-expanded="false" aria-controls="menu-overlay">
+            <button id="menu-btn" class="menu-btn d-flex" type="button">
                 <span id="menu-btn__text" class="menu-btn__text">Меню</span>
-                <svg class="menu-btn__icon" width="21" height="21" aria-hidden="true">
+                <svg class="menu-btn__icon" width="21" height="21">
                     <use id="menu-btn__use" href="assets/images/icons-sprite.svg#icon-burger-menu"></use>
                 </svg>
             </button>
         </div>
-        <div id="menu-overlay" class="menu-overlay" role="dialog" aria-modal="true" aria-label="Мобільне меню навігації" aria-hidden="true" inert>
+        <div id="menu-overlay" class="menu-overlay" role="dialog" inert>
             <div class="menu-overlay__inner d-flex content-wrap">
-                <nav class="menu-overlay__nav d-flex" aria-label="Мобільне меню">
+                <nav class="menu-overlay__nav d-flex">
                     <ul class="menu-overlay__list d-flex item-center">
                         <li class="menu-overlay__item">
                             <a href="index.html" class="menu-overlay__link">Головна</a>
                         </li>
                         <li class="menu-overlay__item">
-                            <a href="portfolio.html" class="menu-overlay__link" aria-current="location">Портфоліо</a>
+                            <a href="portfolio.html" class="menu-overlay__link" data-current="location">Портфоліо</a>
                         </li>
                         <li class="menu-overlay__item">
                             <a href="about.html" class="menu-overlay__link">Про студію</a>
@@ -64,7 +64,7 @@
                     </ul>
                     <a href="mailto:hello@mobilevision.studio" class="menu-overlay__email link-arrow">
                         hello@mobilevision.studio
-                        <svg class="link-arrow__icon" width="30" height="30" aria-hidden="true">
+                        <svg class="link-arrow__icon" width="30" height="30">
                             <use href="assets/images/icons-sprite.svg#icon-arrow-right"></use>
                         </svg>
                     </a>
@@ -99,7 +99,7 @@
                 <p>Увімкніть JavaScript, щоб переглянути деталі роботи</p>
                 <a class="text-action empty-state__action" href="portfolio.html#projects-list">
                     До портфоліо
-                    <svg class="text-action__icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <svg class="text-action__icon" viewBox="0 0 24 24">
                         <use href="assets/images/icons-sprite.svg#icon-arrow-diagonal" transform="rotate(45 12 12)"></use>
                     </svg>
                 </a>
@@ -109,7 +109,7 @@
     <template id="detail-layout">
         <div class="section-wrap">
             <a class="text-action text-action--back return-link" href="portfolio.html#projects-list">
-                <svg class="text-action__icon" viewBox="0 0 24 24" aria-hidden="true">
+                <svg class="text-action__icon" viewBox="0 0 24 24">
                     <use href="assets/images/icons-sprite.svg#icon-arrow-diagonal" transform="rotate(225 12 12)"></use>
                 </svg>
                 До портфоліо
@@ -129,7 +129,7 @@
                 </div>
             </div>
             <div class="story-flow">
-                <svg class="connector-line story-flow__line" viewBox="0 0 1200 1000" preserveAspectRatio="none" aria-hidden="true">
+                <svg class="connector-line story-flow__line" viewBox="0 0 1200 1000" preserveAspectRatio="none">
                     <path d="M600 20C850 160 350 220 600 340S850 600 600 680S350 900 600 980"/>
                 </svg>
                 <div class="story-list">
@@ -138,7 +138,7 @@
                             <h2>Завдання</h2>
                             <p>Завдання проєкту</p>
                         </div>
-                        <div class="story-section__media" aria-hidden="true">
+                        <div class="story-section__media">
                             <img src="assets/images/studio/discovery.svg" alt="" width="500" height="400">
                         </div>
                     </section>
@@ -147,7 +147,7 @@
                             <h2>Рішення</h2>
                             <p>Рішення проєкту</p>
                         </div>
-                        <div class="story-section__media" aria-hidden="true">
+                        <div class="story-section__media">
                             <img src="assets/images/studio/prototype.svg" alt="" width="500" height="400">
                         </div>
                     </section>
@@ -156,7 +156,7 @@
                             <h2>Результат роботи</h2>
                             <p>Результат проєкту</p>
                         </div>
-                        <div class="story-section__media" aria-hidden="true">
+                        <div class="story-section__media">
                             <img src="assets/images/studio/handoff.webp" alt="" width="1000" height="1000">
                         </div>
                     </section>
@@ -169,7 +169,7 @@
                 <p>Розкажіть, яку задачу потрібно вирішити</p>
                 <a href="#contact" class="text-action text-action--diagonal" data-open-brief>
                     Обговорити проєкт
-                    <svg class="closing-panel__icon text-action__icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <svg class="closing-panel__icon text-action__icon" viewBox="0 0 24 24">
                         <use href="assets/images/icons-sprite.svg#icon-arrow-diagonal"></use>
                     </svg>
                 </a>
@@ -182,7 +182,7 @@
             <p>Цього проєкту немає в портфоліо. Перевірте посилання або поверніться до списку робіт</p>
             <a class="text-action empty-state__action" href="portfolio.html#projects-list">
                 До портфоліо
-                <svg class="text-action__icon" viewBox="0 0 24 24" aria-hidden="true">
+                <svg class="text-action__icon" viewBox="0 0 24 24">
                     <use href="assets/images/icons-sprite.svg#icon-arrow-diagonal" transform="rotate(45 12 12)"></use>
                 </svg>
             </a>
@@ -197,12 +197,12 @@
                 </p>
                 <a href="mailto:hello@mobilevision.studio" class="main-footer__email link-arrow">
                     hello@mobilevision.studio
-                    <svg class="link-arrow__icon" width="30" height="30" aria-hidden="true">
+                    <svg class="link-arrow__icon" width="30" height="30">
                         <use href="assets/images/icons-sprite.svg#icon-arrow-right"></use>
                     </svg>
                 </a>
             </div>
-            <nav class="main-footer__nav d-flex" aria-label="Навігація у підвалі">
+            <nav class="main-footer__nav d-flex">
                 <div class="main-footer__nav-col">
                     <h3 class="main-footer__nav-title">Наші проєкти</h3>
                     <ul class="main-footer__nav-list">
@@ -222,24 +222,24 @@
                     </ul>
                 </div>
             </nav>
-            <button class="main-footer__scroll-top" type="button" aria-label="Прокрутити сторінку нагору">
-                <svg class="main-footer__scroll-top-icon" width="40" height="39" aria-hidden="true">
+            <button class="main-footer__scroll-top" type="button"><span class="visually-hidden">Прокрутити сторінку нагору</span>
+                <svg class="main-footer__scroll-top-icon" width="40" height="39">
                     <use href="assets/images/icons-sprite.svg#icon-arrow-up"></use>
                 </svg>
                 Нагору
             </button>
         </div>
-        <div class="main-footer__circles" aria-hidden="true">
+        <div class="main-footer__circles">
             <div class="main-footer__circle main-footer__circle--green"></div>
             <div class="main-footer__circle main-footer__circle--blue"></div>
             <div class="main-footer__circle main-footer__circle--purple"></div>
         </div>
     </footer>
-    <dialog class="brief" aria-labelledby="brief-title">
+    <dialog class="brief">
         <div class="brief__header">
-            <h2 id="brief-title">Обговорити проєкт</h2>
-            <button class="brief__close dialog-close" type="button" aria-label="Закрити форму" data-close-dialog autofocus>
-                <svg width="24" height="24" aria-hidden="true">
+            <h2>Обговорити проєкт</h2>
+            <button class="brief__close dialog-close" type="button" data-close-dialog autofocus><span class="visually-hidden">Закрити форму</span>
+                <svg width="24" height="24">
                     <use href="assets/images/icons-sprite.svg#icon-close-plain"></use>
                 </svg>
             </button>
@@ -250,12 +250,12 @@
                 <div class="fields">
                     <div class="field">
                         <label for="brief-name">Ім’я <span>*</span></label>
-                        <input id="brief-name" name="name" type="text" autocomplete="given-name" required maxlength="80" placeholder="Як до вас звертатися" aria-describedby="brief-name-error">
-                        <p class="field__error" id="brief-name-error" aria-live="polite" hidden></p>
+                        <input id="brief-name" name="name" type="text" autocomplete="given-name" required maxlength="80" placeholder="Як до вас звертатися">
+                        <p class="field__error" id="brief-name-error" hidden></p>
                     </div>
                     <div class="field">
                         <label for="brief-service">Що вам потрібно? <small>необов’язково</small></label>
-                        <select id="brief-service" name="service" aria-describedby="brief-service-error">
+                        <select id="brief-service" name="service">
                             <option value="">Оберіть напрям</option>
                             <option value="new-design">Дизайн нового застосунку</option>
                             <option value="redesign">Редизайн наявного застосунку</option>
@@ -263,34 +263,34 @@
                             <option value="design-system">Дизайн-система та супровід</option>
                             <option value="undecided">Ще не визначився</option>
                         </select>
-                        <p class="field__error" id="brief-service-error" aria-live="polite" hidden></p>
+                        <p class="field__error" id="brief-service-error" hidden></p>
                     </div>
                     <div class="field">
                         <label for="brief-email">Email <span>*</span></label>
-                        <input id="brief-email" name="email" type="email" autocomplete="email" required maxlength="254" placeholder="you@example.com" aria-describedby="brief-email-error">
-                        <p class="field__error" id="brief-email-error" aria-live="polite" hidden></p>
+                        <input id="brief-email" name="email" type="email" autocomplete="email" required maxlength="254" placeholder="you@example.com">
+                        <p class="field__error" id="brief-email-error" hidden></p>
                     </div>
                     <div class="field">
                         <label for="brief-phone">Телефон <small>необов’язково</small></label>
-                        <input id="brief-phone" name="phone" type="tel" autocomplete="tel" placeholder="Номер телефону" aria-describedby="brief-phone-error">
-                        <p class="field__error" id="brief-phone-error" aria-live="polite" hidden></p>
+                        <input id="brief-phone" name="phone" type="tel" autocomplete="tel" placeholder="Номер телефону">
+                        <p class="field__error" id="brief-phone-error" hidden></p>
                     </div>
                     <div class="field field--description">
                         <label for="brief-description">Коротко про задачу <span>*</span></label>
-                        <textarea id="brief-description" name="description" required minlength="10" maxlength="2000" placeholder="Яку ідею або задачу ви хочете опрацювати?" aria-describedby="brief-description-error"></textarea>
-                        <p class="field__error" id="brief-description-error" aria-live="polite" hidden></p>
+                        <textarea id="brief-description" name="description" required minlength="10" maxlength="2000" placeholder="Яку ідею або задачу ви хочете опрацювати?"></textarea>
+                        <p class="field__error" id="brief-description-error" hidden></p>
                     </div>
                     <div class="field field--url">
                         <label for="brief-url">Посилання на продукт або матеріали <small>необов’язково</small></label>
-                        <input id="brief-url" name="url" type="text" inputmode="url" maxlength="2000" placeholder="https://" aria-describedby="brief-url-error">
-                        <p class="field__error" id="brief-url-error" aria-live="polite" hidden></p>
+                        <input id="brief-url" name="url" type="text" inputmode="url" maxlength="2000" placeholder="https://">
+                        <p class="field__error" id="brief-url-error" hidden></p>
                     </div>
                 </div>
                 <div class="brief__bottom">
                     <p>* — обов’язкові поля</p>
                     <button class="brief__submit" type="submit">
                         Надіслати запит
-                        <svg class="text-action__icon" viewBox="0 0 39 40" aria-hidden="true">
+                        <svg class="text-action__icon" viewBox="0 0 39 40">
                             <use href="assets/images/icons-sprite.svg#icon-arrow-right"></use>
                         </svg>
                     </button>
@@ -298,27 +298,27 @@
             </form>
         </div>
     </dialog>
-    <dialog class="image-viewer" aria-labelledby="image-viewer-title">
+    <dialog class="image-viewer">
         <div class="image-viewer__header">
             <div class="image-viewer__title">
                 <h2 id="image-viewer-title">Зображення проєкту</h2>
             </div>
-            <button class="image-viewer__close dialog-close" type="button" aria-label="Закрити перегляд" data-close-dialog autofocus>
-                <svg viewBox="0 0 24 24" aria-hidden="true">
+            <button class="image-viewer__close dialog-close" type="button" data-close-dialog autofocus><span class="visually-hidden">Закрити перегляд</span>
+                <svg viewBox="0 0 24 24">
                     <use href="assets/images/icons-sprite.svg#icon-close-plain"></use>
                 </svg>
             </button>
         </div>
         <div class="image-viewer__content">
-            <div class="image-viewer__stage" tabindex="0" aria-label="Зображення проєкту" data-mode="fit">
+            <div class="image-viewer__stage" tabindex="0" data-mode="fit">
                 <div class="image-viewer__canvas" hidden></div>
                 <div class="image-viewer__status">
                     <div class="image-viewer__status-body">
-                        <span class="image-viewer__loader" aria-hidden="true"></span>
-                        <svg class="image-viewer__error-icon" viewBox="0 0 40 40" aria-hidden="true">
+                        <span class="image-viewer__loader"></span>
+                        <svg class="image-viewer__error-icon" viewBox="0 0 40 40">
                             <use href="assets/images/icons-sprite.svg#icon-image-unavailable"></use>
                         </svg>
-                        <h3 class="image-viewer__status-title" aria-live="polite">Завантажуємо зображення…</h3>
+                        <h3 class="image-viewer__status-title">Завантажуємо зображення…</h3>
                         <p class="image-viewer__status-text"></p>
                         <button class="image-viewer__retry" type="button">Повторити</button>
                     </div>
@@ -328,14 +328,14 @@
                 <p class="image-viewer__category"></p>
                 <h3 class="image-viewer__name">Проєкт</h3>
                 <p class="image-viewer__description"></p>
-                <div class="image-viewer__modes" role="group" aria-label="Масштаб зображення">
-                    <button type="button" data-set-mode="fit" aria-pressed="false" disabled>Вписати в екран</button>
-                    <button type="button" data-set-mode="native" aria-pressed="false" disabled>Оригінальний розмір</button>
+                <div class="image-viewer__modes" role="group">
+                    <button type="button" data-set-mode="fit" disabled>Вписати в екран</button>
+                    <button type="button" data-set-mode="native" disabled>Оригінальний розмір</button>
                 </div>
-                <div class="image-viewer__zoom" role="group" aria-label="Масштаб зображення у відсотках">
-                    <button type="button" data-zoom-out aria-label="Зменшити зображення" disabled>−</button>
-                    <input class="image-viewer__zoom-value" type="text" inputmode="decimal" enterkeyhint="done" autocomplete="off" spellcheck="false" maxlength="12" value="—" aria-label="Масштаб зображення у відсотках" disabled>
-                    <button type="button" data-zoom-in aria-label="Збільшити зображення" disabled>+</button>
+                <div class="image-viewer__zoom" role="group">
+                    <button type="button" data-zoom-out title="Зменшити зображення" disabled>−</button>
+                    <input class="image-viewer__zoom-value" type="text" inputmode="decimal" enterkeyhint="done" autocomplete="off" spellcheck="false" maxlength="12" value="—" title="Масштаб зображення у відсотках" disabled>
+                    <button type="button" data-zoom-in title="Збільшити зображення" disabled>+</button>
                 </div>
             </aside>
         </div>

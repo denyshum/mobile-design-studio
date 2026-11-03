@@ -336,15 +336,3 @@
         transform: translate(.25rem, -.25rem);
     }
 }
-
-@media (prefers-reduced-motion: reduce) {
-    .browse-link,
-    .browse-link h2,
-    .browse-link > .entry-card__arrow {
-        transition: none;
-    }
-
-    .browse-link:is(:hover, :focus-visible) > .entry-card__arrow {
-        transform: none;
-    }
-}

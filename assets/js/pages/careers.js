@@ -47,7 +47,6 @@ function renderCareers() {
         terms.filter(Boolean).forEach((term, index) => {
             if (index > 0) {
                 const separator = document.createElement('span');
-                separator.setAttribute('aria-hidden', 'true');
                 separator.textContent = '·';
                 element.append(' ', separator, ' ');
             }
@@ -92,7 +91,6 @@ function renderCareers() {
 
             const response = role.querySelector('.response-link');
             response.href = 'mailto:hello@mobilevision.studio?subject=' + encodeURIComponent('Вакансія: ' + record.name);
-            response.setAttribute('aria-label', 'Зв’язатись щодо вакансії: ' + record.name);
             roleHost.append(role);
             roles.set(record.id, role);
         });
@@ -218,9 +216,6 @@ function renderCareers() {
             fillRecords(value.data);
         }
 
-        const busy = ['loading', 'retry'].includes(value.status);
-        list.setAttribute('aria-busy', String(busy));
-        roleHost.setAttribute('aria-busy', String(busy));
         render(false, false);
         announce(value.status === 'success' ? 'Вакансії завантажено' : main.querySelector('.data-state__title').textContent);
         window.scrollTo({ top: scroll, behavior: 'instant' });

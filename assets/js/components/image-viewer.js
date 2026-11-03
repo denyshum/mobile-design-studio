@@ -79,7 +79,7 @@ export function initImageViewer(record) {
         stage.dataset.mode = mode;
 
         modes.forEach(button => {
-            button.setAttribute('aria-pressed', String(button.dataset.setMode === mode));
+            button.setAttribute('data-selected', String(button.dataset.setMode === mode));
         });
 
         layout();
@@ -153,7 +153,7 @@ export function initImageViewer(record) {
 
         modes.forEach(button => {
             button.disabled = state !== 'ready';
-            button.setAttribute('aria-pressed', 'false');
+            button.setAttribute('data-selected', 'false');
         });
 
         dialog.querySelector('.image-viewer__status-title').textContent = state === 'loading' ? 'Завантажуємо зображення…' : state === 'error' ? 'Зображення недоступне' : '';
@@ -206,7 +206,6 @@ export function initImageViewer(record) {
         trigger.className = 'image-viewer-trigger';
         const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         icon.setAttribute('viewBox', '0 0 20 20');
-        icon.setAttribute('aria-hidden', 'true');
         const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
         use.setAttribute('href', sitePath('assets/images/icons-sprite.svg#icon-expand'));
         icon.append(use);

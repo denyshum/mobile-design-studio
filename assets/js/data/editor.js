@@ -3,7 +3,7 @@ import { backend } from './config.js';
 export const editorSessionKey = 'mobilevision.editor.auth:' + backend.apiUrl;
 export const editorEventsKey = 'mobilevision.editor.events:' + backend.apiUrl;
 
-export class EditorRequestError extends Error {
+class EditorRequestError extends Error {
     constructor(message, { status = 0, code = 'SOURCE_UNAVAILABLE', committed = false } = {}) {
         super(message);
         this.status = status;
@@ -152,6 +152,43 @@ export function createEditorClient() {
         }
     }
 
+    async function briefs(filter = 'active', signal) {
+        for (let attempt = 0; attempt < 3; attempt += 1) {
+            const records = [];
+            const cursors = new Set();
+            let cursor;
+            let snapshot;
+            let counts;
+            try {
+                do {
+                    const page = await read('briefs', { filter, ...(cursor ? { cursor: JSON.stringify(cursor), snapshot } : {}) }, signal);
+                    if (!Array.isArray(page.records) || typeof page.snapshot_digest !== 'string' || !page.counts || (snapshot && page.snapshot_digest !== snapshot)) {
+                        throw new EditorRequestError('Список змінився. Спробуйте ще раз', { code: 'SNAPSHOT_CHANGED' });
+                    }
+                    snapshot = page.snapshot_digest;
+                    counts = page.counts;
+                    records.push(...page.records);
+                    cursor = page.next_cursor;
+                    if (cursor) {
+                        const encoded = JSON.stringify(cursor);
+                        if (cursors.has(encoded)) {
+                            throw new EditorRequestError('Не вдалося отримати повний список');
+                        }
+                        cursors.add(encoded);
+                    }
+                } while (cursor);
+                if (new Set(records.map(record => record.id)).size !== records.length) {
+                    throw new EditorRequestError('Не вдалося отримати повний список');
+                }
+                return { records, counts, snapshot_digest: snapshot };
+            } catch (error) {
+                if (error.code !== 'SNAPSHOT_CHANGED' || attempt === 2) {
+                    throw error;
+                }
+            }
+        }
+    }
+
     async function mutate(action, payload, expected = null, { operationId = crypto.randomUUID(), onSent } = {}) {
         const access = await read('access');
         const claims = JSON.parse(atob(access.mutation_permit.split('.')[0].replaceAll('-','+').replaceAll('_','/')));
@@ -216,7 +253,7 @@ export function createEditorClient() {
     }
 
     return {
-        auth:sdk.auth,session,read,catalog,mutate,upload,request,signOutLocal,
+        auth:sdk.auth,session,read,catalog,briefs,mutate,upload,request,signOutLocal,
 
         cancelLogoutRetry() { logoutToken = null; },
     };

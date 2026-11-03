@@ -1,6 +1,5 @@
-// Налаштування руху та повернення з кешу сторінки мають один життєвий цикл
+// Анімації та повернення з кешу сторінки мають один життєвий цикл
 export function mountMotion(stateKey, setup, { restore = restart => restart() } = {}) {
-    const preference = matchMedia('(prefers-reduced-motion: reduce)');
     const root = document.documentElement;
     let suspended = false;
     let cleanups = [];
@@ -18,9 +17,9 @@ export function mountMotion(stateKey, setup, { restore = restart => restart() } 
 
     function restart() {
         stop();
-        root.dataset[stateKey] = preference.matches ? 'reduced' : 'active';
+        root.dataset[stateKey] = 'active';
 
-        if (preference.matches || suspended) {
+        if (suspended) {
             return;
         }
 
@@ -48,8 +47,6 @@ export function mountMotion(stateKey, setup, { restore = restart => restart() } 
             console.error(error);
         }
     }
-
-    preference.addEventListener('change', restart);
 
     addEventListener('pagehide', () => {
         suspended = true;

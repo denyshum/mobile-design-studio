@@ -1,7 +1,9 @@
 import Sortable from '../../../vendor/editor/sortable.js';
-import { sitePath } from '../paths.js';
+import { icon } from '../icon.js';
+import { createNotice } from '../notice.js';
 
-const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+export { icon };
+
 const sortables = new Set();
 let toastTimer;
 let activeToast;
@@ -50,19 +52,8 @@ export function publicationLabel(published) {
     return published ? 'Опубліковано' : 'Не опубліковано';
 }
 
-export function icon(name) {
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('viewBox', '0 0 24 24');
-    svg.setAttribute('aria-hidden', 'true');
-    const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
-    use.setAttribute('href', sitePath('assets/images/editor-icons.svg') + '#' + name);
-    svg.append(use);
-
-    return svg;
-}
-
 export function motion(node, frames, duration = 280) {
-    if (reducedMotion.matches || typeof node.animate !== 'function') {
+    if (typeof node.animate !== 'function') {
         return Promise.resolve();
     }
 
@@ -71,17 +62,6 @@ export function motion(node, frames, duration = 280) {
             throw error;
         }
     });
-}
-
-export async function closeDialog(node) {
-    if (!node.open || node.dataset.busy === 'true' || node.dataset.closing === 'true') {
-        return;
-    }
-
-    node.dataset.closing = 'true';
-    await motion(node, [{ opacity: 1 }, { opacity: 0 }], 180);
-    node.close();
-    delete node.dataset.closing;
 }
 
 export function toast(message, { kind = 'success', action, label = 'Повторити', owner } = {}) {
@@ -103,7 +83,6 @@ export function toast(message, { kind = 'success', action, label = 'Повтор
     node.replaceChildren();
     const mark = kind === 'busy' ? document.createElement('span') : icon(kind === 'error' ? 'warning' : 'check');
     mark.classList.add(kind === 'busy' ? 'loading-ring' : 'toast-icon');
-    mark.setAttribute('aria-hidden', 'true');
     const text = document.createElement('span');
     text.className = 'toast-copy';
     text.setAttribute('role', kind === 'error' ? 'alert' : 'status');
@@ -122,7 +101,7 @@ export function toast(message, { kind = 'success', action, label = 'Повтор
     const close = document.createElement('button');
     close.type = 'button';
     close.className = 'toast-close';
-    close.setAttribute('aria-label', 'Закрити повідомлення');
+    close.title = 'Закрити повідомлення';
     close.append(icon('close'));
 
     async function dismiss() {
@@ -197,7 +176,7 @@ export function makeSortable(container, selector, onChange) {
     if (!live) {
         live = document.createElement('span');
         live.className = 'sort-announcement';
-        live.setAttribute('aria-live', 'polite');
+        live.setAttribute('role', 'status');
         container.append(live);
     }
 
@@ -215,9 +194,7 @@ export function makeSortable(container, selector, onChange) {
         const handle = document.createElement('button');
         handle.type = 'button';
         handle.className = 'drag-handle';
-        handle.setAttribute('aria-label', 'Перемістити: ' + (item.querySelector('h2, strong, label')?.textContent || 'елемент'));
-        handle.setAttribute('aria-description', 'Пробіл — почати, стрілки — перемістити, Enter — завершити, Escape — скасувати');
-        handle.setAttribute('aria-pressed', 'false');
+        handle.title = 'Перемістити: ' + (item.querySelector('h2, strong, label')?.textContent || 'елемент');
         handle.append(icon('grip'));
         (item.querySelector('.collection-caption') || item).prepend(handle);
 
@@ -232,7 +209,6 @@ export function makeSortable(container, selector, onChange) {
                 event.preventDefault();
                 keyboardOrder = children();
                 item.classList.add('sortable-chosen');
-                handle.setAttribute('aria-pressed', 'true');
                 announce(item);
             } else if (keyboardOrder && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
                 event.preventDefault();
@@ -268,7 +244,6 @@ export function makeSortable(container, selector, onChange) {
                 }
 
                 item.classList.remove('sortable-chosen');
-                handle.setAttribute('aria-pressed', 'false');
                 handle.focus({ preventScroll: true });
                 announce(item);
             }
@@ -283,7 +258,7 @@ export function makeSortable(container, selector, onChange) {
     const sortable = new Sortable(container, {
         draggable: selector,
         handle: '.drag-handle',
-        animation: reducedMotion.matches ? 0 : 280,
+        animation: 280,
         easing: 'cubic-bezier(.22, 1, .36, 1)',
         ghostClass: 'sortable-ghost',
         chosenClass: 'sortable-chosen',
@@ -298,13 +273,11 @@ export function makeSortable(container, selector, onChange) {
         scrollSensitivity: 70,
         scrollSpeed: 12,
 
-        onStart: event => {
+        onStart: () => {
             before = children();
-            event.item.querySelector('.drag-handle').setAttribute('aria-pressed', 'true');
         },
 
         onEnd: event => {
-            event.item.querySelector('.drag-handle').setAttribute('aria-pressed', 'false');
 
             if (event.oldDraggableIndex !== event.newDraggableIndex) {
                 onChange(before);
@@ -316,13 +289,6 @@ export function makeSortable(container, selector, onChange) {
 
     return sortable;
 }
-
-reducedMotion.addEventListener('change', () => {
-    for (const sortable of sortables) {
-        sortable.option('animation', reducedMotion.matches ? 0 : 280);
-    }
-});
-
 
 export function el(tag, className, text) {
     const node = document.createElement(tag);
@@ -363,21 +329,7 @@ export function notice(title, text, kind = '', action) {
         return document.createDocumentFragment();
     }
 
-    const node = el('div', 'state-notice' + (kind ? ' state-notice--' + kind : ''));
-
-    if (kind === 'error') {
-        node.append(icon('warning'));
-    }
-
-    node.setAttribute('role', kind === 'error' ? 'alert' : 'status');
-    const copy = el('div');
-    copy.append(el('strong', '', title));
-
-    if (text) {
-        copy.append(el('p', '', text));
-    }
-
-    node.append(copy);
+    const node = createNotice(title, text, kind);
 
     if (action) {
         node.append(action);
@@ -412,8 +364,7 @@ export function field(key, label, value = '', options = {}) {
     }
 
     if (options.error) {
-        control.setAttribute('aria-invalid', 'true');
-        control.setAttribute('aria-describedby', key + '-error');
+        control.setAttribute('data-invalid', 'true');
     }
 
     node.append(caption, control);
@@ -459,7 +410,6 @@ export function fieldError(control,message) {
 
     let error = wrapper.querySelector('.field__error');
     const id = control.id + '-error';
-    const described = (control.getAttribute('aria-describedby') || '').split(' ').filter(value => value && value !== id);
 
     if (message) {
         if (!error) {
@@ -469,16 +419,10 @@ export function fieldError(control,message) {
         }
 
         error.textContent = message;
-        control.setAttribute('aria-invalid','true');
-        described.push(id);
+        control.setAttribute('data-invalid','true');
     } else {
         error?.remove();
-        control.removeAttribute('aria-invalid');
+        control.removeAttribute('data-invalid');
     }
 
-    if (described.length) {
-        control.setAttribute('aria-describedby',described.join(' '));
-    } else {
-        control.removeAttribute('aria-describedby');
-    }
 }

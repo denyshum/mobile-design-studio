@@ -32,7 +32,7 @@ function normalize(record) {
 }
 
 export const catalogResource = createResource(async signal => unique((await readRows('projects', query, signal)).map(normalize)));
-export const projectPresence = createResource(async signal => (await readRows('projects', { select: 'id', published: 'eq.true', order: 'id.asc' }, signal, { first: true })).length > 0);
+const projectPresence = createResource(async signal => (await readRows('projects', { select: 'id', published: 'eq.true', order: 'id.asc' }, signal, { first: true })).length > 0);
 export const navigationProjects = createResource(async signal => {
     const rows = await readRows('projects', { select: 'id,name', published: 'eq.true', id: 'in.(wingriders,trackee,worldcoin,audience-plus)', order: 'id.asc' }, signal);
 

@@ -24,8 +24,6 @@ export function initNavigation() {
 
         menuOverlay.inert = !open;
         menuOverlay.classList.toggle('menu-overlay--open', open);
-        menuOverlay.setAttribute('aria-hidden', String(!open));
-        menuBtn?.setAttribute('aria-expanded', String(open));
         body.classList.toggle('no-scroll', open);
         mainHeaderNav?.classList.toggle('nav--hidden', open);
         clearTimeout(menuTimer);
@@ -136,13 +134,6 @@ export function initNavigation() {
 
     if (scrollTopBtn) {
         scrollTopBtn.addEventListener('click', () => {
-            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                window.scrollTo({ top: 0, behavior: 'instant' });
-                document.querySelector('h1')?.focus({ preventScroll: true });
-
-                return;
-            }
-
             document.documentElement.style.scrollBehavior = 'auto';
 
             const startPosition = window.scrollY;
