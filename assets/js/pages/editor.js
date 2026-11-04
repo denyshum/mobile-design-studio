@@ -3,7 +3,7 @@ import { createEditorClient, editorSessionKey, editorEventsKey } from '../data/e
 import { catalogResource } from '../data/projects.js';
 import { validId } from '../data/client.js';
 import { createModal, finishScrollRestore } from '../components/modal.js';
-import { el,button,icon,heading,field,notice,motion,toast,clearToast,makeSortable,disposeSortables,publicationLabel,rememberFocus,positionRecordMenu } from '../components/editor/controls.js';
+import { el,button,icon,heading,field,fieldError,notice,motion,toast,clearToast,makeSortable,disposeSortables,publicationLabel,rememberFocus,positionRecordMenu } from '../components/editor/controls.js';
 import { createEditorDialog } from '../components/editor/dialog.js';
 import { createCoverImages } from '../components/editor/media.js';
 import { createContentForm } from '../components/editor/form.js';
@@ -30,6 +30,7 @@ let suspended;
 let uncertainView;
 let loggingOut = false;
 let signingIn = false;
+let registeredUser;
 let accessVersion = 0;
 let viewVersion = 0;
 let viewAbort = new AbortController();
@@ -216,43 +217,73 @@ async function loginView(error) {
     }
 
     if (error?.status === 403) {
-        login.append(el('h1','','Немає доступу редактора'),notice('Цей акаунт не може редагувати сайт','','error'),button('Інший акаунт',async () => {
-            await explicitLogout({confirm:false});
-        },'primary-action'));
+        const message = error.registered
+            ? notice('Акаунт створено','Для керування сайтом потрібен доступ редактора.')
+            : notice('Цей акаунт не може редагувати сайт','','error');
+        login.append(el('h1','','Немає доступу редактора'),message,button('Вийти',() => explicitLogout({confirm:false}),'primary-action'));
 
         return;
     }
 
-    login.append(el('h1','',error?.status === 401 ? 'Увійдіть знову' : 'Вхід редактора'));
+    const target = new URL(location.href);
+    const registering = target.searchParams.has('register');
+    const title = el('h1','',registering ? 'Створити акаунт' : error?.status === 401 ? 'Увійдіть знову' : 'Вхід редактора');
+    login.append(title);
 
     if (error) {
         login.append(notice(error.status === 401 ? 'Сесія завершилась' : 'Не вдалося перевірити доступ','','error'));
     }
 
     const email = field('email','Електронна пошта','',{type:'email'});
-    const password = field('password','Пароль','',{type:'password'});
     const emailInput = email.querySelector('input');
-    const passwordInput = password.querySelector('input');
-    emailInput.required = passwordInput.required = true;
+    emailInput.required = true;
     emailInput.autocomplete = 'username';
-    passwordInput.autocomplete = 'current-password';
-    const passwordBox = el('div','password-control');
-    passwordInput.replaceWith(passwordBox);
-    const toggle = button('',() => {
-        const visible = passwordInput.type === 'password';
-        passwordInput.type = visible ? 'text' : 'password';
-        toggle.title = visible ? 'Приховати пароль' : 'Показати пароль';
-        toggle.replaceChildren(icon(visible ? 'eye-off' : 'eye'));
-    },'icon-action password-toggle');
-    toggle.title = 'Показати пароль';
-    toggle.append(icon('eye'));
-    passwordBox.append(passwordInput,toggle);
-    const submit = button('Увійти',null,'primary-action');
+    const password = authPassword('password','Пароль',registering ? 'new-password' : 'current-password');
+    const repeat = registering ? authPassword('repeat-password','Повторіть пароль','new-password') : null;
+    const submitLabel = registering ? 'Зареєструватися' : 'Увійти';
+    const submit = button(submitLabel,null,'primary-action');
     submit.type = 'submit';
-    login.append(email,password,submit);
+    const alternate = el('a','small-action',registering ? '← До входу' : 'Створити акаунт');
 
-    for (const control of [emailInput,passwordInput]) {
-        control.addEventListener('input',() => control.removeAttribute('data-invalid'));
+    if (registering) {
+        target.searchParams.delete('register');
+        password.input.minLength = 6;
+        login.append(email,password.wrapper,repeat.wrapper);
+    } else {
+        target.searchParams.set('register','1');
+        login.append(email,password.wrapper);
+    }
+
+    alternate.href = target.href;
+    login.append(submit,alternate);
+    alternate.addEventListener('click',async event => {
+        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+            return;
+        }
+
+        event.preventDefault();
+
+        if (!signingIn) {
+            historyIndex += 1;
+            history.pushState({editorIndex:historyIndex},'',target);
+            await loginView();
+
+            if (event.detail === 0) {
+                const heading = main.querySelector('.login-form h1');
+                heading.tabIndex = -1;
+                heading.focus();
+            }
+        }
+    });
+
+    for (const control of [emailInput,password.input,repeat?.input].filter(Boolean)) {
+        control.addEventListener('input',() => {
+            control.removeAttribute('data-invalid');
+
+            if (repeat) {
+                fieldError(repeat.input,'');
+            }
+        });
     }
 
     login.addEventListener('submit',async event => {
@@ -262,47 +293,96 @@ async function loginView(error) {
             return;
         }
 
+        if (repeat && repeat.input.value !== password.input.value) {
+            fieldError(repeat.input,'Паролі не збігаються');
+            repeat.input.focus();
+
+            return;
+        }
+
         const focused = document.activeElement;
-        const restoreFocus = rememberFocus(login.contains(focused) && focused.tagName === 'INPUT' ? focused : passwordInput);
+        const restoreFocus = rememberFocus(login.contains(focused) && focused.tagName === 'INPUT' ? focused : password.input);
+        const controls = login.querySelectorAll('input,button');
         let failed = false;
         signingIn = true;
-        submit.disabled = true;
-        emailInput.disabled = passwordInput.disabled = toggle.disabled = true;
-        submit.textContent = 'Входимо…';
+
+        for (const control of controls) {
+            control.disabled = true;
+        }
+
+        submit.textContent = registering ? 'Реєструємо…' : 'Входимо…';
         login.querySelector('.state-notice')?.remove();
 
         try {
-            const result = await client.auth.signInWithPassword({email:emailInput.value.trim(),password:passwordInput.value});
+            const credentials = {email:emailInput.value.trim(),password:password.input.value};
+            const result = registering ? await client.auth.signUp(credentials) : await client.auth.signInWithPassword(credentials);
 
             if (result.error) {
                 throw result.error;
             }
 
+            if (registering) {
+                if (!result.data.session) {
+                    throw new Error('Сесію реєстрації не створено');
+                }
+
+                registeredUser = result.data.session.user.id;
+                repeat.input.value = '';
+                const current = new URL(location.href);
+                current.searchParams.delete('register');
+                history.replaceState({editorIndex:historyIndex},'',current);
+            }
+
             client.cancelLogoutRetry();
             client.auth.startAutoRefresh();
-            passwordInput.value = '';
+            password.input.value = '';
             await checkAccess();
         } catch (failure) {
             failed = true;
             const network = !failure.status || failure.status >= 500;
-            const errorNotice = notice('Не вдалося увійти',network ? 'Перевірте з’єднання та спробуйте ще раз' : 'Перевірте пошту та пароль','error');
-            email.before(errorNotice);
+            const message = network ? 'Перевірте з’єднання та спробуйте ще раз' : registering
+                ? 'Перевірте введені дані або перейдіть до входу'
+                : 'Перевірте пошту та пароль';
+            email.before(notice(registering ? 'Не вдалося створити акаунт' : 'Не вдалося увійти',message,'error'));
 
-            if (!network) {
+            if (!registering && !network) {
                 emailInput.setAttribute('data-invalid','true');
-                passwordInput.setAttribute('data-invalid','true');
+                password.input.setAttribute('data-invalid','true');
             }
         } finally {
             signingIn = false;
-            submit.disabled = false;
-            emailInput.disabled = passwordInput.disabled = toggle.disabled = false;
-            submit.textContent = 'Увійти';
+
+            for (const control of controls) {
+                control.disabled = false;
+            }
+
+            submit.textContent = submitLabel;
 
             if (failed) {
                 restoreFocus();
             }
         }
     });
+}
+
+function authPassword(id,label,autocomplete) {
+    const wrapper = field(id,label,'',{type:'password'});
+    const input = wrapper.querySelector('input');
+    input.required = true;
+    input.autocomplete = autocomplete;
+    const box = el('div','password-control');
+    input.replaceWith(box);
+    const toggle = button('',() => {
+        const visible = input.type === 'password';
+        input.type = visible ? 'text' : 'password';
+        toggle.title = visible ? 'Приховати пароль' : 'Показати пароль';
+        toggle.replaceChildren(icon(visible ? 'eye-off' : 'eye'));
+    },'icon-action password-toggle');
+    toggle.title = 'Показати пароль';
+    toggle.append(icon('eye'));
+    box.append(input,toggle);
+
+    return {wrapper,input};
 }
 
 async function renderList(kind,image,signal) {
@@ -757,17 +837,18 @@ async function accessLost(error) {
 }
 
 async function checkAccess({initial = false} = {}) {
+    let session;
     const version = ++accessVersion;
 
     try {
-        const session = await client.session();
+        session = await client.session();
 
         if (version !== accessVersion || loggingOut) {
             return;
         }
 
         if (!session) {
-            if (!initial && !authorized && main.querySelector('.login-form input[type="password"]')) {
+            if (!initial && !authorized && main.querySelector('.login-form input[type="email"]')) {
                 return;
             }
 
@@ -819,12 +900,12 @@ async function checkAccess({initial = false} = {}) {
             return;
         }
 
-        if (error.status === 401 && !initial && !authorized && main.querySelector('.login-form input[type="password"]')) {
+        if (error.status === 401 && !initial && !authorized && main.querySelector('.login-form input[type="email"]')) {
             return;
         }
 
         if ([401,403].includes(error.status)) {
-            await accessLost(error);
+            await accessLost({status:error.status,code:error.code,registered:Boolean(registeredUser && session?.user.id === registeredUser)});
         } else if (authorized) {
             toast('Не вдалося перевірити доступ. Перевірте з’єднання',{kind:'error',action:() => checkAccess()});
         } else {
@@ -855,6 +936,7 @@ async function explicitLogout({confirm = true} = {}) {
     }
 
     loggingOut = true;
+    registeredUser = undefined;
     accessVersion += 1;
     viewVersion += 1;
     clearToast();
@@ -1100,7 +1182,12 @@ async function boot() {
         }
 
         historyIndex = next;
-        await renderCurrent();
+
+        if (authorized) {
+            await renderCurrent();
+        } else if (!signingIn && !loggingOut) {
+            await checkAccess({initial:true});
+        }
     });
 
     window.addEventListener('scroll',() => {
