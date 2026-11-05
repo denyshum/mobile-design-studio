@@ -1,5 +1,6 @@
+import { searchQuery, matchesSearch } from '../../data/search.js';
 import { paintBadge } from '../badge.js';
-import { el, button, heading, icon, toast, clearToast, positionRecordMenu } from './controls.js';
+import { el, button, field, heading, icon, toast, clearToast, positionRecordMenu } from './controls.js';
 
 const labels = { new: 'Нове', progress: 'У роботі', closed: 'Закрите' };
 const filters = { all: 'Усі', active: 'Активні', new: 'Нові', progress: 'У роботі', closed: 'Закриті' };
@@ -41,8 +42,8 @@ function loading() {
     return container;
 }
 
-export function createBriefsController({ client, main, dialog, navigate, mutations, onAccessLost }) {
-    let route = { filter: 'active' };
+export function createBriefsController({ client, main, dialog, navigate, mutations, onAccessLost, setSearchQuery }) {
+    let route = { filter: 'active', query: '' };
     let counts;
     let signature;
     let current;
@@ -58,6 +59,7 @@ export function createBriefsController({ client, main, dialog, navigate, mutatio
     let backoff = 60000;
     let countVersion = 0;
     let viewSignal;
+    let searchOpened = false;
 
     function updateCounts(value) {
         counts = value;
@@ -70,7 +72,7 @@ export function createBriefsController({ client, main, dialog, navigate, mutatio
     }
 
     function go(id, filter = route.filter, options = {}) {
-        return navigate('briefs', id, { filter, ...options });
+        return navigate('briefs', id, { filter, query: route.query, ...options });
     }
 
     function navigation(disabled = false) {
@@ -129,50 +131,295 @@ export function createBriefsController({ client, main, dialog, navigate, mutatio
         return section;
     }
 
+    function rememberQueue(id = null) {
+        queuePosition = { filter: route.filter, query: route.query, top: scrollY, id };
+        history.replaceState({ ...history.state, briefPosition: queuePosition }, '', location.href);
+    }
+
+    function searchEmpty() {
+        const section = el('section', 'queue-empty');
+        section.append(
+            el('h2', '', 'Звернень не знайдено'),
+            el('p', '', 'За запитом «' + route.query + '» у поточному статусі збігів немає. Змініть ім’я або оберіть інший статус угорі')
+        );
+
+        if (route.filter !== 'all') {
+            section.append(button('Шукати в усіх', () => go(null, 'all'), 'small-action'));
+        }
+
+        return section;
+    }
+
+    function queueList(records) {
+        const list = el('section', 'brief-list');
+
+        for (const record of records) {
+            const row = el('article', 'brief-row');
+            row.dataset.record = record.id;
+            const open = () => {
+                rememberQueue(record.id);
+                go(record.id);
+            };
+            const copy = el('div', 'record-copy brief-row__copy');
+            const title = el('h2');
+            title.append(button(record.name, open, 'brief-name'));
+            copy.append(title, el('p', '', services[record.service] || 'Напрям не вказано'));
+            const more = button('Переглянути', open, 'record-action record-action--primary brief-row__open');
+            row.append(copy, state(record), more);
+            list.append(row);
+        }
+
+        return list;
+    }
+
+    function queueSearch(signal) {
+        const group = el('div', 'brief-search');
+        const nav = navigation(true);
+        nav.classList.add('brief-search__navigation');
+        const slot = el('div', 'brief-search__slot');
+        const toggle = button('', () => setOpen(!searchOpened), 'brief-search__toggle');
+        const prefix = el('span', 'sort-announcement');
+        const text = el('span', 'brief-search__query');
+        toggle.append(icon('search'), prefix, text);
+        const panel = el('div', 'brief-search__panel');
+        const fields = el('fieldset', 'brief-search__fields');
+        fields.disabled = true;
+        const inputField = field('brief-query', 'Пошук за ім’ям', route.query, { type: 'search', max: 80 });
+        const input = inputField.querySelector('input');
+        input.placeholder = 'Пошук за ім’ям';
+        input.autocomplete = 'off';
+        const shell = el('div', 'brief-search__input');
+        const clear = clearButton();
+        shell.append(input, clear);
+        inputField.append(shell);
+        fields.append(el('legend', 'sort-announcement', 'Пошук звернень'), inputField);
+        const collapse = button('', () => setOpen(false), 'brief-search__collapse');
+        collapse.title = 'Згорнути пошук';
+        collapse.append(icon('chevron-right'), el('span', 'sort-announcement', 'Згорнути пошук'));
+        panel.append(fields, collapse);
+        const reset = clearButton();
+        slot.append(toggle, reset);
+        nav.append(slot, panel);
+        group.append(nav);
+        const region = el('div');
+        region.append(loading());
+        const announcement = el('p', 'sort-announcement');
+        announcement.setAttribute('role', 'status');
+        let available = false;
+        let found = [];
+        let editingQuery = false;
+        let animation;
+        let closing = false;
+        const wide = matchMedia('(min-width: 1200px)');
+        const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+
+        function clearButton() {
+            const control = button('', () => {
+                apply('');
+                (searchOpened && !fields.disabled ? input : toggle).focus({ preventScroll: true });
+            }, 'brief-search__clear');
+            control.title = 'Очистити пошук';
+            control.append(icon('close'), el('span', 'sort-announcement', 'Очистити пошук'));
+            return control;
+        }
+
+        function update() {
+            const active = Boolean(route.query);
+            const expanded = searchOpened || closing;
+            group.dataset.open = String(expanded);
+            panel.hidden = !expanded;
+            toggle.dataset.active = String(active);
+            text.textContent = expanded ? 'Згорнути' : active ? route.query : 'Пошук';
+            prefix.textContent = active && !expanded ? 'Пошук за ім’ям: ' : '';
+            toggle.title = expanded ? 'Згорнути пошук' : active ? 'Пошук за ім’ям: ' + route.query : 'Пошук за ім’ям';
+            clear.hidden = !available || fields.disabled || (!input.value && !active);
+            reset.hidden = !available || expanded || !active;
+        }
+
+        function cancelAnimation() {
+            animation?.cancel();
+            animation = null;
+        }
+
+        function finishAnimation(restoreFocus = false) {
+            const focus = restoreFocus && (group.contains(document.activeElement) || document.activeElement === document.body);
+            cancelAnimation();
+            closing = false;
+            update();
+
+            if (focus) {
+                toggle.focus({ preventScroll: true });
+            }
+        }
+
+        function setOpen(value) {
+            if (signal.aborted || value === searchOpened) {
+                return;
+            }
+
+            const animate = wide.matches && !reducedMotion.matches && typeof panel.animate === 'function';
+            const current = animation ? getComputedStyle(panel).clipPath : value ? 'inset(0 0 0 100%)' : 'inset(0)';
+            cancelAnimation();
+            searchOpened = value;
+            closing = !value && animate;
+            update();
+
+            if (value || !animate) {
+                const fallback = collapse.getClientRects().length ? collapse : toggle;
+                (value && !fields.disabled ? input : value ? fallback : toggle).focus({ preventScroll: true });
+            }
+
+            if (animate) {
+                const active = panel.animate([
+                    { clipPath: current === 'none' ? 'inset(0)' : current },
+                    { clipPath: value ? 'inset(0)' : 'inset(0 0 0 100%)' },
+                ], { duration: 180, easing: 'cubic-bezier(.22, 1, .36, 1)', fill: 'both' });
+                animation = active;
+                active.onfinish = () => {
+                    if (animation === active && !signal.aborted && group.isConnected) {
+                        finishAnimation(!searchOpened);
+                    }
+                };
+            }
+        }
+
+        const finishOnMediaChange = () => {
+            if (animation && (!wide.matches || reducedMotion.matches)) {
+                finishAnimation(closing);
+            }
+        };
+
+        wide.addEventListener('change', finishOnMediaChange, { signal });
+        reducedMotion.addEventListener('change', finishOnMediaChange, { signal });
+        signal.addEventListener('abort', cancelAnimation, { once: true });
+
+        function draw() {
+            found = rows.filter(record => matchesSearch([record.name], route.query));
+            region.replaceChildren(counts?.all === 0 ? empty() : route.query && !found.length ? searchEmpty() : found.length ? queueList(found) : empty());
+            announcement.textContent = route.query ? 'Знайдено звернень: ' + found.length : '';
+            update();
+        }
+
+        function apply(value, typing = false) {
+            const query = searchQuery(value, 80);
+
+            if (query !== route.query) {
+                if (!typing || !editingQuery) {
+                    rememberQueue();
+                }
+                setSearchQuery(query, typing && editingQuery);
+                route.query = query;
+                queuePosition = null;
+                editingQuery = typing;
+            }
+
+            if (!typing) {
+                editingQuery = false;
+                input.value = query;
+            }
+
+            if (available) {
+                draw();
+                announcement.textContent = query ? 'Знайдено звернень: ' + found.length : 'Пошук очищено';
+            } else {
+                update();
+            }
+        }
+
+        const change = event => {
+            if (!event.isComposing && available && !fields.disabled) {
+                apply(input.value, true);
+            }
+        };
+
+        input.addEventListener('input', change, { signal });
+        input.addEventListener('compositionend', change, { signal });
+        input.addEventListener('blur', () => {
+            input.value = route.query;
+            editingQuery = false;
+            update();
+        }, { signal });
+        input.addEventListener('keydown', event => {
+            if (event.key === 'Enter' && !event.isComposing) {
+                input.value = route.query;
+                editingQuery = false;
+                update();
+            }
+        }, { signal });
+        main.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && !event.isComposing && (searchOpened || closing) && !event.defaultPrevented) {
+                event.preventDefault();
+                setOpen(false);
+            }
+        }, { signal });
+        update();
+
+        function enableNavigation() {
+            for (const control of nav.querySelectorAll('[data-brief-filter]')) {
+                control.disabled = false;
+            }
+        }
+
+        return {
+            controls: group,
+            region,
+            announcement,
+
+            loaded() {
+                available = true;
+                fields.disabled = counts?.all === 0;
+                enableNavigation();
+                draw();
+            },
+
+            failed() {
+                available = false;
+                enableNavigation();
+                announcement.textContent = '';
+                region.replaceChildren();
+                const section = el('section', 'queue-empty');
+                section.append(
+                    el('h2', '', 'Не вдалося завантажити звернення'),
+                    el('p', '', 'Перевірте з’єднання та спробуйте ще раз.'),
+                    button('Спробувати знову', () => go(null), 'primary-action')
+                );
+                region.append(section);
+                update();
+            },
+        };
+    }
+
     async function queue(signal) {
         const requestVersion = ++countVersion;
-        main.replaceChildren(heading('Звернення'), navigation(true), loading());
+        const search = queueSearch(signal);
+        rows = [];
+        main.replaceChildren(heading('Звернення'), search.controls, search.region, search.announcement);
+
         try {
             const result = await client.briefs(route.filter, signal);
+
             if (signal.aborted) {
                 return;
             }
+
             rows = result.records;
+
             if (requestVersion === countVersion) {
                 updateCounts(result.counts);
             }
+
             signature = result.snapshot_digest;
-            main.replaceChildren(heading('Звернення'), navigation());
-            if (!rows.length) {
-                main.append(empty());
-            } else {
-                const list = el('section', 'brief-list');
-                for (const record of rows) {
-                    const row = el('article', 'brief-row');
-                    row.dataset.record = record.id;
-                    const open = () => {
-                        queuePosition = { filter: route.filter, top: scrollY, id: record.id };
-                        history.replaceState({ ...history.state, briefPosition: queuePosition }, '', location.href);
-                        go(record.id);
-                    };
-                    const copy = el('div', 'record-copy brief-row__copy');
-                    const title = el('h2');
-                    title.append(button(record.name, open, 'brief-name'));
-                    copy.append(title, el('p', '', services[record.service] || 'Напрям не вказано'));
-                    const more = button('Переглянути', open, 'record-action record-action--primary brief-row__open');
-                    row.append(copy, state(record), more);
-                    list.append(row);
-                }
-                main.append(list);
-            }
+            search.loaded();
             const saved = history.state?.briefPosition || queuePosition;
-            if (saved?.filter === route.filter) {
+
+            if (saved?.filter === route.filter && (saved.query || '') === route.query) {
                 requestAnimationFrame(() => {
                     if (!signal.aborted) {
                         scrollTo({ top: saved.top, behavior: 'instant' });
-                        main.querySelector('[data-record="' + CSS.escape(saved.id) + '"] button')?.focus({
-                            preventScroll: true,
-                        });
+
+                        if (saved.id) {
+                            main.querySelector('[data-record="' + CSS.escape(saved.id) + '"] button')?.focus({ preventScroll: true });
+                        }
                     }
                 });
             }
@@ -180,17 +427,13 @@ export function createBriefsController({ client, main, dialog, navigate, mutatio
             if (signal.aborted) {
                 return;
             }
+
             if ([401, 403].includes(error.status)) {
                 await onAccessLost(error);
                 return;
             }
-            const section = el('section', 'queue-empty');
-            section.append(
-                el('h2', '', 'Не вдалося завантажити звернення'),
-                el('p', '', 'Перевірте з’єднання та спробуйте ще раз.'),
-                button('Спробувати знову', () => go(null), 'primary-action')
-            );
-            main.replaceChildren(heading('Звернення'), navigation(), section);
+
+            search.failed();
         }
     }
 
@@ -457,8 +700,9 @@ export function createBriefsController({ client, main, dialog, navigate, mutatio
         main.replaceChildren(article);
     }
 
-    async function render({ id, filter = 'active', signal }) {
-        route = { id, filter: Object.hasOwn(filters, filter) ? filter : 'active' };
+    async function render({ id, filter = 'active', query = '', signal }) {
+        route = { id, filter: Object.hasOwn(filters, filter) ? filter : 'active', query: searchQuery(query, 80) };
+        setSearchQuery?.(route.query, true);
         viewSignal = signal;
         recovery = null;
         current = null;
@@ -512,7 +756,7 @@ export function createBriefsController({ client, main, dialog, navigate, mutatio
                 });
                 document.querySelector('.editor-toast').dataset.briefArrival = '';
                 const empty = main.querySelector('.queue-empty');
-                if (empty) {
+                if (empty && !route.query) {
                     empty.querySelector('h2').textContent = 'Надійшло нове звернення';
                     empty.querySelector('p').textContent = 'Перейдіть до «Нових», щоб відкрити оновлений список.';
                 }
@@ -575,6 +819,7 @@ export function createBriefsController({ client, main, dialog, navigate, mutatio
 
     function stop() {
         running = false;
+        searchOpened = false;
         epoch += 1;
         clearTimeout(timer);
         counts = null;
@@ -597,6 +842,11 @@ export function createBriefsController({ client, main, dialog, navigate, mutatio
         toast(message || 'Не вдалося підтвердити зміну. Перевірте результат.', { kind: 'error' });
     }
 
+    window.addEventListener('pagehide', () => {
+        if (running && !route.id && new URLSearchParams(location.search).get('view') === 'briefs') {
+            rememberQueue();
+        }
+    });
     window.addEventListener('focus', poll);
     document.addEventListener('visibilitychange', poll);
     return { render, start, stop, poll, showUncertain };

@@ -104,6 +104,35 @@
                 <h2 id="list-title">Усі проєкти</h2>
                 <span data-project-count>—</span>
             </div>
+            <div class="catalog-controls" data-catalog-controls hidden>
+                <h3 class="catalog-sidebar-title">Пошук і фільтри</h3>
+                <details class="catalog-disclosure" data-catalog-disclosure>
+                    <summary>Пошук і фільтри<span data-catalog-summary>Усі напрями · Порядок студії</span></summary>
+                    <div class="catalog-toolbar" data-catalog-toolbar>
+                        <fieldset class="catalog-tools" disabled>
+                                <legend class="data-announcement">Параметри проєктів</legend>
+                            <div class="field">
+                                <label for="catalog-query">Пошук проєкту</label>
+                                <input id="catalog-query" name="q" type="search" maxlength="160" placeholder="Назва або короткий опис">
+                            </div>
+                            <div class="field">
+                                <label for="catalog-category">Напрям</label>
+                                <select id="catalog-category" name="category"><option value="">Усі напрями</option></select>
+                            </div>
+                            <fieldset class="catalog-sort">
+                                <legend>Сортування</legend>
+                                <label class="catalog-sort__option"><input type="radio" name="sort" value="studio" checked>Порядок студії</label>
+                                <label class="catalog-sort__option"><input type="radio" name="sort" value="name-asc">Назва: за зростанням</label>
+                                <label class="catalog-sort__option"><input type="radio" name="sort" value="name-desc">Назва: за спаданням</label>
+                            </fieldset>
+                        </fieldset>
+                        <div class="catalog-toolbar__footer" data-catalog-footer hidden>
+                            <button class="catalog-reset" data-catalog-reset type="button" hidden>Скинути все</button>
+                        </div>
+                    </div>
+                </details>
+                <p class="data-announcement" role="status" data-catalog-announcement></p>
+            </div>
             <div class="entry-grid" data-project-catalog></div>
         </section>
         <section class="closing-panel section-wrap">

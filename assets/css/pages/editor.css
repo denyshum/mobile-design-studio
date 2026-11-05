@@ -1321,7 +1321,149 @@ button:disabled {
     min-height: 2.75rem;
 }
 
+.brief-search {
+    margin-bottom: 1.5rem;
+    container-type: inline-size;
+}
+
+.brief-search > .queue-navigation {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0 .75rem;
+    margin-bottom: 0;
+}
+
+.brief-search__slot {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: .25rem;
+    min-width: 0;
+}
+
+.brief-search__toggle,
+.brief-search__collapse {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    min-height: 2.75rem;
+    color: var(--editor-muted);
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+.brief-search__toggle {
+    min-width: 0;
+    max-width: 20rem;
+}
+
+.brief-search__toggle svg,
+.brief-search__collapse svg {
+    flex: 0 0 auto;
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.brief-search__toggle svg,
+.brief-search__collapse {
+    display: none;
+}
+
+.brief-search__toggle[data-active="true"] {
+    color: var(--editor-accent);
+}
+
+.brief-search[data-open="false"] .brief-search__toggle[data-active="true"] svg {
+    display: block;
+}
+
+.brief-search__query {
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.brief-search__panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-column: 1 / -1;
+    align-items: center;
+    gap: .5rem;
+    min-width: 0;
+    width: 100%;
+    padding-top: .75rem;
+}
+
+.brief-search__fields {
+    grid-column: 1 / -1;
+    min-width: 0;
+    border: 0;
+}
+
+.brief-search__fields > .field {
+    margin-bottom: 0;
+}
+
+.brief-search__input {
+    position: relative;
+}
+
+.brief-search__input input {
+    padding-right: 3.25rem;
+}
+
+.brief-search__input input::-webkit-search-cancel-button {
+    appearance: none;
+}
+
+.brief-search__clear,
+.brief-search__collapse {
+    flex: 0 0 auto;
+    width: 2.75rem;
+    height: 2.75rem;
+}
+
+.brief-search__clear {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--editor-muted);
+}
+
+.brief-search__input > .brief-search__clear {
+    position: absolute;
+    inset: 0 .125rem 0 auto;
+    margin-block: auto;
+}
+
+.brief-search__clear svg {
+    width: 1rem;
+    height: 1rem;
+}
+
+.brief-search__toggle:focus-visible,
+.brief-search__collapse:focus-visible,
+.brief-search__clear:focus-visible {
+    color: var(--text-strong);
+}
+
+@container (min-width: 20rem) {
+    .brief-search > .queue-navigation {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .brief-search__slot {
+        justify-content: flex-end;
+    }
+}
+
 @media (min-width: 481px) {
+    .brief-search__toggle svg {
+        display: block;
+    }
+
     .editor-main--access {
         min-height: calc(100svh - 3.75rem - 8px);
         margin-top: calc(3.75rem + 8px);
@@ -1427,6 +1569,26 @@ button:disabled {
 }
 
 @media (min-width: 769px) {
+    .brief-search > .queue-navigation {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 0 2rem;
+    }
+
+    .brief-search__navigation > .queue-link {
+        margin-top: 2px;
+    }
+
+    .brief-search__slot {
+        flex: 1 0 auto;
+        justify-content: flex-end;
+    }
+
+    .brief-search__panel {
+        flex: 1 0 100%;
+    }
+
     .collection-grid {
         grid-template-columns: repeat(2,minmax(0,1fr));
         gap: 1.5rem;
@@ -1480,7 +1642,47 @@ button:disabled {
     }
 }
 
+@media (min-width: 1200px) {
+    .brief-search__slot {
+        min-height: max(3rem, calc(1.4rem + 1.5rem + 2px));
+    }
+
+    .brief-search__panel {
+        flex: 0 0 24rem;
+        width: 24rem;
+        max-width: 100%;
+        margin-left: auto;
+        padding-top: 0;
+    }
+
+    .brief-search__fields {
+        grid-column: auto;
+    }
+
+    .brief-search__fields label {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+    }
+
+    .brief-search__collapse {
+        display: inline-flex;
+    }
+
+    .brief-search[data-open="true"] .brief-search__slot {
+        display: none;
+    }
+}
+
 @media (hover: hover) and (pointer: fine) {
+    .brief-search__toggle:hover,
+    .brief-search__collapse:hover,
+    .brief-search__clear:hover {
+        color: var(--text-strong);
+    }
+
     .small-action:not(:disabled):hover,
     .record-action:not(:disabled):hover,
     .picker-option:not(:disabled):hover {

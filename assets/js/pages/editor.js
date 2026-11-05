@@ -1,6 +1,7 @@
 import { createBriefsController } from '../components/editor/briefs.js';
 import { createEditorClient, editorSessionKey, editorEventsKey } from '../data/editor.js';
 import { catalogResource } from '../data/projects.js';
+import { searchQuery } from '../data/search.js';
 import { validId } from '../data/client.js';
 import { createModal, finishScrollRestore } from '../components/modal.js';
 import { el,button,icon,heading,field,fieldError,notice,motion,toast,clearToast,makeSortable,disposeSortables,publicationLabel,rememberFocus,positionRecordMenu } from '../components/editor/controls.js';
@@ -43,7 +44,7 @@ const channel = typeof BroadcastChannel === 'function' ? new BroadcastChannel(ed
 function currentRoute() {
     const query = new URLSearchParams(location.search);
 
-    return {view:query.get('view') || 'projects',id:query.get('id'),filter:query.get('filter') || 'active'};
+    return {view:query.get('view') || 'projects',id:query.get('id'),filter:query.get('filter') || 'active',query:query.get('view') === 'briefs' ? searchQuery(query.get('q'),80) : ''};
 }
 
 function pageTitle(view) {
@@ -148,7 +149,28 @@ async function canLeave() {
     });
 }
 
-async function navigate(view,id,{replace = false,focus = keyboardActivation,resetScroll = true,animate = true,record,filter} = {}) {
+function writeLocation(target,replace = false) {
+    if (!replace) {
+        historyIndex += 1;
+    }
+
+    history[replace ? 'replaceState' : 'pushState']({...history.state,editorIndex:historyIndex},'',target);
+}
+
+function setBriefSearch(query,replace = false) {
+    const target = new URL(location.href);
+    target.searchParams.delete('q');
+
+    if (query) {
+        target.searchParams.set('q',query);
+    }
+
+    if (target.href !== location.href) {
+        writeLocation(target,replace);
+    }
+}
+
+async function navigate(view,id,{replace = false,focus = keyboardActivation,resetScroll = true,animate = true,record,filter,query = currentRoute().query} = {}) {
     await menu.close();
 
     if (!routes.has(view) || !await canLeave()) {
@@ -165,17 +187,17 @@ async function navigate(view,id,{replace = false,focus = keyboardActivation,rese
     target.searchParams.set('view',view);
     if (view === 'briefs') {
         target.searchParams.set('filter',filter || currentRoute().filter || 'active');
+
+        if (query) {
+            target.searchParams.set('q',searchQuery(query,80));
+        }
     }
 
     if (id) {
         target.searchParams.set('id',id);
     }
 
-    if (!replace) {
-        historyIndex += 1;
-    }
-
-    history[replace ? 'replaceState' : 'pushState']({editorIndex:historyIndex},'',target);
+    writeLocation(target,replace);
     finishScrollRestore();
 
     if (resetScroll) {
@@ -1047,7 +1069,7 @@ async function boot() {
         onConflict:() => navigate(currentRoute().view,currentRoute().id,{replace:true}),
     });
 
-    briefs = createBriefsController({ client, main, dialog:panel, navigate, mutations, onAccessLost:accessLost });
+    briefs = createBriefsController({ client, main, dialog:panel, navigate, mutations, onAccessLost:accessLost, setSearchQuery:setBriefSearch });
 
     client.auth.onAuthStateChange(event => {
         queueMicrotask(() => {
@@ -1158,7 +1180,7 @@ async function boot() {
         }
     });
 
-    history.replaceState({editorIndex:historyIndex},'',location.href);
+    history.replaceState({...history.state,editorIndex:historyIndex},'',location.href);
 
     window.addEventListener('popstate',async event => {
         if (restoringHistory) {
