@@ -3,6 +3,7 @@
 }
 
 .hiring-content {
+    min-height: 100svh;
     padding-top: 7.5rem;
     overflow-wrap: anywhere;
     line-height: 1.6;
@@ -223,7 +224,6 @@
 .hiring-content.data-missing-view {
     display: grid;
     align-items: center;
-    min-height: 100svh;
     padding-block: 6rem 2rem;
 }
 

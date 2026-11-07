@@ -37,7 +37,7 @@
 
 .hero__inner {
     position: relative;
-    height: calc(100dvh - 64px);
+    height: calc(100svh - 64px);
     margin-top: 64px;
     padding: 0 24px 20px;
 }
@@ -46,7 +46,7 @@
     z-index: 100;
     flex-direction: column;
     justify-content: space-between;
-    margin-top: calc(50dvh - 64px);
+    margin-top: calc(50svh - 64px);
 }
 
 .hero__title {
@@ -106,7 +106,7 @@
     left: 0;
     width: 100%;
     max-width: 1008px;
-    height: calc(50dvh - 64px);
+    height: calc(50svh - 64px);
     max-height: 946px;
     background-image: url(../../images/hero-image.webp);
     background-position: center;
@@ -432,12 +432,12 @@
     }
 
     .hero__inner {
-        height: calc(100dvh - 68px);
+        height: calc(100svh - 68px);
         margin-top: 68px;
     }
 
     .hero__content {
-        margin-top: calc(60dvh - 68px);
+        margin-top: calc(60svh - 68px);
     }
 
     .hero__title {
@@ -446,7 +446,7 @@
     }
 
     .hero__image-bg {
-        height: calc(75dvh - 68px);
+        height: calc(75svh - 68px);
         background-size: contain;
     }
 
@@ -547,7 +547,7 @@
     }
 
     .hero__title {
-        margin: 23dvh 0 17dvh;
+        margin: 23svh 0 17svh;
         font-size: 6.583333vw;
         line-height: 7.2vw;
     }
@@ -560,7 +560,7 @@
         left: auto;
         right: 0;
         width: 70vw;
-        height: 100dvh;
+        height: 100svh;
     }
 
     .logo-strip__label {

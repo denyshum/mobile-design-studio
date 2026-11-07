@@ -1,6 +1,6 @@
 import { searchQuery, matchesSearch } from '../../data/search.js';
 import { paintBadge } from '../badge.js';
-import { el, button, field, heading, icon, toast, clearToast, positionRecordMenu } from './controls.js';
+import { el, button, field, heading, icon, toast, clearToast, positionRecordMenu, deferLoading } from './controls.js';
 
 const labels = { new: 'Нове', progress: 'У роботі', closed: 'Закрите' };
 const filters = { all: 'Усі', active: 'Активні', new: 'Нові', progress: 'У роботі', closed: 'Закриті' };
@@ -202,7 +202,11 @@ export function createBriefsController({ client, main, dialog, navigate, mutatio
         nav.append(slot, panel);
         group.append(nav);
         const region = el('div');
-        region.append(loading());
+        const finishLoading = deferLoading(() => {
+            const node = loading();
+            region.append(node);
+            return node;
+        }, signal);
         const announcement = el('p', 'sort-announcement');
         announcement.setAttribute('role', 'status');
         let available = false;
@@ -366,6 +370,7 @@ export function createBriefsController({ client, main, dialog, navigate, mutatio
             announcement,
 
             loaded() {
+                finishLoading();
                 available = true;
                 fields.disabled = counts?.all === 0;
                 enableNavigation();
@@ -373,6 +378,7 @@ export function createBriefsController({ client, main, dialog, navigate, mutatio
             },
 
             failed() {
+                finishLoading();
                 available = false;
                 enableNavigation();
                 announcement.textContent = '';
@@ -389,11 +395,14 @@ export function createBriefsController({ client, main, dialog, navigate, mutatio
         };
     }
 
-    async function queue(signal) {
+    async function queue(signal, retain, restoreFocus) {
         const requestVersion = ++countVersion;
         const search = queueSearch(signal);
         rows = [];
-        main.replaceChildren(heading('Звернення'), search.controls, search.region, search.announcement);
+        const mount = () => main.replaceChildren(heading('Звернення'), search.controls, search.region, search.announcement);
+        if (!retain) {
+            mount();
+        }
 
         try {
             const result = await client.briefs(route.filter, signal);
@@ -403,6 +412,9 @@ export function createBriefsController({ client, main, dialog, navigate, mutatio
             }
 
             rows = result.records;
+            if (retain) {
+                mount();
+            }
 
             if (requestVersion === countVersion) {
                 updateCounts(result.counts);
@@ -417,7 +429,7 @@ export function createBriefsController({ client, main, dialog, navigate, mutatio
                     if (!signal.aborted) {
                         scrollTo({ top: saved.top, behavior: 'instant' });
 
-                        if (saved.id) {
+                        if (restoreFocus && saved.id) {
                             main.querySelector('[data-record="' + CSS.escape(saved.id) + '"] button')?.focus({ preventScroll: true });
                         }
                     }
@@ -433,6 +445,9 @@ export function createBriefsController({ client, main, dialog, navigate, mutatio
                 return;
             }
 
+            if (retain) {
+                mount();
+            }
             search.failed();
         }
     }
@@ -487,17 +502,22 @@ export function createBriefsController({ client, main, dialog, navigate, mutatio
             expected: { id: current.id, version: current.version },
             context: { id: current.id },
             quietBusy: true,
-            message: 'Стан звернення змінено',
+            message: null,
         });
         if (generation !== epoch) {
             return;
         }
         if (result.state === 'saved') {
             await go(record.id, route.filter, { replace: true, focus: false, resetScroll: false });
-            await poll();
-            if (status === 'closed') {
-                toast('Звернення закрито', { label: 'До закритих', action: () => go(null, 'closed') });
+            if (generation !== epoch || viewSignal?.aborted || current?.id !== record.id) {
+                return;
             }
+            if (status === 'closed') {
+                toast('Звернення закрито', { inlineAction: true, label: 'До закритих', action: () => go(null, 'closed') });
+            } else {
+                toast('Стан звернення змінено');
+            }
+            await poll();
         } else if (result.state !== 'uncertain' && !(await failure(result)) && primary?.isConnected) {
             primary.disabled = false;
             primary.textContent =
@@ -530,7 +550,7 @@ export function createBriefsController({ client, main, dialog, navigate, mutatio
                     expected: { id: record.id, version: record.version },
                     context: { id: record.id },
                     quietBusy: true,
-                    message: 'Звернення видалено',
+                    message: null,
                 });
                 if (generation !== epoch) {
                     return false;
@@ -543,16 +563,29 @@ export function createBriefsController({ client, main, dialog, navigate, mutatio
         });
         if (deleted && generation === epoch) {
             await go(null, route.filter);
+            if (generation !== epoch || viewSignal?.aborted || route.id) {
+                return;
+            }
+            toast('Звернення видалено');
             await poll();
         }
     }
 
-    async function detail(id, signal) {
+    async function detail(id, signal, retain) {
         if (!/^[a-f0-9-]{36}$/.test(id)) {
             throw Object.assign(new Error('Звернення недоступне'), { status: 404 });
         }
-        main.replaceChildren(loading());
-        const result = await client.read('brief', { id }, signal);
+        const finishLoading = retain ? null : deferLoading(() => {
+            const node = loading();
+            main.replaceChildren(node);
+            return node;
+        }, signal);
+        let result;
+        try {
+            result = await client.read('brief', { id }, signal);
+        } finally {
+            finishLoading?.();
+        }
         if (signal.aborted) {
             return;
         }
@@ -700,18 +733,20 @@ export function createBriefsController({ client, main, dialog, navigate, mutatio
         main.replaceChildren(article);
     }
 
-    async function render({ id, filter = 'active', query = '', signal }) {
+    async function render({ id, filter = 'active', query = '', signal, retain = false, restoreFocus = false }) {
         route = { id, filter: Object.hasOwn(filters, filter) ? filter : 'active', query: searchQuery(query, 80) };
         setSearchQuery?.(route.query, true);
         viewSignal = signal;
         recovery = null;
         current = null;
-        document.body.classList.toggle('editor-page--brief-detail', Boolean(id));
         try {
             if (id) {
-                await detail(id, signal);
+                await detail(id, signal, retain);
             } else {
-                await queue(signal);
+                await queue(signal, retain, restoreFocus);
+            }
+            if (!signal.aborted) {
+                document.body.classList.toggle('editor-page--brief-detail', Boolean(id));
             }
         } catch (error) {
             if (error.status === 404 && !signal.aborted) {
@@ -720,6 +755,66 @@ export function createBriefsController({ client, main, dialog, navigate, mutatio
             } else if (!signal.aborted) {
                 throw error;
             }
+        }
+    }
+
+    async function refreshDetail(id) {
+        const detail = main.querySelector('.brief-detail');
+        const origin = document.activeElement;
+        const control = detail?.contains(origin) ? origin.closest('button,summary,a[href]') : null;
+        const isPrimary = control?.matches('[data-brief-primary]');
+        const isBack = control?.matches('.brief-detail__back');
+        const inMenu = Boolean(control && menu?.contains(control));
+        const menuAction = inMenu && control.tagName === 'BUTTON' ? control.textContent : null;
+        const menuOpened = inMenu && menu.open;
+        const href = control?.getAttribute('href');
+        const generation = epoch;
+        const events = new AbortController();
+        let interacted = false;
+
+        if (control) {
+            document.addEventListener('focusin', event => {
+                if (![origin,document.body,document.documentElement].includes(event.target)) {
+                    interacted = true;
+                }
+            }, {capture:true,signal:events.signal});
+
+            document.addEventListener('pointerdown', () => {
+                interacted = true;
+            }, {capture:true,signal:events.signal});
+        }
+
+        try {
+            await go(id, route.filter, {replace:true,resetScroll:false,focus:false});
+        } finally {
+            events.abort();
+        }
+
+        if (!control || interacted || generation !== epoch || current?.id !== id || viewSignal?.aborted || new URLSearchParams(location.search).get('view') !== 'briefs' || ![origin,document.body,document.documentElement].includes(document.activeElement)) {
+            return;
+        }
+
+        const updated = main.querySelector('.brief-detail');
+        let target;
+
+        if (isPrimary) {
+            target = updated?.querySelector('[data-brief-primary]');
+        } else if (isBack) {
+            target = updated?.querySelector('.brief-detail__back');
+        } else if (inMenu) {
+            const updatedMenu = updated?.querySelector('.record-menu');
+
+            if (updatedMenu) {
+                updatedMenu.open = menuOpened;
+                position(updatedMenu);
+                target = [...updatedMenu.querySelectorAll('button')].find(item => item.textContent === menuAction) || updatedMenu.querySelector('summary');
+            }
+        } else if (href) {
+            target = [...(updated?.querySelectorAll('a[href]') || [])].find(link => link.getAttribute('href') === href);
+        }
+
+        if (target?.isConnected && !target.disabled && target.getClientRects().length) {
+            target.focus({preventScroll:true});
         }
     }
 
@@ -747,10 +842,11 @@ export function createBriefsController({ client, main, dialog, navigate, mutatio
                 !route.id &&
                 new URLSearchParams(location.search).get('view') === 'briefs' &&
                 !document.querySelector('dialog[open]') &&
-                !document.querySelector('.editor-toast[data-kind="error"]')
+                !document.querySelector('.editor-toast')
             ) {
                 toast(incoming === 1 ? 'Нове звернення у черзі' : 'Нових звернень: ' + incoming, {
                     owner: arrivalOwner,
+                    inlineAction: true,
                     label: 'Показати',
                     action: () => go(null, 'new'),
                 });
@@ -771,7 +867,7 @@ export function createBriefsController({ client, main, dialog, navigate, mutatio
             ) {
                 const actual = await client.read('brief', { id: current.id }, viewSignal);
                 if (actual.record.version !== current.version) {
-                    await go(current.id, route.filter, { replace: true, resetScroll: false, focus: false });
+                    await refreshDetail(current.id);
                 }
             }
             signature = result.signature;

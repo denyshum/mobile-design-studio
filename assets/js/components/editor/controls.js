@@ -7,8 +7,10 @@ export { icon };
 const sortables = new Set();
 let toastTimer;
 let activeToast;
+let retiringToast;
 let toastVersion = 0;
 let toastOwner;
+let toastCleanup = () => {};
 
 export function rememberFocus(control = document.activeElement) {
     const origin = document.activeElement;
@@ -64,12 +66,40 @@ export function motion(node, frames, duration = 280) {
     });
 }
 
-export function toast(message, { kind = 'success', action, label = 'Повторити', owner } = {}) {
+export function deferLoading(show, signal) {
+    let node;
+    const finish = () => {
+        clearTimeout(timer);
+        node?.remove();
+        signal.removeEventListener('abort', finish);
+    };
+    const timer = setTimeout(() => {
+        if (!signal.aborted) {
+            node = show();
+        }
+    }, 150);
+    signal.addEventListener('abort', finish, { once: true });
+    if (signal.aborted) {
+        finish();
+    }
+    return finish;
+}
+
+export function toast(message, { kind = 'success', action, label = 'Повторити', owner, inlineAction = false } = {}) {
+    toastCleanup();
+    toastCleanup = () => {};
     clearTimeout(toastTimer);
     const version = ++toastVersion;
     toastOwner = owner;
 
-    if (!activeToast?.isConnected) {
+    if (retiringToast) {
+        retiringToast.getAnimations?.().forEach(animation => animation.cancel());
+        retiringToast.remove();
+        retiringToast = null;
+    }
+
+    const reuse = activeToast?.isConnected;
+    if (!reuse) {
         activeToast = document.createElement('div');
         activeToast.className = 'editor-toast';
         document.body.append(activeToast);
@@ -79,7 +109,12 @@ export function toast(message, { kind = 'success', action, label = 'Повтор
     }
 
     const node = activeToast;
+    if (reuse) {
+        node.getAnimations?.().forEach(animation => animation.cancel());
+    }
     node.dataset.kind = kind;
+    node.toggleAttribute('data-inline-action', inlineAction);
+    delete node.dataset.briefArrival;
     node.replaceChildren();
     const mark = kind === 'busy' ? document.createElement('span') : icon(kind === 'error' ? 'warning' : 'check');
     mark.classList.add(kind === 'busy' ? 'loading-ring' : 'toast-icon');
@@ -109,6 +144,8 @@ export function toast(message, { kind = 'success', action, label = 'Повтор
             await motion(node, [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(.5rem)' }], 180);
 
             if (version === toastVersion) {
+                toastCleanup();
+                toastCleanup = () => {};
                 node.remove();
             }
         }
@@ -119,14 +156,17 @@ export function toast(message, { kind = 'success', action, label = 'Повтор
 
     if (kind === 'success') {
         const schedule = () => {
-            if (version !== toastVersion) {
+            if (version !== toastVersion || !node.isConnected) {
                 return;
             }
 
             clearTimeout(toastTimer);
+            if (document.querySelector('dialog[open]')) {
+                return;
+            }
 
             toastTimer = setTimeout(() => {
-                if (node.matches(':hover') || node.contains(document.activeElement)) {
+                if (document.querySelector('dialog[open]') || node.matches(':hover') || node.contains(document.activeElement)) {
                     schedule();
                 } else {
                     dismiss();
@@ -134,12 +174,15 @@ export function toast(message, { kind = 'success', action, label = 'Повтор
             }, 5500);
         };
 
-        node.onpointerleave = schedule;
-        node.onfocusout = schedule;
+        document.addEventListener('close', schedule, true);
+        node.addEventListener('pointerleave', schedule);
+        node.addEventListener('focusout', schedule);
+        toastCleanup = () => {
+            document.removeEventListener('close', schedule, true);
+            node.removeEventListener('pointerleave', schedule);
+            node.removeEventListener('focusout', schedule);
+        };
         schedule();
-    } else {
-        node.onpointerleave = null;
-        node.onfocusout = null;
     }
 }
 
@@ -148,6 +191,8 @@ export async function clearToast(owner) {
         return;
     }
 
+    toastCleanup();
+    toastCleanup = () => {};
     clearTimeout(toastTimer);
     toastVersion += 1;
     const node = activeToast;
@@ -155,8 +200,12 @@ export async function clearToast(owner) {
     toastOwner = undefined;
 
     if (node?.isConnected) {
+        retiringToast = node;
         await motion(node,[{opacity:1},{opacity:0}],180);
         node.remove();
+        if (retiringToast === node) {
+            retiringToast = null;
+        }
     }
 }
 

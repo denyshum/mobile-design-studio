@@ -1,4 +1,5 @@
 import { backend } from './config.js';
+import { createCoverCache } from './editor-covers.js';
 
 export const editorSessionKey = 'mobilevision.editor.auth:' + backend.apiUrl;
 export const editorEventsKey = 'mobilevision.editor.events:' + backend.apiUrl;
@@ -38,6 +39,12 @@ export function createEditorClient() {
 
     const storageKey = editorSessionKey;
     let logoutToken;
+    let identity = null;
+    let privateVersion = 0;
+    let permit;
+    let permitRequest;
+    const covers = createCoverCache(request);
+    const resetListeners = new Set();
     const sdk = globalThis.supabase.createClient(apiUrl, publicKey, {
         auth: {
             persistSession: true, autoRefreshToken: true, detectSessionInUrl: false,
@@ -50,12 +57,49 @@ export function createEditorClient() {
         },
     });
 
+    function clearPrivateState() {
+        privateVersion += 1;
+        permit = null;
+        permitRequest = null;
+        covers.clear();
+
+        for (const listener of resetListeners) {
+            listener();
+        }
+    }
+
+    function setIdentity(current) {
+        const next = sessionIdentity(current?.access_token);
+
+        if (next !== identity) {
+            clearPrivateState();
+            identity = next;
+        }
+    }
+
+    sdk.auth.onAuthStateChange?.((_event, current) => {
+        setIdentity(current);
+    });
+
+    function rememberPermit(value, current, startedAt) {
+        const claims = JSON.parse(atob(value.mutation_permit.split('.')[0].replaceAll('-', '+').replaceAll('_', '/')));
+        const remaining = Date.parse(claims.expires_at) - Date.parse(value.server_time);
+        const matches = claims.actor === JSON.parse(sessionIdentity(current.access_token) || '[]')[0];
+        permit = matches && Number.isFinite(remaining) && remaining > 5000 ? {
+            value: value.mutation_permit, claims,
+            deadline: startedAt + Math.min(remaining, 60000) - 5000,
+        } : null;
+    }
+
     async function session() {
         const result = await sdk.auth.getSession();
 
         if (result.error) {
+            clearPrivateState();
             throw new EditorRequestError('Увійдіть знову', {status:401, code:'SESSION_EXPIRED'});
         }
+
+        setIdentity(result.data.session);
 
         return result.data.session;
     }
@@ -67,6 +111,8 @@ export function createEditorClient() {
             throw new EditorRequestError('Увійдіть знову', {status:401, code:'SESSION_EXPIRED'});
         }
 
+        const version = privateVersion;
+        const startedAt = performance.now();
         let response;
 
         try {
@@ -82,9 +128,19 @@ export function createEditorClient() {
             const value = await response.json();
 
             if (!response.ok) {
+                permit = null;
+
+                if ([401, 403].includes(response.status)) {
+                    clearPrivateState();
+                }
+
                 throw new EditorRequestError(value.message || 'Не вдалося виконати дію', {
                     status:response.status, code:value.code, committed:write ? value.committed === false ? false : null : false,
                 });
+            }
+
+            if (route === 'editor-content?view=access' && version === privateVersion) {
+                rememberPermit(value, current, startedAt);
             }
 
             return value;
@@ -190,14 +246,63 @@ export function createEditorClient() {
     }
 
     async function mutate(action, payload, expected = null, { operationId = crypto.randomUUID(), onSent } = {}) {
-        const access = await read('access');
-        const claims = JSON.parse(atob(access.mutation_permit.split('.')[0].replaceAll('-','+').replaceAll('_','/')));
+        await session();
+        const version = privateVersion;
+        const uploadedCover = Boolean(payload.cover_ticket || payload.cover?.mode === 'replace');
+        let access = !uploadedCover && permit?.deadline > performance.now() ? permit : null;
+
+        if (!access) {
+            if (!permitRequest) {
+                const pending = read('access').then(value => ({
+                    value: value.mutation_permit,
+                    claims: JSON.parse(atob(value.mutation_permit.split('.')[0].replaceAll('-', '+').replaceAll('_', '/'))),
+                }));
+                permitRequest = pending;
+                const settled = () => {
+                    if (permitRequest === pending) {
+                        permitRequest = null;
+                    }
+                };
+                pending.then(settled, settled);
+            }
+
+            access = await permitRequest;
+        }
+
+        if (version !== privateVersion) {
+            throw new EditorRequestError('Увійдіть знову', { status: 401, code: 'SESSION_EXPIRED' });
+        }
+
+        const { claims } = access;
         onSent?.({operationId, expiresAt:Date.parse(claims.expires_at)});
 
-        return request('editor-content', {
+        const send = value => request('editor-content', {
             method:'POST', write:true, headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({action,payload,expected,operation_id:operationId,permit:access.mutation_permit}),
+            body:JSON.stringify({action,payload,expected,operation_id:operationId,permit:value}),
         });
+
+        try {
+            return await send(access.value);
+        } catch (error) {
+            if (uploadedCover || error.code !== 'PERMIT_EXPIRED' || error.committed !== false) {
+                throw error;
+            }
+
+            const fresh = await read('access');
+
+            if (version !== privateVersion) {
+                throw new EditorRequestError('Увійдіть знову', { status: 401, code: 'SESSION_EXPIRED' });
+            }
+
+            const renewed = JSON.parse(atob(fresh.mutation_permit.split('.')[0].replaceAll('-', '+').replaceAll('_', '/')));
+            onSent?.({operationId, expiresAt:Date.parse(renewed.expires_at)});
+
+            return await send(fresh.mutation_permit);
+        } finally {
+            if (action.endsWith('.delete')) {
+                permit = null;
+            }
+        }
     }
 
     async function upload(blob, context) {
@@ -207,6 +312,7 @@ export function createEditorClient() {
     }
 
     async function signOutLocal() {
+        clearPrivateState();
         const current = logoutToken ? null : await session();
         const token = logoutToken || current?.access_token;
 
@@ -253,7 +359,31 @@ export function createEditorClient() {
     }
 
     return {
-        auth:sdk.auth,session,read,catalog,briefs,mutate,upload,request,signOutLocal,
+        auth:sdk.auth,session,read,catalog,briefs,mutate,upload,request,signOutLocal,clearPrivateState,
+
+        onPrivateStateClear(listener) {
+            resetListeners.add(listener);
+
+            return () => resetListeners.delete(listener);
+        },
+
+        async cover(record, signal) {
+            await session();
+
+            return covers.load(record, signal);
+        },
+
+        forgetCover(record) {
+            covers.forget(record);
+        },
+
+        async rememberCover(record, blob, token) {
+            await session();
+
+            if (identity && identity === sessionIdentity(token)) {
+                covers.remember(record, blob);
+            }
+        },
 
         cancelLogoutRetry() { logoutToken = null; },
     };

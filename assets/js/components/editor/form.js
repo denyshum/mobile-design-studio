@@ -21,6 +21,8 @@ export function createContentForm({kind, record = null, image, onSave, onBack, o
     const status = el('span','status-pill', publicationLabel(!fresh && (vacancy ? record.status === 'open' : record.published)));
     const save = button(fresh ? 'Зберегти чернетку' : 'Зберегти зміни', () => submit(false),fresh ? 'small-action' : 'primary-action');
     const commands = actions(save);
+    let busyAction;
+    let busyLabel;
 
     if (fresh) {
         commands.append(button('Опублікувати', () => submit(true),'primary-action'));
@@ -380,7 +382,13 @@ export function createContentForm({kind, record = null, image, onSave, onBack, o
 
         set dirty(value) { dirty = value; },
 
-        setBusy(value) {
+        setBusy(value,publish = false) {
+            if (value && !busyAction) {
+                busyAction = fresh && publish ? commands.lastElementChild : save;
+                busyLabel = busyAction.textContent;
+                busyAction.textContent = 'Зберігаємо…';
+            }
+
             for (const node of form.querySelectorAll('button,input,textarea')) {
                 if (value) {
                     previousDisabled.set(node,node.disabled);
@@ -390,9 +398,13 @@ export function createContentForm({kind, record = null, image, onSave, onBack, o
                 }
             }
 
-
             if (!value) {
                 previousDisabled.clear();
+
+                if (busyAction) {
+                    busyAction.textContent = busyLabel;
+                    busyAction = null;
+                }
             }
         },
 

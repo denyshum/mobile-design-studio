@@ -185,7 +185,7 @@ export function initBriefForm() {
                     return 'Вкажіть email для відповіді.';
                 }
                 control.value = value;
-                if (control.validity.typeMismatch || value.length > 254) {
+                if (control.validity.typeMismatch || control.validity.patternMismatch || value.length > 254) {
                     return 'Введіть email у форматі name@example.com.';
                 }
                 break;

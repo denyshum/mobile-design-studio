@@ -10,8 +10,7 @@ export function createCoverImages(client, signal) {
 
         try {
             if (!cache.has(key)) {
-                cache.set(key, client.request('project-cover?id=' + encodeURIComponent(record.id), {signal}).then(async response => {
-                    const blob = await response.blob();
+                cache.set(key, client.cover(record, signal).then(blob => {
 
                     if (signal.aborted) {
                         throw signal.reason;
@@ -65,11 +64,23 @@ export function createCoverImages(client, signal) {
     return (record, className = '') => {
         const node = el('img',className);
         node.alt = '';
+        node.dataset.coverId = record.id;
         node.width = record.image_width;
         node.height = record.image_height;
         node.decoding = 'async';
 
         node.addEventListener('error',() => {
+            if (signal.aborted) {
+                return;
+            }
+
+            client.forgetCover(record);
+            cache.delete(record.record_token + ':' + record.cover_revision);
+
+            if (urls.delete(node.src)) {
+                URL.revokeObjectURL(node.src);
+            }
+
             node.alt = 'Обкладинка недоступна';
             node.dataset.imageError = 'true';
         },{once:true});

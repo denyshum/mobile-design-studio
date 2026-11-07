@@ -4,7 +4,7 @@ import { catalogResource } from '../data/projects.js';
 import { searchQuery } from '../data/search.js';
 import { validId } from '../data/client.js';
 import { createModal, finishScrollRestore } from '../components/modal.js';
-import { el,button,icon,heading,field,fieldError,notice,motion,toast,clearToast,makeSortable,disposeSortables,publicationLabel,rememberFocus,positionRecordMenu } from '../components/editor/controls.js';
+import { el,button,icon,heading,field,fieldError,notice,motion,toast,clearToast,makeSortable,disposeSortables,publicationLabel,rememberFocus,positionRecordMenu,deferLoading } from '../components/editor/controls.js';
 import { createEditorDialog } from '../components/editor/dialog.js';
 import { createCoverImages } from '../components/editor/media.js';
 import { createContentForm } from '../components/editor/form.js';
@@ -39,6 +39,10 @@ let historyIndex = history.state?.editorIndex || 0;
 let restoringHistory = false;
 let keyboardActivation = false;
 const routes = new Set(['projects','vacancies','collections','project-new','project-edit','vacancy-new','vacancy-edit','briefs','login']);
+const viewSnapshots = new Map();
+let progress;
+let renderedRecords = [];
+
 const channel = typeof BroadcastChannel === 'function' ? new BroadcastChannel(editorEventsKey) : null;
 
 function currentRoute() {
@@ -77,6 +81,9 @@ function setHeader(value) {
 }
 
 function clearView() {
+    progress?.remove();
+    progress = null;
+    renderedRecords = [];
     finishScrollRestore();
     uncertainView = null;
     viewAbort.abort();
@@ -86,6 +93,7 @@ function clearView() {
     disposeSortables();
     main.replaceChildren();
     delete main.dataset.ready;
+    delete main.dataset.refreshing;
     main.classList.remove('editor-main--access');
     document.body.classList.remove('editor-page--editing', 'editor-page--brief-detail');
 }
@@ -412,6 +420,11 @@ async function renderList(kind,image,signal) {
     const result = await client.catalog(entity,signal);
     const list = el('div','record-list');
     const records = result.records;
+
+    if (!signal.aborted) {
+        renderedRecords = records;
+    }
+
     let digest = result.order_digest;
     const tokens = Object.fromEntries(records.map(record => [record.id,record.record_token]));
 
@@ -482,7 +495,7 @@ async function renderList(kind,image,signal) {
                     execute:async () => {
                         const payload = kind === 'project' ? {published:!visible} : {status:visible ? 'closed' : 'open'};
                         const expected = {record_token:record.record_token,...(kind === 'project' ? {published:visible} : {status:record.status})};
-                        const changed = await mutations.run({action:kind + '.visibility',payload,expected,context:{id:record.id},message:visible ? 'Запис приховано' : 'Запис опубліковано'});
+                        const changed = await mutations.run({action:kind + '.visibility',payload,expected,context:{id:record.id},message:visible ? 'Запис приховано' : 'Запис опубліковано',quietBusy:true});
 
                         if (changed.state === 'saved') {
                             const previousCover = record.cover_revision;
@@ -542,7 +555,7 @@ async function renderList(kind,image,signal) {
                         const deleted = await mutations.run({
                             action:kind + '.delete',payload:{id:record.id},
                             expected:{record_token:record.record_token,delete_digest:preview.delete_digest},
-                            context:{id:record.id},message:kind === 'project' ? 'Проєкт видалено' : 'Вакансію видалено',
+                            context:{id:record.id},message:kind === 'project' ? 'Проєкт видалено' : 'Вакансію видалено',quietBusy:true,
                         });
 
                         return deleted.state === 'saved';
@@ -634,18 +647,22 @@ async function saveForm(controller,publish) {
         return;
     }
 
+    let savingSession;
+    const preparedCover = controller.blob;
     const fresh = !controller.record;
     const kind = controller.kind;
     const payload = controller.values();
     const expected = fresh ? null : {record_token:controller.record.record_token,content_version:controller.record.content_version};
     controller.operationId ||= crypto.randomUUID();
     const operationId = controller.operationId;
-    controller.setBusy(true);
+    controller.setBusy(true,publish);
+    clearToast();
 
     try {
+        savingSession = await client.session();
+
         if (kind === 'project') {
             if (controller.blob) {
-                toast('Завантажуємо обкладинку…',{kind:'busy'});
                 const uploaded = await client.upload(controller.blob,{
                     record_token:fresh ? operationId : controller.record.record_token,
                     base_cover_revision:fresh ? '0' : controller.record.cover_revision,purpose:fresh ? 'create' : 'replace',
@@ -678,10 +695,14 @@ async function saveForm(controller,publish) {
             success:value => {
                 controller.dirty = false;
                 controller.savedRecord = value.record;
-            },message:fresh && !publish ? 'Чернетку збережено' : 'Зміни збережено',
+            },message:fresh && !publish ? 'Чернетку збережено' : 'Зміни збережено',quietBusy:true,
         });
 
         if (result.state === 'saved') {
+            if (preparedCover) {
+                await client.rememberCover(result.record, preparedCover, savingSession.access_token);
+            }
+
             await navigate(kind + '-edit',result.record.id,{replace:true,focus:false,resetScroll:false,animate:false,record:result.record});
         } else if (result.state !== 'uncertain') {
             controller.setBusy(false);
@@ -695,6 +716,60 @@ async function saveForm(controller,publish) {
             toast(error.message,{kind:'error'});
         }
     }
+}
+
+function cloneViewNodes() {
+    return [...main.children].map(node => {
+        const copy = node.cloneNode(true);
+        for (const image of copy.querySelectorAll('img[data-cover-id]')) {
+            image.removeAttribute('src');
+        }
+        return copy;
+    });
+}
+
+function lockSnapshot(node) {
+    node.dataset.readonly = 'true';
+
+    for (const control of node.querySelectorAll('button, input, select, textarea, summary, a')) {
+        if ('disabled' in control) {
+            control.disabled = true;
+        } else {
+            control.tabIndex = -1;
+        }
+    }
+
+    const block = event => {
+        if (event.target.closest('button, input, select, textarea, summary, a, [draggable="true"]')) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+        }
+    };
+
+    for (const type of ['click', 'keydown', 'pointerdown', 'dragstart']) {
+        node.addEventListener(type, block, { capture: true });
+    }
+}
+
+function beginRefresh(message = 'Оновлюємо список…') {
+    const node = el('div', 'editor-progress');
+    node.setAttribute('role', 'status');
+    const label = el('span', 'editor-progress__label', message);
+    node.append(label);
+    const finishLoading = deferLoading(() => {
+        document.body.append(node);
+        progress = node;
+        return node;
+    }, viewAbort.signal);
+
+    return () => {
+        finishLoading();
+        if (progress === node) {
+            progress = null;
+        }
+
+        node.remove();
+    };
 }
 
 async function renderCurrent({focus = false,preserveScroll = true,animate = true,recordOverride} = {}) {
@@ -715,6 +790,25 @@ async function renderCurrent({focus = false,preserveScroll = true,animate = true
         return;
     }
 
+    const previousView = main.dataset.ready;
+    const sourceSnapshot = ['projects', 'vacancies', 'collections', 'briefs'].includes(previousView)
+        ? { records: renderedRecords, nodes: cloneViewNodes(), briefDetail: document.body.classList.contains('editor-page--brief-detail') }
+        : null;
+
+    if (['projects', 'vacancies', 'collections'].includes(previousView)) {
+        viewSnapshots.delete(previousView);
+
+        if (renderedRecords.length <= 200) {
+            const nodes = cloneViewNodes();
+
+            for (const node of nodes) {
+                node.querySelectorAll('details[open]').forEach(details => { details.open = false; });
+            }
+
+            viewSnapshots.set(previousView, { records: renderedRecords, nodes });
+        }
+    }
+
     clearView();
     setHeader(true);
     const signal = viewAbort.signal;
@@ -722,11 +816,44 @@ async function renderCurrent({focus = false,preserveScroll = true,animate = true
     const knownRoute = routes.has(route.view);
     const title = knownRoute ? pageTitle(route.view) : 'Редактор';
 
-    if (knownRoute) {
-        main.append(heading(title),resource('Завантажуємо ' + title.toLowerCase() + '…','',null,'',{loading:true}));
+    const cached = viewSnapshots.get(route.view);
+    const retained = cached || (!recordOverride && knownRoute ? sourceSnapshot : null);
+    let finishRefresh;
+    let finishLoading;
+
+    if (knownRoute && !retained) {
+        main.append(heading(title));
+        if (!recordOverride && route.view !== 'briefs') {
+            finishLoading = deferLoading(() => {
+                const node = resource('Завантажуємо ' + title.toLowerCase() + '…','',null,'',{loading:true});
+                main.append(node);
+                return node;
+            }, signal);
+        }
     }
 
     try {
+        if (retained) {
+            const nodes = retained.nodes.map(node => node.cloneNode(true));
+
+            for (const node of nodes) {
+                for (const previous of node.querySelectorAll('img[data-cover-id]')) {
+                    const record = retained.records.find(record => record.id === previous.dataset.coverId);
+
+                    if (record) {
+                        previous.replaceWith(image(record, previous.className));
+                    }
+                }
+
+                lockSnapshot(node);
+            }
+
+            main.replaceChildren(...nodes);
+            main.dataset.refreshing = 'true';
+            document.body.classList.toggle('editor-page--brief-detail', Boolean(retained.briefDetail));
+            finishRefresh = beginRefresh(route.view === 'briefs' ? 'Оновлюємо звернення…' : 'Оновлюємо дані…');
+        }
+
         if (!routes.has(route.view)) {
             throw Object.assign(new Error('Сторінку не знайдено'),{status:404});
         }
@@ -734,7 +861,7 @@ async function renderCurrent({focus = false,preserveScroll = true,animate = true
         let content;
 
         if (route.view === 'briefs') {
-            await briefs.render({ ...route, signal });
+            await briefs.render({ ...route, signal, retain: Boolean(retained), restoreFocus: previousView === 'briefs' });
             if (signal.aborted || version !== viewVersion) {
                 return;
             }
@@ -755,6 +882,7 @@ async function renderCurrent({focus = false,preserveScroll = true,animate = true
             }
 
             main.replaceChildren();
+            renderedRecords = catalog.records;
 
             renderCollections({main,collections,records:catalog.records,image,dialog:panel,save:async (collection,items,digest) => {
                 return mutations.run({
@@ -798,6 +926,12 @@ async function renderCurrent({focus = false,preserveScroll = true,animate = true
             document.body.classList.add('editor-page--editing');
         }
 
+        document.body.classList.toggle('editor-page--brief-detail', route.view === 'briefs' && Boolean(route.id));
+
+        // Після модальних вікон перераховуємо inert-стан нового вмісту перед відновленням фокуса
+        main.inert = true;
+        main.inert = false;
+        delete main.dataset.refreshing;
         document.title = title + ' — MobileVision';
         main.dataset.ready = route.view;
 
@@ -813,13 +947,25 @@ async function renderCurrent({focus = false,preserveScroll = true,animate = true
             window.scrollTo(previousScroll);
         }
 
-        if (animate) {
+        if (animate && (!retained || previousView !== route.view)) {
             motion(main,[{opacity:0,transform:'translateY(.5rem)'},{opacity:1,transform:'none'}]);
         }
     } catch (error) {
         if (!signal.aborted && version === viewVersion) {
-            handleReadError(error);
+            delete main.dataset.refreshing;
+
+            if (cached && ![401, 403, 404].includes(error.status)) {
+                const message = notice('Не вдалося оновити список', 'Показано попередні дані. Перевірте з’єднання та спробуйте ще раз', 'error', button('Спробувати ще раз', () => renderCurrent(), 'primary-action'));
+                message.classList.add('editor-refresh-error');
+                main.querySelector('.editor-heading').after(message);
+                main.dataset.ready = 'cached-error';
+            } else {
+                handleReadError(error);
+            }
         }
+    } finally {
+        finishLoading?.();
+        finishRefresh?.();
     }
 }
 
@@ -843,6 +989,7 @@ function handleReadError(error) {
 }
 
 async function accessLost(error) {
+    client.clearPrivateState();
     clearToast();
     accessVersion += 1;
     viewVersion += 1;
@@ -895,6 +1042,9 @@ async function checkAccess({initial = false} = {}) {
         if (actor && actor !== nextActor) {
             suspended = null;
             mutations.clear();
+            briefs.stop();
+            viewSnapshots.clear();
+            clearView();
         }
 
         const keepView = authorized && actor === nextActor;
@@ -958,6 +1108,7 @@ async function explicitLogout({confirm = true} = {}) {
     }
 
     loggingOut = true;
+    client.clearPrivateState();
     registeredUser = undefined;
     accessVersion += 1;
     viewVersion += 1;
@@ -1001,6 +1152,7 @@ async function boot() {
     },true);
 
     client = createEditorClient();
+    client.onPrivateStateClear(() => viewSnapshots.clear());
 
     mutations = createMutationController(client,{
         onUncertain:(verify,message) => {
@@ -1041,10 +1193,15 @@ async function boot() {
         onAccessLost:accessLost,
 
         onSettled:async ({conflict = false,result} = {}) => {
+            const target = currentRoute();
+            const stillCurrent = () => {
+                const actual = currentRoute();
+                return Object.entries(target).every(([key,value]) => actual[key] === value);
+            };
             if (currentRoute().view === 'briefs' && result?.result === 'deleted' && !conflict) {
                 await navigate('briefs',null,{replace:true,filter:currentRoute().filter});
-                toast('Звернення видалено');
-                return;
+                target.id = null;
+                return stillCurrent() ? {message:'Звернення видалено'} : false;
             }
             if (uncertainView) {
                 main.replaceChildren(uncertainView);
@@ -1055,14 +1212,20 @@ async function boot() {
             if (form) {
                 if (result?.record && !conflict) {
                     form.dirty = false;
-                    await navigate(form.kind + '-edit',result.record.id,{replace:true,focus:false,resetScroll:false,animate:false,record:result.record});
+                    target.view = form.kind + '-edit';
+                    target.id = result.record.id;
+                    target.filter = 'active';
+                    await navigate(target.view,result.record.id,{replace:true,focus:false,resetScroll:false,animate:false,record:result.record});
                 } else {
                     form.setBusy(false);
                     form.operationId = crypto.randomUUID();
-                    toast('Поточні дані відрізняються. Перегляньте їх перед збереженням',{kind:'error',label:'Оновити дані',action:() => navigate(currentRoute().view,currentRoute().id,{replace:true})});
+                    return {message:'Поточні дані відрізняються. Перегляньте їх перед збереженням',options:{kind:'error',label:'Оновити дані',action:() => navigate(currentRoute().view,currentRoute().id,{replace:true})}};
                 }
             } else {
                 await renderCurrent({focus:false});
+            }
+            if (!stillCurrent()) {
+                return false;
             }
         },
 

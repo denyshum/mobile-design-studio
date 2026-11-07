@@ -146,6 +146,11 @@ button {
     padding: 0 12px;
 }
 
+.main-header:has(.menu-overlay--open) > .main-header__inner {
+    background-color: var(--bg-main);
+    box-shadow: 0 -8px 0 var(--bg-main);
+}
+
 .nav {
     display: none;
     align-self: flex-end;
@@ -202,6 +207,8 @@ button {
     left: 0;
     width: 100vw;
     height: 100dvh;
+    overflow-y: auto;
+    scroll-padding-top: 4.25rem;
     background-color: var(--bg-main);
     opacity: 0;
     transition: opacity .4s ease, visibility .4s ease;
@@ -216,7 +223,8 @@ button {
 
 .menu-overlay__inner {
     flex-direction: column;
-    height: 100%;
+    height: auto;
+    min-height: 100%;
     padding: 64px 32px;
 }
 
@@ -233,6 +241,10 @@ button {
     flex-direction: column;
 }
 
+.menu-overlay__item {
+    max-width: 100%;
+}
+
 .menu-overlay__link {
     position: relative;
     display: inline-block;
@@ -240,6 +252,7 @@ button {
     font-size: 2.5rem;
     font-weight: 500;
     line-height: 1.2;
+    overflow-wrap: anywhere;
 }
 
 .menu-overlay__link:after {
@@ -262,7 +275,13 @@ button {
 }
 
 .menu-overlay__info {
+    flex-wrap: wrap;
     justify-content: space-between;
+}
+
+.menu-overlay__col {
+    max-width: 100%;
+    overflow-wrap: anywhere;
 }
 
 .menu-overlay__col-title {
@@ -303,16 +322,14 @@ button {
     height: 2px;
     background-color: #ffffff4d;
     transition: width .3s ease, background-color .3s ease;
-    cursor: pointer;
 }
 
-.slider__indicator:before {
+.slider__indicator-button {
     position: absolute;
     top: -10px;
     right: -2.5px;
     bottom: -10px;
     left: -2.5px;
-    content: "";
 }
 
 .slider__indicator--active {
@@ -1050,6 +1067,7 @@ button {
 }
 
 .menu-overlay__link:has(.badge:not([hidden])) {
+    margin-right: calc(var(--badge-width, 26px) + 8px);
     max-width: calc(100% - var(--badge-width, 26px) - 8px);
 }
 
@@ -1083,7 +1101,7 @@ button {
         width: 20px;
     }
 
-    .slider__indicator:before {
+    .slider__indicator-button {
         left: -5px;
         right: -5px;
     }

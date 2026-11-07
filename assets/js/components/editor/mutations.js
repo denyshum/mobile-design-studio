@@ -4,14 +4,19 @@ import { verifyMutation } from './verification.js';
 export function createMutationController(client,{onAccessLost,onSettled,onConflict,onUncertain}) {
     let busy = false;
     let pending;
+    let generation = 0;
 
     function announcePending() {
-        if (onUncertain) {
-            onUncertain(verify);
-
+        if (!pending) {
+            if (busy) {
+                toast('Зачекайте завершення поточної дії',{kind:'busy'});
+            }
             return;
         }
-
+        if (onUncertain) {
+            onUncertain(verify);
+            return;
+        }
         toast('Не вдалося підтвердити результат. Перевірте збереження перед наступною дією', {
             kind:'error',label:'Перевірити результат',action:verify,
         });
@@ -21,25 +26,31 @@ export function createMutationController(client,{onAccessLost,onSettled,onConfli
         if (!pending || busy) {
             return;
         }
-
+        const operation = pending;
+        const version = ++generation;
         busy = true;
         toast('Перевіряємо збереження…',{kind:'busy'});
 
         try {
-            const actual = await verifyMutation(client,pending);
-
+            const actual = await verifyMutation(client,operation);
+            if (version !== generation || pending !== operation) {
+                return;
+            }
             if (actual.matches) {
-                const completed = pending;
                 pending = null;
                 busy = false;
-                completed.success?.(actual.result);
-                toast('Поточні дані відповідають змінам');
-                await onSettled?.({result:actual.result,operation:completed});
+                operation.success?.(actual.result);
+                const feedback = await onSettled?.({result:actual.result,operation});
+                if (version === generation && feedback !== false) {
+                    toast(feedback?.message || 'Поточні дані відповідають змінам',feedback?.options);
+                }
             } else if (actual.settled) {
                 pending = null;
                 busy = false;
-                toast('Результат перевірено. Дані відрізняються — перегляньте їх перед наступним збереженням',{kind:'error'});
-                await onSettled?.({conflict:true});
+                const feedback = await onSettled?.({conflict:true,operation});
+                if (version === generation && feedback !== false) {
+                    toast(feedback?.message || 'Результат перевірено. Дані відрізняються — перегляньте їх перед наступним збереженням',{kind:'error',...feedback?.options});
+                }
             } else {
                 if (onUncertain) {
                     onUncertain(verify,'Операція ще може завершуватися. Перевірте результат трохи згодом');
@@ -50,13 +61,22 @@ export function createMutationController(client,{onAccessLost,onSettled,onConfli
                 }
             }
         } catch (error) {
+            if (version !== generation) {
+                return;
+            }
             if ([401,403].includes(error.status)) {
-                onAccessLost(error);
-            } else {
+                await onAccessLost(error);
+            } else if (pending === operation) {
                 announcePending();
+            } else {
+                toast('Результат перевірено, але сторінку не вдалося оновити',{
+                    kind:'error',...(onConflict ? {label:'Оновити дані',action:onConflict} : {}),
+                });
             }
         } finally {
-            busy = false;
+            if (version === generation) {
+                busy = false;
+            }
         }
     }
 
@@ -67,10 +87,9 @@ export function createMutationController(client,{onAccessLost,onSettled,onConfli
             } else {
                 toast('Зачекайте завершення поточної дії',{kind:'busy'});
             }
-
             return {state:pending ? 'uncertain' : 'blocked'};
         }
-
+        const version = ++generation;
         busy = true;
         if (!quietBusy) {
             toast('Зберігаємо…',{kind:'busy'});
@@ -79,40 +98,41 @@ export function createMutationController(client,{onAccessLost,onSettled,onConfli
 
         try {
             const result = await client.mutate(action,payload,expected,{operationId,onSent:meta => { sent = meta; }});
+            if (version !== generation) {
+                return {state:'cancelled'};
+            }
             success?.(result);
-            toast(message);
-
+            if (message) {
+                toast(message);
+            }
             return {state:'saved',...result};
         } catch (error) {
+            if (version !== generation) {
+                return {state:'cancelled'};
+            }
             if (error.committed === null && sent) {
                 pending = {action,payload,expected,operationId,context,success,...sent};
                 announcePending();
-
                 return {state:'uncertain'};
             }
-
             if ([401,403].includes(error.status)) {
-                onAccessLost(error);
+                await onAccessLost(error);
             } else {
                 toast(error.message,{kind:'error',...(error.status === 409 && onConflict ? {label:'Оновити дані',action:onConflict} : {})});
             }
-
             return {state:'rolled-back',error};
         } finally {
-            busy = false;
+            if (version === generation) {
+                busy = false;
+            }
         }
     }
 
     return {
         run,verify,
-
         get pending() { return Boolean(pending); },
-
         get busy() { return busy; },
-
-        clear() { pending = null; },
-
+        clear() { generation += 1; pending = null; busy = false; },
         announcePending,
     };
 }
-

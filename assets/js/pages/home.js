@@ -29,6 +29,7 @@ function initSlider(projectsData) {
         const link = document.createElement('a');
         link.href = projectUrl(item);
         const image = document.createElement('img');
+        image.loading = 'lazy';
         fillImage(image, item);
         image.className = 'slider__img';
         link.append(image);
@@ -44,25 +45,22 @@ function initSlider(projectsData) {
     projectsData.forEach((_, index) => {
         const li = document.createElement('li');
         li.className = 'slider__indicator' + (index === 0 ? ' slider__indicator--active' : '');
-        li.setAttribute('role', 'button');
-        li.setAttribute('tabindex', '0');
-        li.title = `Перейти до слайду ${index + 1}`;
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'slider__indicator-button';
+        button.title = `Перейти до слайду ${index + 1}`;
+        const label = document.createElement('span');
+        label.className = 'visually-hidden';
+        label.textContent = button.title;
+        button.append(label);
 
-        const goToSlide = () => {
+        button.addEventListener('click', () => {
             if (swiperInstance) {
                 swiperInstance.slideToLoop(index);
             }
-        };
-
-        li.addEventListener('click', goToSlide);
-
-        li.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                goToSlide();
-            }
         });
 
+        li.append(button);
         indicatorsEl.appendChild(li);
     });
 
@@ -192,6 +190,7 @@ function initCollections() {
                 link.className = 'projects__item';
                 link.href = projectUrl(record);
                 const image = document.createElement('img');
+                image.loading = 'lazy';
                 image.className = 'projects__img';
                 fillImage(image, record);
                 link.append(image);
