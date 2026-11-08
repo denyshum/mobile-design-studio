@@ -43,6 +43,7 @@ const routes = new Set(['projects','vacancies','collections','project-new','proj
 const viewSnapshots = new Map();
 let progress;
 let renderedRecords = [];
+let displayedView;
 
 const channel = typeof BroadcastChannel === 'function' ? new BroadcastChannel(editorEventsKey) : null;
 
@@ -86,6 +87,7 @@ function clearView() {
     progress?.remove();
     progress = null;
     renderedRecords = [];
+    displayedView = null;
     finishScrollRestore();
     uncertainView = null;
     viewAbort.abort();
@@ -812,9 +814,10 @@ async function renderCurrent({focus = false,preserveScroll = true,animate = true
         client.clearReadCache();
     }
 
-    const previousView = main.dataset.ready;
-    const sourceSnapshot = ['projects', 'vacancies', 'collections', 'briefs'].includes(previousView)
-        ? { records: renderedRecords, nodes: cloneViewNodes(), briefDetail: document.body.classList.contains('editor-page--brief-detail') }
+    const previousView = main.dataset.ready || displayedView;
+    const visibleRow = [...main.querySelectorAll('.record-row')].findIndex(node => node.getBoundingClientRect().bottom > 0);
+    const sourceSnapshot = ['projects', 'vacancies', 'collections', 'briefs', 'project-edit', 'vacancy-edit', 'project-new', 'vacancy-new'].includes(previousView)
+        ? { records: renderedRecords, nodes: [...main.children], live: true, editing: document.body.classList.contains('editor-page--editing'), briefDetail: document.body.classList.contains('editor-page--brief-detail') }
         : null;
 
     if (['projects', 'vacancies', 'collections'].includes(previousView)) {
@@ -839,7 +842,7 @@ async function renderCurrent({focus = false,preserveScroll = true,animate = true
     const title = knownRoute ? pageTitle(route.view) : 'Редактор';
 
     const cached = viewSnapshots.get(route.view);
-    const retained = cached || (!recordOverride && knownRoute ? sourceSnapshot : null);
+    const retained = (!recordOverride && knownRoute ? sourceSnapshot : null) || cached;
     let finishRefresh;
     let finishLoading;
 
@@ -856,10 +859,10 @@ async function renderCurrent({focus = false,preserveScroll = true,animate = true
 
     try {
         if (retained) {
-            const nodes = retained.nodes.map(node => node.cloneNode(true));
+            const nodes = retained.live ? retained.nodes : retained.nodes.map(node => node.cloneNode(true));
 
             for (const node of nodes) {
-                for (const previous of node.querySelectorAll('img[data-cover-id]')) {
+                for (const previous of retained.live ? [] : node.querySelectorAll('img[data-cover-id]')) {
                     const record = retained.records.find(record => record.id === previous.dataset.coverId);
 
                     if (record) {
@@ -871,6 +874,8 @@ async function renderCurrent({focus = false,preserveScroll = true,animate = true
             }
 
             main.replaceChildren(...nodes);
+            displayedView = retained.live ? previousView : route.view;
+            document.body.classList.toggle('editor-page--editing', Boolean(retained.editing));
             main.dataset.refreshing = 'true';
             document.body.classList.toggle('editor-page--brief-detail', Boolean(retained.briefDetail));
             finishRefresh = beginRefresh(route.view === 'briefs' ? 'Оновлюємо звернення…' : 'Оновлюємо дані…');
@@ -890,6 +895,7 @@ async function renderCurrent({focus = false,preserveScroll = true,animate = true
         } else if (['projects','vacancies'].includes(route.view)) {
             const kind = route.view === 'projects' ? 'project' : 'vacancy';
             content = await renderList(kind,image,signal);
+            await image.ready(content, previousView === route.view ? Math.max(0,visibleRow) : 0);
 
             if (signal.aborted || version !== viewVersion) {
                 return;
@@ -903,15 +909,21 @@ async function renderCurrent({focus = false,preserveScroll = true,animate = true
                 return;
             }
 
-            main.replaceChildren();
+            const staged = document.createDocumentFragment();
             renderedRecords = catalog.records;
 
-            renderCollections({main,collections,records:catalog.records,image,dialog:panel,save:async (collection,items,digest) => {
+            renderCollections({main:staged,collections,records:catalog.records,image,dialog:panel,save:async (collection,items,digest) => {
                 return mutations.run({
                     action:'collection.replace',payload:{collection,items},expected:{collection_digest:digest},
                     context:{tokens:Object.fromEntries(catalog.records.map(record => [record.id,record.record_token]))},message:'Добірку збережено',
                 });
             }});
+            await image.ready(staged);
+            if (signal.aborted || version !== viewVersion) {
+                return;
+            }
+
+            main.replaceChildren(staged);
         } else {
             const kind = route.view.startsWith('vacancy') ? 'vacancy' : 'project';
             const fresh = route.view.endsWith('-new');
@@ -939,6 +951,11 @@ async function renderCurrent({focus = false,preserveScroll = true,animate = true
 
             form = createContentForm({kind,record:draft ? suspended.record : record,image,onSave:saveForm,onBack:() => navigate(kind === 'project' ? 'projects' : 'vacancies'),draft});
             suspended = null;
+            await image.ready(form.form);
+            if (signal.aborted || version !== viewVersion) {
+                return;
+            }
+
             main.replaceChildren(form.heading,form.form);
 
             if (changedWhileAway) {
@@ -949,6 +966,8 @@ async function renderCurrent({focus = false,preserveScroll = true,animate = true
         }
 
         document.body.classList.toggle('editor-page--brief-detail', route.view === 'briefs' && Boolean(route.id));
+        document.body.classList.toggle('editor-page--editing', route.view.startsWith('project-') || route.view.startsWith('vacancy-'));
+        displayedView = route.view;
 
         // Після модальних вікон перераховуємо inert-стан нового вмісту перед відновленням фокуса
         main.inert = true;
