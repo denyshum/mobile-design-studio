@@ -33,6 +33,7 @@ let loggingOut = false;
 let signingIn = false;
 let registeredUser;
 let accessVersion = 0;
+let pendingAccessCheck;
 let viewVersion = 0;
 let viewAbort = new AbortController();
 let historyIndex = history.state?.editorIndex || 0;
@@ -187,9 +188,7 @@ async function navigate(view,id,{replace = false,focus = keyboardActivation,rese
 
     await menu.close();
 
-    if (!record) {
-        await clearToast();
-    }
+    const retiringToast = record ? Promise.resolve() : clearToast();
 
     const target = new URL('editor.html',location.href);
     target.searchParams.set('view',view);
@@ -212,7 +211,7 @@ async function navigate(view,id,{replace = false,focus = keyboardActivation,rese
         window.scrollTo({top:0,behavior:'instant'});
     }
 
-    await renderCurrent({focus,preserveScroll:!resetScroll,animate,recordOverride:record,fresh:false});
+    await Promise.all([retiringToast,renderCurrent({focus,preserveScroll:!resetScroll,animate,recordOverride:record,fresh:false})]);
 }
 
 async function loginView(error) {
@@ -866,7 +865,7 @@ async function renderCurrent({focus = false,preserveScroll = true,animate = true
         let content;
 
         if (route.view === 'briefs') {
-            await briefs.render({ ...route, signal, retain: Boolean(retained), restoreFocus: previousView === 'briefs' });
+            await briefs.render({ ...route, signal, retain: Boolean(retained), restoreFocus: previousView === 'briefs', recordOverride });
             if (signal.aborted || version !== viewVersion) {
                 return;
             }
@@ -1010,12 +1009,40 @@ async function accessLost(error) {
     await loginView(error);
 }
 
-async function checkAccess({initial = false} = {}) {
+async function checkAccess(options = {}) {
+    let session;
+    try {
+        session = await client.session();
+    } catch (error) {
+        return performAccessCheck({ ...options, sessionError: error });
+    }
+
+    const identity = session ? session.user?.id + ':' + session.access_token : null;
+    if (pendingAccessCheck?.identity === identity) {
+        return pendingAccessCheck.promise;
+    }
+
+    const promise = performAccessCheck({ ...options, checkedSession: session });
+    pendingAccessCheck = { identity, promise };
+    try {
+        return await promise;
+    } finally {
+        if (pendingAccessCheck?.promise === promise) {
+            pendingAccessCheck = null;
+        }
+    }
+}
+
+async function performAccessCheck({initial = false, checkedSession, sessionError} = {}) {
     let session;
     const version = ++accessVersion;
 
     try {
-        session = await client.session();
+        if (sessionError) {
+            throw sessionError;
+        }
+
+        session = checkedSession;
 
         if (version !== accessVersion || loggingOut) {
             return;
@@ -1035,7 +1062,7 @@ async function checkAccess({initial = false} = {}) {
             return;
         }
 
-        const access = await client.read('access');
+        const access = await client.read('access', {}, undefined, {retainReads:true});
 
         if (version !== accessVersion || loggingOut) {
             return;

@@ -217,7 +217,9 @@ export function createEditorClient() {
         }
         signal?.throwIfAborted();
         if (fresh) {
-            clearReadCache();
+            readVersion += 1;
+            readRefreshes.clear();
+            readCache.delete(key);
         }
         const cached = readCache.get(key) || source?.();
         if (!fresh && cached) {
@@ -268,7 +270,7 @@ export function createEditorClient() {
         const query = new URLSearchParams({view, ...parameters});
         const load = background => request('editor-content?' + query, {signal:background ? undefined : signal});
 
-        if (view === 'access') {
+        if (view === 'access' && !options?.retainReads) {
             clearReadCache();
         }
 

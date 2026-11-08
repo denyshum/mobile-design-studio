@@ -508,7 +508,7 @@ export function createBriefsController({ client, main, dialog, navigate, mutatio
             return;
         }
         if (result.state === 'saved') {
-            await go(record.id, route.filter, { replace: true, focus: false, resetScroll: false });
+            await go(record.id, route.filter, { replace: true, focus: false, resetScroll: false, record: { ...record, ...result.record } });
             if (generation !== epoch || viewSignal?.aborted || current?.id !== record.id) {
                 return;
             }
@@ -567,11 +567,10 @@ export function createBriefsController({ client, main, dialog, navigate, mutatio
                 return;
             }
             toast('Звернення видалено');
-            await poll();
         }
     }
 
-    async function detail(id, signal, retain) {
+    async function detail(id, signal, retain, recordOverride) {
         if (!/^[a-f0-9-]{36}$/.test(id)) {
             throw Object.assign(new Error('Звернення недоступне'), { status: 404 });
         }
@@ -582,7 +581,7 @@ export function createBriefsController({ client, main, dialog, navigate, mutatio
         }, signal);
         let result;
         try {
-            result = await client.read('brief', { id }, signal);
+            result = recordOverride?.id === id ? { record: recordOverride } : await client.read('brief', { id }, signal);
         } finally {
             finishLoading?.();
         }
@@ -733,7 +732,7 @@ export function createBriefsController({ client, main, dialog, navigate, mutatio
         main.replaceChildren(article);
     }
 
-    async function render({ id, filter = 'active', query = '', signal, retain = false, restoreFocus = false }) {
+    async function render({ id, filter = 'active', query = '', signal, retain = false, restoreFocus = false, recordOverride }) {
         route = { id, filter: Object.hasOwn(filters, filter) ? filter : 'active', query: searchQuery(query, 80) };
         setSearchQuery?.(route.query, true);
         viewSignal = signal;
@@ -741,7 +740,7 @@ export function createBriefsController({ client, main, dialog, navigate, mutatio
         current = null;
         try {
             if (id) {
-                await detail(id, signal, retain);
+                await detail(id, signal, retain, recordOverride);
             } else {
                 await queue(signal, retain, restoreFocus);
             }
@@ -758,7 +757,7 @@ export function createBriefsController({ client, main, dialog, navigate, mutatio
         }
     }
 
-    async function refreshDetail(id) {
+    async function refreshDetail(id, record) {
         const detail = main.querySelector('.brief-detail');
         const origin = document.activeElement;
         const control = detail?.contains(origin) ? origin.closest('button,summary,a[href]') : null;
@@ -785,7 +784,7 @@ export function createBriefsController({ client, main, dialog, navigate, mutatio
         }
 
         try {
-            await go(id, route.filter, {replace:true,resetScroll:false,focus:false});
+            await go(id, route.filter, {replace:true,resetScroll:false,focus:false,record});
         } finally {
             events.abort();
         }
@@ -865,9 +864,15 @@ export function createBriefsController({ client, main, dialog, navigate, mutatio
                 !dialog.title.closest('dialog').open &&
                 !viewSignal?.aborted
             ) {
-                const actual = await client.read('brief', { id: current.id }, viewSignal);
+                const target = current;
+                const signal = viewSignal;
+                const actual = await client.read('brief', { id: target.id }, signal);
+                if (generation !== epoch || signal.aborted || current !== target || route.id !== target.id || mutations.busy || mutations.pending) {
+                    return;
+                }
+
                 if (actual.record.version !== current.version) {
-                    await refreshDetail(current.id);
+                    await refreshDetail(current.id, actual.record);
                 }
             }
             signature = result.signature;
