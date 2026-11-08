@@ -212,7 +212,7 @@ async function navigate(view,id,{replace = false,focus = keyboardActivation,rese
         window.scrollTo({top:0,behavior:'instant'});
     }
 
-    await renderCurrent({focus,preserveScroll:!resetScroll,animate,recordOverride:record});
+    await renderCurrent({focus,preserveScroll:!resetScroll,animate,recordOverride:record,fresh:false});
 }
 
 async function loginView(error) {
@@ -472,7 +472,7 @@ async function renderList(kind,image,signal) {
                 let text = visible ? kind === 'vacancy' ? 'Вакансія зникне зі сторінки кар’єри. Її можна буде опублікувати знову' : 'Проєкт зникне із сайту. Ви зможете опублікувати його знову' : 'Запис стане доступним на сайті';
 
                 if (visible && kind === 'project') {
-                    const collections = await client.read('collections',{},signal);
+                    const collections = await client.read('collections',{},signal,{fresh:true});
 
                     if (signal.aborted) {
                         return;
@@ -583,7 +583,7 @@ async function renderList(kind,image,signal) {
                     }
 
                     try {
-                        const actual = await client.catalog(entity,signal);
+                        const actual = await client.catalog(entity,signal,{fresh:true});
                         const displayed = [...list.querySelectorAll('.record-row')].map(node => [node.dataset.record,tokens[node.dataset.record]]);
 
                         if (JSON.stringify(actual.records.map(record => [record.id,record.record_token])) === JSON.stringify(displayed)) {
@@ -772,12 +772,13 @@ function beginRefresh(message = 'Оновлюємо список…') {
     };
 }
 
-async function renderCurrent({focus = false,preserveScroll = true,animate = true,recordOverride} = {}) {
+async function renderCurrent({focus = false,preserveScroll = true,animate = true,recordOverride,fresh = true} = {}) {
     const previousRow = document.activeElement.closest('.record-row');
     const previousRows = [...main.querySelectorAll('.record-row')];
     const previousIndex = previousRows.indexOf(previousRow);
     const previousRecord = previousRow?.dataset.record;
     const previousAction = document.activeElement.tagName === 'SUMMARY' ? 'summary' : 'button';
+    const previousButtonIndex = previousRow ? [...previousRow.querySelectorAll('button')].indexOf(document.activeElement) : -1;
     const previousField = main.contains(document.activeElement) ? document.activeElement.id : '';
     const wasSave = document.activeElement.closest('.form-toolbar');
     const previousScroll = {left:scrollX,top:scrollY,behavior:'instant'};
@@ -788,6 +789,10 @@ async function renderCurrent({focus = false,preserveScroll = true,animate = true
         await loginView();
 
         return;
+    }
+
+    if (fresh) {
+        client.clearReadCache();
     }
 
     const previousView = main.dataset.ready;
@@ -920,7 +925,7 @@ async function renderCurrent({focus = false,preserveScroll = true,animate = true
             main.replaceChildren(form.heading,form.form);
 
             if (changedWhileAway) {
-                form.form.before(notice('Запис змінився під час вашої відсутності','Перед наступним збереженням перегляньте актуальні дані','error',button('Оновити дані',() => navigate(route.view,route.id,{replace:true}))));
+                form.form.before(notice('Запис змінився під час вашої відсутності','Перед наступним збереженням перегляньте актуальні дані','error',button('Оновити дані',() => { client.clearReadCache(); return navigate(route.view,route.id,{replace:true}); })));
             }
 
             document.body.classList.add('editor-page--editing');
@@ -940,7 +945,7 @@ async function renderCurrent({focus = false,preserveScroll = true,animate = true
         } else if (preserveScroll) {
             const rows = [...main.querySelectorAll('.record-row')];
             const row = rows.find(node => node.dataset.record === previousRecord) || (previousIndex >= 0 ? rows[Math.min(previousIndex,rows.length - 1)] : null);
-            const target = row?.querySelector(previousAction)
+            const target = (previousButtonIndex >= 0 ? row?.querySelectorAll('button')[previousButtonIndex] : row?.querySelector(previousAction))
                 || (previousField ? document.getElementById(previousField) : null)
                 || (wasSave ? main.querySelector('.form-toolbar button') : null);
             target?.focus({preventScroll:true});
@@ -1219,7 +1224,7 @@ async function boot() {
                 } else {
                     form.setBusy(false);
                     form.operationId = crypto.randomUUID();
-                    return {message:'Поточні дані відрізняються. Перегляньте їх перед збереженням',options:{kind:'error',label:'Оновити дані',action:() => navigate(currentRoute().view,currentRoute().id,{replace:true})}};
+                    return {message:'Поточні дані відрізняються. Перегляньте їх перед збереженням',options:{kind:'error',label:'Оновити дані',action:() => { client.clearReadCache(); return navigate(currentRoute().view,currentRoute().id,{replace:true}); }}};
                 }
             } else {
                 await renderCurrent({focus:false});
@@ -1229,10 +1234,53 @@ async function boot() {
             }
         },
 
-        onConflict:() => navigate(currentRoute().view,currentRoute().id,{replace:true}),
+        onConflict:() => {
+            client.clearReadCache();
+            return navigate(currentRoute().view,currentRoute().id,{replace:true});
+        },
     });
 
     briefs = createBriefsController({ client, main, dialog:panel, navigate, mutations, onAccessLost:accessLost, setSearchQuery:setBriefSearch });
+
+    client.onReadRefresh(({ key, changed, error }) => {
+        if (error && [401, 403].includes(error.status)) {
+            accessLost(error);
+            return;
+        }
+        const route = currentRoute();
+        const list = ['projects', 'vacancies', 'collections'].includes(route.view);
+        const detailKey = 'read:' + new URLSearchParams({ view: route.view.startsWith('vacancy') ? 'vacancy' : 'project', id: route.id });
+        const relevant = key === 'catalog:' + route.view
+            || (route.view === 'collections' && ['catalog:projects', 'read:view=collections'].includes(key))
+            || (form && key === detailKey);
+        if (route.view === 'collections' && main.contains(document.activeElement)) {
+            return;
+        }
+        if (!authorized || !relevant || mutations.busy || mutations.pending || main.inert
+            || main.querySelector('details[open], .sortable-chosen, .sortable-drag')) {
+            return;
+        }
+        const retry = () => {
+            client.clearReadCache();
+            return form ? navigate(route.view, route.id, { replace: true }) : renderCurrent();
+        };
+        if (error || (changed && form)) {
+            if (!main.querySelector('.editor-refresh-error')) {
+                const message = notice(error ? 'Не вдалося оновити дані' : 'Запис змінився',
+                    error ? 'Показано попередні дані. Перевірте з’єднання та спробуйте ще раз' : 'Перед наступним збереженням перегляньте актуальні дані',
+                    'error', button('Оновити дані', retry, 'primary-action'));
+                message.classList.add('editor-refresh-error');
+                main.prepend(message);
+            }
+        } else if (changed && list) {
+            renderCurrent({ fresh: false, focus: false, animate: false });
+        } else if (!changed) {
+            const message = main.querySelector('.editor-refresh-error');
+            if (!message?.contains(document.activeElement)) {
+                message?.remove();
+            }
+        }
+    });
 
     client.auth.onAuthStateChange(event => {
         queueMicrotask(() => {
@@ -1369,7 +1417,7 @@ async function boot() {
         historyIndex = next;
 
         if (authorized) {
-            await renderCurrent();
+            await renderCurrent({fresh:false});
         } else if (!signingIn && !loggingOut) {
             await checkAccess({initial:true});
         }
