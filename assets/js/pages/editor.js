@@ -1159,6 +1159,32 @@ async function boot() {
     client = createEditorClient();
     client.onPrivateStateClear(() => viewSnapshots.clear());
 
+    const prepareWrite = event => {
+        if (!authorized || loggingOut || mutations?.busy || mutations?.pending
+            || !(event.target instanceof Element)
+            || !event.target.closest('.record-actions, .record-action, .editor-form, .collection-toolbar, .collection-canvas, .collection-slider, [data-dialog-actions]')) {
+            return;
+        }
+
+        const owner = actor;
+        const generation = accessVersion;
+
+        Promise.resolve(client.prepareMutation?.()).catch(error => {
+            if (owner !== actor || generation !== accessVersion || loggingOut) {
+                return;
+            }
+
+            if ([401,403].includes(error.status)) {
+                accessLost(error);
+            }
+            // Основна дія повторить підготовку й покаже помилку мережі, якщо вона залишиться
+        });
+    };
+
+    for (const type of ['pointerover','focusin','input','pointerdown']) {
+        document.addEventListener(type,prepareWrite);
+    }
+
     mutations = createMutationController(client,{
         onUncertain:(verify,message) => {
             if (currentRoute().view === 'briefs') {

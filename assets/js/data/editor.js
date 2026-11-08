@@ -376,16 +376,14 @@ export function createEditorClient() {
         }
     }
 
-    async function mutate(action, payload, expected = null, { operationId = crypto.randomUUID(), onSent } = {}) {
+    async function prepareMutation({ fresh = false } = {}) {
         await session();
         const version = privateVersion;
-        const previousReads = new Map(readCache);
-        const uploadedCover = Boolean(payload.cover_ticket || payload.cover?.mode === 'replace');
-        let access = !uploadedCover && permit?.deadline > performance.now() ? permit : null;
+        let access = !fresh && permit?.deadline > performance.now() ? permit : null;
 
         if (!access) {
             if (!permitRequest) {
-                const pending = read('access').then(value => ({
+                const pending = request('editor-content?view=access').then(value => ({
                     value: value.mutation_permit,
                     claims: JSON.parse(atob(value.mutation_permit.split('.')[0].replaceAll('-', '+').replaceAll('_', '/'))),
                 }));
@@ -400,6 +398,20 @@ export function createEditorClient() {
 
             access = await permitRequest;
         }
+
+        if (version !== privateVersion) {
+            throw new EditorRequestError('Увійдіть знову', { status: 401, code: 'SESSION_EXPIRED' });
+        }
+
+        return access;
+    }
+
+    async function mutate(action, payload, expected = null, { operationId = crypto.randomUUID(), onSent } = {}) {
+        await session();
+        const version = privateVersion;
+        const previousReads = new Map(readCache);
+        const uploadedCover = Boolean(payload.cover_ticket || payload.cover?.mode === 'replace');
+        const access = await prepareMutation({ fresh: uploadedCover });
 
         if (version !== privateVersion) {
             throw new EditorRequestError('Увійдіть знову', { status: 401, code: 'SESSION_EXPIRED' });
@@ -500,6 +512,8 @@ export function createEditorClient() {
 
     return {
         auth:sdk.auth,session,read,catalog,briefs,mutate,upload,request,signOutLocal,clearPrivateState,clearReadCache,
+
+        prepareMutation,
 
         onReadRefresh(listener) {
             readListeners.add(listener);
