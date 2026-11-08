@@ -212,6 +212,7 @@ export function createEditorClient() {
 
     async function cachedRead(key, load, signal, { fresh = false } = {}, source) {
         const current = await session();
+
         if (!current) {
             throw new EditorRequestError('Увійдіть знову', { status: 401, code: 'SESSION_EXPIRED' });
         }
@@ -268,7 +269,17 @@ export function createEditorClient() {
 
     async function read(view, parameters = {}, signal, options) {
         const query = new URLSearchParams({view, ...parameters});
-        const load = background => request('editor-content?' + query, {signal:background ? undefined : signal});
+        const load = async background => {
+            const result = await request('editor-content?' + query, {signal:background ? undefined : signal});
+            const queue = readCache.get('briefs:all');
+            if (view === 'brief-counts' && queue && typeof result.signature === 'string' && queue.value.snapshot_digest !== result.signature) {
+                readCache.delete('briefs:all');
+                readVersion += 1;
+                readRefreshes.clear();
+            }
+
+            return result;
+        };
 
         if (view === 'access' && !options?.retainReads) {
             clearReadCache();
@@ -342,6 +353,42 @@ export function createEditorClient() {
     }
 
     async function briefs(filter = 'active', signal) {
+        if (!['all','active','new','progress','closed'].includes(filter)) {
+            return loadBriefs(filter, signal);
+        }
+
+        const current = await session();
+        if (!current) {
+            throw new EditorRequestError('Увійдіть знову', { status: 401, code: 'SESSION_EXPIRED' });
+        }
+
+        signal?.throwIfAborted();
+        const key = 'briefs:all';
+        const version = readVersion;
+        const owner = privateVersion;
+        const cached = readCache.get(key);
+        const reusable = cached?.expires > performance.now();
+        const result = reusable
+            ? structuredClone(cached.value)
+            : await loadBriefs('all', signal, filter === 'all' ? null : filter);
+        signal?.throwIfAborted();
+        const complete = result.records.length === result.counts.all;
+
+        if (owner !== privateVersion) {
+            throw new EditorRequestError('Увійдіть знову', { status: 401, code: 'SESSION_EXPIRED' });
+        }
+
+        if (!reusable && complete && result.records.length <= 200 && version === readVersion) {
+            rememberRead(key, result);
+        }
+
+        return complete ? {
+            ...result,
+            records: result.records.filter(record => filter === 'all' || (filter === 'active' ? record.status !== 'closed' : record.status === filter)),
+        } : result;
+    }
+
+    async function loadBriefs(filter, signal, fallbackFilter) {
         for (let attempt = 0; attempt < 3; attempt += 1) {
             const records = [];
             const cursors = new Set();
@@ -351,9 +398,13 @@ export function createEditorClient() {
             try {
                 do {
                     const page = await read('briefs', { filter, ...(cursor ? { cursor: JSON.stringify(cursor), snapshot } : {}) }, signal);
-                    if (!Array.isArray(page.records) || typeof page.snapshot_digest !== 'string' || !page.counts || (snapshot && page.snapshot_digest !== snapshot)) {
+                    if (!Array.isArray(page.records) || typeof page.snapshot_digest !== 'string' || !page.counts || !Number.isSafeInteger(page.counts.all) || page.counts.all < 0 || (snapshot && page.snapshot_digest !== snapshot)) {
                         throw new EditorRequestError('Список змінився. Спробуйте ще раз', { code: 'SNAPSHOT_CHANGED' });
                     }
+                    if (fallbackFilter && page.counts.all > 200) {
+                        return loadBriefs(fallbackFilter, signal);
+                    }
+
                     snapshot = page.snapshot_digest;
                     counts = page.counts;
                     records.push(...page.records);
@@ -369,6 +420,10 @@ export function createEditorClient() {
                 if (new Set(records.map(record => record.id)).size !== records.length) {
                     throw new EditorRequestError('Не вдалося отримати повний список');
                 }
+                if (filter === 'all' && records.length !== counts.all) {
+                    throw new EditorRequestError('Не вдалося отримати повний список', { code: 'SNAPSHOT_CHANGED' });
+                }
+
                 return { records, counts, snapshot_digest: snapshot };
             } catch (error) {
                 if (error.code !== 'SNAPSHOT_CHANGED' || attempt === 2) {

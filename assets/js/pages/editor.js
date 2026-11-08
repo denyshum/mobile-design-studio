@@ -82,6 +82,7 @@ function setHeader(value) {
 }
 
 function clearView() {
+    main.getAnimations?.().forEach(animation => animation.cancel());
     progress?.remove();
     progress = null;
     renderedRecords = [];
@@ -536,9 +537,15 @@ async function renderList(kind,image,signal) {
         },'record-action');
         items.append(visibilityButton);
 
-        items.append(button('Видалити',async () => {
+        const deleteButton = button('Видалити',async () => {
+            const restoreFocus = rememberFocus(trigger);
+            deleteButton.disabled = true;
+
             try {
-                const preview = await client.read('delete-preview',{entity,id:record.id});
+                const preview = await client.read('delete-preview',{entity,id:record.id},signal);
+                if (signal.aborted) {
+                    return;
+                }
 
                 if (preview.record.record_token !== record.record_token) {
                     toast('Запис змінився. Оновіть список перед видаленням',{kind:'error'});
@@ -547,6 +554,9 @@ async function renderList(kind,image,signal) {
                 }
 
                 const text = 'Запис буде видалено із сайту. Відновити його не вдасться' + (preview.placements.length ? '. Також буде прибрано розміщення в добірках: ' + preview.placements.length : '');
+                deleteButton.disabled = false;
+                restoreFocus();
+
                 const saved = await panel.confirm({
                     heading:'Видалити «' + preview.record.name + '»?',text,label:'Видалити',danger:true,
 
@@ -602,9 +612,17 @@ async function renderList(kind,image,signal) {
                     }
                 }
             } catch (error) {
-                handleReadError(error);
+                if (!signal.aborted) {
+                    handleReadError(error);
+                }
+            } finally {
+                if (deleteButton.isConnected) {
+                    deleteButton.disabled = false;
+                    restoreFocus();
+                }
             }
-        },'record-action record-action--delete'));
+        },'record-action record-action--delete');
+        items.append(deleteButton);
 
         menu.append(trigger,items);
         commands.append(menu);
@@ -951,7 +969,7 @@ async function renderCurrent({focus = false,preserveScroll = true,animate = true
             window.scrollTo(previousScroll);
         }
 
-        if (animate && (!retained || previousView !== route.view)) {
+        if (animate && !retained) {
             motion(main,[{opacity:0,transform:'translateY(.5rem)'},{opacity:1,transform:'none'}]);
         }
     } catch (error) {
