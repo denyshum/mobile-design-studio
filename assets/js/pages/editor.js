@@ -842,7 +842,7 @@ async function renderCurrent({focus = false,preserveScroll = true,animate = true
     const title = knownRoute ? pageTitle(route.view) : 'Редактор';
 
     const cached = viewSnapshots.get(route.view);
-    const retained = (!recordOverride && knownRoute ? sourceSnapshot : null) || cached;
+    const retained = (knownRoute ? sourceSnapshot : null) || cached;
     let finishRefresh;
     let finishLoading;
 
