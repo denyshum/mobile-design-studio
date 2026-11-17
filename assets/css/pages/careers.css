@@ -71,11 +71,6 @@
     stroke-width: 1.25;
 }
 
-.condition-line > span {
-    padding-inline: .5rem;
-    color: #706578;
-}
-
 .meeting-section {
     padding-top: 4.5rem;
 }
@@ -146,9 +141,18 @@
 }
 
 .condition-line {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: .25rem .75rem;
     margin: 1.5rem auto 0;
     color: #aaa3b0;
     font-size: 1rem;
+}
+
+.condition-line > span {
+    max-width: 100%;
+    overflow-wrap: anywhere;
 }
 
 .role-content {
@@ -306,6 +310,12 @@
 
     .condition-line {
         font-size: 1.0625rem;
+    }
+
+    .condition-line > span + span:before {
+        margin-inline-end: .75rem;
+        color: #706578;
+        content: '·';
     }
 
     .role-content {

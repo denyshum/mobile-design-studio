@@ -44,15 +44,16 @@ function renderCareers() {
     function fillTerms(element, terms) {
         element.replaceChildren();
 
-        terms.filter(Boolean).forEach((term, index) => {
-            if (index > 0) {
-                const separator = document.createElement('span');
-                separator.textContent = '·';
-                element.append(' ', separator, ' ');
+        for (const term of terms.filter(Boolean)) {
+            const item = document.createElement('span');
+            item.textContent = term;
+
+            if (element.childNodes.length) {
+                element.append(' ');
             }
 
-            element.append(document.createTextNode(term));
-        });
+            element.append(item);
+        }
 
         element.hidden = !element.childNodes.length;
     }

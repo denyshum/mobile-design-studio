@@ -277,6 +277,12 @@
     padding: 15px 0 7px;
 }
 
+.slider__img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+}
+
 .slider__controls {
     display: none;
     gap: 10px;
@@ -419,6 +425,7 @@
 .about__desc {
     margin-bottom: 16px;
     line-height: 1.38;
+    overflow-wrap: anywhere;
 }
 
 .about__photo {
