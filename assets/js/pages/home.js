@@ -20,7 +20,7 @@ function initSlider(projectsData) {
         return;
     }
 
-    // Рендер слайдів
+    // Render the slides
     wrapper.replaceChildren();
 
     projectsData.forEach(item => {
@@ -38,7 +38,7 @@ function initSlider(projectsData) {
         wrapper.appendChild(li);
     });
 
-    // Рендер індикаторів
+    // Render the slide indicators
     let swiperInstance;
     indicatorsEl.replaceChildren();
 
@@ -64,7 +64,7 @@ function initSlider(projectsData) {
         indicatorsEl.appendChild(li);
     });
 
-    // Оновлення активного індикатора
+    // Update the active slide indicator
     const updateIndicators = (activeIndex) => {
         const items = indicatorsEl.querySelectorAll('.slider__indicator');
 
@@ -73,7 +73,7 @@ function initSlider(projectsData) {
         });
     };
 
-    // Ініціалізація Swiper
+    // Initialize Swiper
     if (typeof window.Swiper !== 'function') {
         return;
     }
@@ -83,7 +83,7 @@ function initSlider(projectsData) {
     swiperInstance = new window.Swiper(swiperEl, {
         loop: projectsData.length > 1,
         a11y: { enabled: false },
-        // Зміна висоти обкладинки не має скидати вибраний слайд
+        // Preserve the selected slide when the cover height changes
         resizeObserver: false,
         autoplay: projectsData.length < 2 ? false : {
             delay: 3000,
@@ -230,58 +230,58 @@ function initCollections() {
 }
 
 function initHome() {
-    // Приховування підказки прокручування, коли видно блок логотипів
+    // Hide the scroll hint when the logo strip is visible
     const scrollBlock = document.querySelector('.hero__scroll-block');
     const logoStrip = document.querySelector('.logo-strip__inner');
 
     if (scrollBlock && logoStrip && 'IntersectionObserver' in window) {
-        // IntersectionObserver відстежує, коли елемент (логотипи) потрапляє у видиму зону екрана
+        // Track when the logo strip enters the viewport with IntersectionObserver
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                // entry.boundingClientRect.top < 0 означає, що ми проскролили нижче блоку з логотипами
-                // isIntersecting стає true, коли видно заданий відсоток блоку (threshold)
+                // A negative entry.boundingClientRect.top means the logo strip has scrolled above the viewport
+                // The threshold controls when visibility changes are reported
                 if (entry.isIntersecting || entry.boundingClientRect.top < 0) {
                     scrollBlock.classList.add('hero__scroll-block--hidden');
-                    // Ховаємо блок
+                    // Hide the scroll hint
                 } else {
                     scrollBlock.classList.remove('hero__scroll-block--hidden');
-                    // Показуємо знову
+                    // Show the scroll hint again
                 }
             });
         }, {
-            // Спрацює, коли 80% блоку логотипів з'явиться у вікні браузера
+            // Report visibility changes at the 80% threshold
             threshold: 0.8
         });
 
-        // Вказуємо обзерверу, за яким саме елементом стежити
+        // Observe the logo strip
         observer.observe(logoStrip);
     }
 
-    // Паралакс-ефект фотографій у секції про студію
+    // Apply parallax to the photos in the studio section
     const aboutSection = document.querySelector('.about');
     const aboutPhotos = document.querySelectorAll('.about__photo');
 
     if (aboutSection && aboutPhotos.length > 0) {
         window.addEventListener('scroll', () => {
-            // Отримуємо координати секції відносно вікна перегляду
+            // Read the section's position relative to the viewport
             const rect = aboutSection.getBoundingClientRect();
 
-            // Виконуємо розрахунки лише тоді, коли секція перебуває у видимій зоні
+            // Calculate offsets only while the section is visible
             if (rect.top < window.innerHeight && rect.bottom > 0) {
-                // Відстань у пікселях від моменту появи секції на екрані
+                // Distance in pixels since the section entered the viewport
                 const scrolled = window.innerHeight - rect.top;
 
-                // Адаптивна швидкість для третього фото
+                // Adjust the third photo's speed for the viewport width
                 const thirdPhotoSpeed = window.innerWidth < 1200 ? -0.02 : -0.05;
 
-                // Коефіцієнти швидкості: додатні значення — рух вниз, від'ємні — рух вгору
+                // Positive speeds move photos down; negative speeds move them up
                 const speeds = [
-                0.20,  // Фото 1 (Верхнє ліве)
-                0.10,  // Фото 2 (Праве)
-                thirdPhotoSpeed  // Фото 3 (Нижнє)
+                0.20,  // Photo 1 (top left)
+                0.10,  // Photo 2 (right)
+                thirdPhotoSpeed  // Photo 3 (bottom)
                 ];
 
-                // Застосовуємо зміщення по осі Y для кожної фотографії
+                // Apply the vertical offset to each photo
                 aboutPhotos.forEach((photo, index) => {
                     const speed = speeds[index];
 
@@ -293,54 +293,54 @@ function initHome() {
         });
     }
 
-    // Перемикач вкладок послуг із послідовною анімацією
+    // Switch service tabs with sequential transitions
     const tabItems = document.querySelectorAll('.services__item');
     const tabPanels = document.querySelectorAll('.services__panel');
     const tabBtns = document.querySelectorAll('.services__btn');
 
-    let isAnimating = false; // Блокування для запобігання накладанню анімацій при швидких кліках
-    const animationDuration = 350; // Тривалість анімації (має відповідати значенню transition в CSS)
+    let isAnimating = false; // Prevent overlapping animations during rapid clicks
+    const animationDuration = 350; // Match the duration of the CSS transition
 
     if (tabItems.length > 0 && tabPanels.length > 0) {
         tabItems.forEach((item, index) => {
             item.addEventListener('click', () => {
-                // Перериваємо виконання, якщо анімація ще триває або обрана вже активна вкладка
+                // Ignore clicks during a transition or on the active tab
                 if (isAnimating || item.classList.contains('services__item--active')) {
                     return;
                 }
 
                 isAnimating = true;
-                // Вмикаємо стан анімації
+                // Mark the transition as running
 
                 const currentActiveItem = document.querySelector('.services__item--active');
                 const currentActivePanel = document.querySelector('.services__panel--visible');
                 const newPanel = tabPanels[index];
 
-                // Оновлюємо активний стан вкладок
+                // Update the active tab
                 if (currentActiveItem) {
                     currentActiveItem.classList.remove('services__item--active');
                 }
 
                 item.classList.add('services__item--active');
 
-                // Запускаємо зникнення поточної панелі
+                // Fade out the current panel
                 if (currentActivePanel) {
                     currentActivePanel.classList.remove('services__panel--visible');
 
-                    // Очікуємо завершення анімації зникнення
+                    // Wait for the fade-out transition to finish
                     setTimeout(() => {
-                        // Приховуємо стару панель (display: none)
+                        // Hide the previous panel with display: none
                         currentActivePanel.classList.remove('services__panel--active');
 
-                        // Додаємо нову панель у потік документа (display: flex, opacity: 0)
+                        // Place the next panel in the layout with display: flex and opacity: 0
                         newPanel.classList.add('services__panel--active');
 
-                        // Мікро-затримка (20мс) для коректного відпрацювання transition браузером
+                        // Give the browser 20ms to apply the initial styles before starting the transition
                         setTimeout(() => {
-                            // Запускаємо появу нової панелі
+                            // Fade in the next panel
                             newPanel.classList.add('services__panel--visible');
 
-                            // Знімаємо блокування після повного завершення анімації
+                            // Unlock the tabs after the transition finishes
                             setTimeout(() => {
                                 isAnimating = false;
                             }, animationDuration);
@@ -350,7 +350,7 @@ function initHome() {
             });
         });
 
-        // Клавіатурна навігація для вкладок згідно WAI-ARIA
+        // Support keyboard navigation between the service tabs
         tabBtns.forEach((btn, idx) => {
             btn.addEventListener('keydown', (e) => {
                 let targetIdx = null;

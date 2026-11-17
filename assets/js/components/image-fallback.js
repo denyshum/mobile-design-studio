@@ -21,7 +21,7 @@ function watchImage(image) {
 
     image.addEventListener('error', showFallback, { once: true });
 
-    // Lazy-зображення в ще не вставленому template не є помилкою завантаження
+    // A lazy image in an unmounted template is not a load failure
     if (!image.getAttribute('src') || (image.isConnected && image.complete && image.naturalWidth === 0)) {
         showFallback();
     }

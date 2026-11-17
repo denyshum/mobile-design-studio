@@ -1,4 +1,4 @@
-// Ресурс об'єднує одночасні читання й не кешує помилку
+// Share concurrent reads without caching failed requests
 export function createResource(loader, { timeout = 15000 } = {}) {
     const listeners = new Set();
     let current = { status: 'idle', data: null };

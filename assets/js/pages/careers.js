@@ -115,7 +115,7 @@ function renderCareers() {
         try {
             fragment = decodeURIComponent(fragment);
         } catch {
-            // Некоректний fragment показує стан недоступної вакансії
+            // Show the unavailable vacancy state for an invalid URL fragment
         }
 
         const ready = vacancyResource.value.status === 'success';
@@ -176,7 +176,7 @@ function renderCareers() {
         });
     }
 
-    // Перехід до ролі перехоплюється до спільного обробника внутрішніх якорів
+    // Handle role navigation before the shared internal-anchor handler
     main.addEventListener('click', event => {
         const link = event.target.closest('a[data-vacancy-link], a[data-return-vacancies]');
 
@@ -259,7 +259,7 @@ if (document.body.hasAttribute('data-careers-effects')) {
         onCleanup(reveals.stop);
         reveals.add(main.querySelectorAll('.browse-link, .meeting-section > h2, .stage-list > li, .role-content__section, .response-link'));
     }, { restore: scheduleView });
-    // Подання відновлює прокрутку до підготовки позаекранних блоків
+    // Restore the view's scroll position before preparing offscreen blocks
     const changes = new MutationObserver(() => {
         scheduleView(motion.restart);
     });

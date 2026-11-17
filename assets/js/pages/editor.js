@@ -969,7 +969,7 @@ async function renderCurrent({focus = false,preserveScroll = true,animate = true
         document.body.classList.toggle('editor-page--editing', route.view.startsWith('project-') || route.view.startsWith('vacancy-'));
         displayedView = route.view;
 
-        // Після модальних вікон перераховуємо inert-стан нового вмісту перед відновленням фокуса
+        // Recompute the new content's inert state after dialogs close before restoring focus
         main.inert = true;
         main.inert = false;
         delete main.dataset.refreshing;
@@ -1241,7 +1241,7 @@ async function boot() {
             if ([401,403].includes(error.status)) {
                 accessLost(error);
             }
-            // Основна дія повторить підготовку й покаже помилку мережі, якщо вона залишиться
+            // The main action retries preparation and reports any remaining network error
         });
     };
 

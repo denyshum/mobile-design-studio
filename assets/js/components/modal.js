@@ -109,7 +109,7 @@ export function createModal(dialog, {initialFocus, canClose = () => true, closeA
             position: { left: saved.x, top: saved.y, behavior: 'instant' }
         };
 
-        // Відновлюємо прив’язку прокрутки після стабілізації геометрії scrollbar
+        // Restore scroll anchoring after the scrollbar geometry stabilizes
         restoreFrame = requestAnimationFrame(() => {
             restoreFrame = requestAnimationFrame(finishScrollRestore);
         });

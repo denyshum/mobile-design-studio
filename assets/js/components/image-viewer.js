@@ -102,7 +102,7 @@ export function initImageViewer(record) {
             return;
         }
 
-        // Зберігаємо точку зображення під курсором або серединою жесту
+        // Keep the image point under the pointer or at the gesture midpoint fixed
         const updated = image.getBoundingClientRect();
         stage.scrollLeft += updated.left + point.x * next - destination.x;
         stage.scrollTop += updated.top + point.y * next - destination.y;

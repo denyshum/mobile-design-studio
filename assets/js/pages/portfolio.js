@@ -414,7 +414,7 @@ bindResource(catalogResource, {
     },
 });
 
-// Перший стан каталогу може перервати нативну плавну прокрутку до якоря
+// The initial catalogue state can interrupt native smooth scrolling to the anchor
 if (navigationType === 'navigate' && location.hash === '#projects-list') {
     requestAnimationFrame(() => {
         if (!userMoved && location.hash === '#projects-list') {

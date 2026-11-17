@@ -409,7 +409,7 @@
     transition: color var(--motion-text) ease, background-color var(--motion-text) ease, border-color var(--motion-text) ease, box-shadow var(--motion-text) ease;
 }
 
-/* Рамка у комірці сітки залишається нерухомою під час прокрутки */
+/* Keep the frame anchored in its grid cell while scrolling */
 
 .image-viewer__content:has(> .image-viewer__stage:focus-visible):after {
     content: "";

@@ -128,7 +128,7 @@ export function createCoverImages(client, signal) {
     image.ready = async (root, start = 0) => {
         const nodes = [...root.querySelectorAll('img[data-cover-id]')];
         const size = parseFloat(getComputedStyle(document.documentElement).fontSize);
-        // Рядок має щонайменше 4rem обкладинки й 3rem вертикальних відступів
+        // Each row needs at least 4rem for the cover and 3rem of vertical padding
         const count = Math.ceil((innerHeight + 200) / (size * 7)) + 1;
         const offset = Math.max(0,start - 1);
         await Promise.all(nodes.slice(offset, offset + count).map(node => {

@@ -1,7 +1,7 @@
 export const coverBucket = 'project-covers';
 export const coverMaxBytes = 5 * 1024 * 1024;
 
-// Перевірка контейнера й геометрії; повне декодування upload належить його обробнику
+// Validate the container and dimensions; the upload handler performs full decoding
 export function webpInfo(bytes) {
     if (!(bytes instanceof Uint8Array) || bytes.length < 20 || bytes.length > coverMaxBytes) {
         throw new Error('Invalid WebP size');

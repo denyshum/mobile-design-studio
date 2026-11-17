@@ -151,7 +151,7 @@ if (document.body.hasAttribute('data-project-effects')) {
             lineWidth = rect.width;
             lineHeight = rect.height;
             let index = 0;
-            // Контур M/C/S складається з пар координат; одиниці штриха мають збігатися з екранними
+            // The M/C/S path uses coordinate pairs; stroke units must match screen units
             const d = originalPath.replace(/-?\d*\.?\d+(?:e[-+]?\d+)?/gi, value => {
                 const scale = index++ % 2 === 0 ? lineWidth / sourceWidth : lineHeight / sourceHeight;
 
@@ -197,7 +197,7 @@ if (document.body.hasAttribute('data-project-effects')) {
             }
 
             normalizeLine();
-            // Кінчик штриха прив’язаний до нижньої частини екрана, а не до частки довжини кривої
+            // Anchor the stroke tip to the bottom of the viewport rather than a fraction of the curve length
             const targetY = revealY - svg.getBoundingClientRect().top;
             let lower = 0;
             let upper = lineLength;

@@ -1,4 +1,4 @@
-// Анімації та повернення з кешу сторінки мають один життєвий цикл
+// Use one lifecycle for animations and back-forward cache restoration
 export function mountMotion(stateKey, setup, { restore = restart => restart() } = {}) {
     const root = document.documentElement;
     let suspended = false;

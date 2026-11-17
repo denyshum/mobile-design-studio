@@ -3,7 +3,7 @@ const riseFrames = [
     { opacity: 1, transform: 'none' },
 ];
 
-// Фокус одразу відкриває вміст; скасування не залишає його прихованим
+// Reveal focused content immediately and keep it visible after cancellation
 export function createReveals({ signal, seen, rootMargin = '0px 0px 32px 0px' }) {
     const pending = new Map();
     const observer = new IntersectionObserver(entries => {
@@ -66,7 +66,7 @@ export function createReveals({ signal, seen, rootMargin = '0px 0px 32px 0px' })
                     show(element);
                 }
             }).catch(error => {
-                // AbortError є очікуваним завершенням при фокусі чи очищенні
+                // AbortError is expected when focus changes or cleanup cancels the animation
                 if (error.name !== 'AbortError') {
                     show(element);
                     console.error(error);

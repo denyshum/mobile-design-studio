@@ -1,7 +1,7 @@
 import { sitePath } from './paths.js';
 
 export function initNavigation() {
-    // Управління оверлеєм меню
+    // Manage the menu overlay
     const mainHeaderNav = document.getElementById("main-header__nav");
     const menuBtn = document.getElementById("menu-btn");
     const menuOverlay = document.getElementById("menu-overlay");
@@ -62,14 +62,14 @@ export function initNavigation() {
             }
         });
 
-        // Закриття меню при натисканні на навігаційне посилання
+        // Close the menu when a navigation link is activated
         menuOverlay.querySelectorAll('a').forEach(link => {
             link.addEventListener("click", () => {
                 closeMenu();
             });
         });
 
-        // Кнопка закриття лишається в header, тому включаємо її в цикл фокуса діалогу
+        // Include the header close button in the dialog's focus loop
         document.addEventListener('keydown', event => {
             if (event.key !== 'Tab' || !menuOverlay.classList.contains('menu-overlay--open')) {
                 return;
@@ -81,7 +81,7 @@ export function initNavigation() {
             const first = menuBtn;
             const last = links.at(-1) || menuBtn;
 
-            // Під час відкриття visibility може оновитися лише в наступному кадрі
+            // Wait one frame for visibility to update when opening
             const focusWhenVisible = target => {
                 if (!menuOverlay.classList.contains('menu-overlay--open')) {
                     return;
@@ -107,7 +107,7 @@ export function initNavigation() {
             }
         });
 
-        // Закриття меню клавішею Escape для доступності
+        // Close the menu with Escape for keyboard access
         document.addEventListener("keydown", (e) => {
             if (e.key === "Escape" && menuOverlay.classList.contains("menu-overlay--open")) {
                 closeMenu();
@@ -116,7 +116,7 @@ export function initNavigation() {
         });
     }
 
-    // Зміна фону шапки при скролі
+    // Update the header background while scrolling
     const header = document.querySelector('.main-header');
 
     if (header) {
@@ -129,7 +129,7 @@ export function initNavigation() {
         });
     }
 
-    // Кнопка повернення нагору
+    // Scroll back to the top
     const scrollTopBtn = document.querySelector('.main-footer__scroll-top');
 
     if (scrollTopBtn) {
@@ -137,11 +137,11 @@ export function initNavigation() {
             document.documentElement.style.scrollBehavior = 'auto';
 
             const startPosition = window.scrollY;
-            // Поточна позиція
+            // Current scroll position
             const distance = -startPosition;
-            // Відстань до нуля
+            // Distance to the top
             const duration = 1200;
-            // Час анімації (мс)
+            // Animation duration in milliseconds
             let start = null;
 
             function animation(currentTime) {
@@ -151,15 +151,15 @@ export function initNavigation() {
 
                 const timeElapsed = currentTime - start;
 
-                // Розрахунок прогресу (від 0 до 1)
+                // Calculate progress from 0 to 1
                 const progress = Math.min(timeElapsed / duration, 1);
 
-                // Формула плавності (ease-in-out)
+                // Apply ease-in-out interpolation
                 const ease = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
 
                 window.scrollTo(0, startPosition + distance * ease);
 
-                // Продовжуємо, поки не вийде час
+                // Continue until the animation duration has elapsed
                 if (timeElapsed < duration) {
                     requestAnimationFrame(animation);
                 } else {
@@ -171,7 +171,7 @@ export function initNavigation() {
         });
     }
 
-    // Клавіатурний перехід продовжує навігацію від цільового заголовка
+    // Continue keyboard navigation from the target heading
     if (body.classList.contains('detail-page')) {
         document.querySelectorAll('a[href^="#"]').forEach(link => {
             link.addEventListener('click', event => {
